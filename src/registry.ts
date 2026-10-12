@@ -37,7 +37,7 @@ export const sections: Section[] = [
     title: 'Hero (baseline)',
     stack: 'react',
     animation: 'gsap',
-    figma: null,
-    status: 'planned',
+    figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
+    status: 'in-progress',
   },
 ];
