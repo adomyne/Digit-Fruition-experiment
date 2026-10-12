@@ -31,11 +31,11 @@
   --color-gray: #8e8e93;            /* Grays/Gray */
 
   /* Type
-   * Display = Manrope (H1, H5). Sans = Neue Montreal (H2-H4, H6), a licensed
-   * face that isn't bundled here; Inter stands in until the font files are
-   * added to the repo. */
+   * Display = Manrope (H1, H5). Figma sets H2-H4 and H6 in Neue Montreal;
+   * by the owner's call the site uses Manrope Variable there too, so both
+   * tokens point at the same face. */
   --font-display: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
-  --font-sans: 'Neue Montreal', 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;    /* 14px: metric labels */

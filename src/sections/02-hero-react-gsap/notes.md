@@ -42,6 +42,11 @@ Hover: the guide and dot follow the pointer along the ACOS line (0.35s) and
 settle back on Dec 2 on leave (0.6s). Live mode re-noises both series every
 1.4s with a 1.1s `sine.inOut` morph. Reduced motion skips the intro timeline.
 
+## Type
+Everything is set in Manrope Variable (`@fontsource-variable/manrope`).
+Figma uses Neue Montreal for nav, buttons, metric cards and dates; the owner
+chose Manrope for those instead, so widths there differ slightly from the frame.
+
 ## Assets
 `assets/` holds the frame's own exports, downloaded through the Figma MCP
 server and used at their Figma sizes: `df-logo.png` (node 142:1077),
@@ -51,7 +56,4 @@ points of the Figma chart vector (142:1188), mapped to the plot's axis scale
 rather than traced.
 
 ## Unfinished
-- **Neue Montreal** (nav, buttons, metric cards, dates) is a licensed font
-  and isn't in the repo; Inter stands in, which makes the CTA about 24px wider
-  than in Figma. Manrope is installed from Fontsource.
 - No `frame.png` in the folder yet.
