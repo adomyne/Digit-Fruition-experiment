@@ -15,6 +15,9 @@ import './Hero.css';
 
 const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
 
+/** Places an axis label or gridline at its tick value (see .hero__axis span). */
+const tick = (t: number) => ({ '--t': t }) as CSSProperties;
+
 export default function Hero() {
   const root = useRef<HTMLDivElement>(null);
   const plot = useRef<HTMLDivElement>(null);
@@ -54,7 +57,7 @@ export default function Hero() {
 
         gsap
           .timeline({ defaults: { ease: 'power3.out' } })
-          .from('.hero__header > *', { y: -16, autoAlpha: 0, duration: 0.6, stagger: 0.08 })
+          .from('.hero__logo, .hero__nav, .hero__tools > *', { y: -16, autoAlpha: 0, duration: 0.6, stagger: 0.08 })
           .from('.hero__amazon-word', { y: 28, autoAlpha: 0, duration: 0.8 }, 0.15)
           .fromTo(
             '.hero__smile path',
@@ -133,17 +136,19 @@ export default function Hero() {
   return (
     <div className="hero" ref={root}>
       <header className="hero__header">
-        <a className="hero__logo" href="#" aria-label="Digit Fruition home">
-          <span className="hero__logo-digit">DIGIT</span>
-          <span className="hero__logo-fruition">Fruition</span>
-        </a>
-        <nav className="hero__nav" aria-label="Main">
-          {NAV.map((item, i) => (
-            <a key={item} href="#" className="hero__nav-item" aria-current={i === 0 ? 'page' : undefined}>
-              {item}
-            </a>
-          ))}
-        </nav>
+        <div className="hero__brand">
+          <a className="hero__logo" href="#" aria-label="Digit Fruition home">
+            <span className="hero__logo-digit">DIGIT</span>
+            <span className="hero__logo-fruition">Fruition</span>
+          </a>
+          <nav className="hero__nav" aria-label="Main">
+            {NAV.map((item, i) => (
+              <a key={item} href="#" className="hero__nav-item" aria-current={i === 0 ? 'page' : undefined}>
+                {item}
+              </a>
+            ))}
+          </nav>
+        </div>
         <div className="hero__tools">
           <button type="button" className="hero__lang">
             <GlobeIcon /> EN <ChevronIcon />
@@ -163,7 +168,10 @@ export default function Hero() {
               <path d="M100 4 L111 7.5 L106 18" pathLength={1} />
             </svg>
           </span>
-          <span className="hero__title-word">PPC</span> <span className="hero__title-word">Agency</span>
+          <span className="hero__title-words">
+            <span className="hero__title-word">PPC</span>
+            <span className="hero__title-word">Agency</span>
+          </span>
         </h1>
 
         <p className="hero__sub">
@@ -178,7 +186,7 @@ export default function Hero() {
         <div className="hero__chart">
           <div className="hero__metrics">
             {metrics.map((m) => (
-              <div key={m.label} className={`hero__metric${m.active ? ' is-active' : ''}`}>
+              <div key={m.label} className={`hero__metric${m.bar ? ` hero__metric--${m.bar}` : ''}`}>
                 <span className="hero__metric-label">
                   {m.label} <ChevronIcon /> <InfoIcon />
                 </span>
@@ -188,28 +196,34 @@ export default function Hero() {
           </div>
 
           <div className="hero__graph">
-            <div className="hero__axis hero__axis--left" aria-hidden="true">
-              {[...AXIS_TICKS].reverse().map((t) => (
-                <span key={t}>€{t ? `${t}K` : 0}</span>
-              ))}
-            </div>
-            <div className="hero__plot" ref={plot}>
-              <div className="hero__grid" aria-hidden="true">
+            <div className="hero__axis-col" aria-hidden="true">
+              <div className="hero__axis hero__axis--left">
                 {AXIS_TICKS.map((t) => (
-                  <i key={t} />
+                  <span key={t} style={tick(t)}>€{t ? `${t}K` : 0}</span>
                 ))}
               </div>
-              <svg className="hero__lines" viewBox="0 0 1000 250" preserveAspectRatio="none" role="img" aria-label="Sales and ACOS from Oct 15 to Dec 29">
-                <path ref={salesPath} d={toPath(sales)} vectorEffect="non-scaling-stroke" />
-                <path ref={acosPath} d={toPath(acos)} vectorEffect="non-scaling-stroke" />
-              </svg>
-              <div className="hero__guide" ref={guide} aria-hidden="true" />
-              <div className="hero__dot" ref={dot} aria-hidden="true" />
             </div>
-            <div className="hero__axis hero__axis--right" aria-hidden="true">
-              {[...AXIS_TICKS].reverse().map((t) => (
-                <span key={t}>{t}%</span>
-              ))}
+            <div className="hero__plot" ref={plot}>
+              <div className="hero__guide" ref={guide} aria-hidden="true" />
+              <div className="hero__plot-area">
+                <div className="hero__grid" aria-hidden="true">
+                  {AXIS_TICKS.map((t) => (
+                    <i key={t} style={tick(t)} />
+                  ))}
+                </div>
+                <svg className="hero__lines" viewBox="0 0 1000 250" preserveAspectRatio="none" role="img" aria-label="Sales and ACOS from Oct 15 to Dec 29">
+                  <path ref={salesPath} className="hero__line--sales" d={toPath(sales)} vectorEffect="non-scaling-stroke" />
+                  <path ref={acosPath} className="hero__line--acos" d={toPath(acos)} vectorEffect="non-scaling-stroke" />
+                </svg>
+                <div className="hero__dot" ref={dot} aria-hidden="true" />
+              </div>
+            </div>
+            <div className="hero__axis-col" aria-hidden="true">
+              <div className="hero__axis hero__axis--right">
+                {AXIS_TICKS.map((t) => (
+                  <span key={t} style={tick(t)}>{t}%</span>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -233,10 +247,11 @@ export default function Hero() {
   );
 }
 
-/* Icons: simple stand-ins drawn here, not exported from Figma. */
+/* Icons: stand-ins drawn here until the Figma SVGs can be downloaded
+   (globe-2, chevron-down, download, bxs:info-circle, bxs:phone-call). */
 function GlobeIcon() {
   return (
-    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4">
+    <svg viewBox="0 0 16 16" className="hero__icon-sm" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4">
       <circle cx="8" cy="8" r="6.3" />
       <path d="M2 8h12M8 1.7c2 2 2 10.6 0 12.6M8 1.7c-2 2-2 10.6 0 12.6" />
     </svg>
@@ -244,21 +259,21 @@ function GlobeIcon() {
 }
 function ChevronIcon() {
   return (
-    <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg viewBox="0 0 10 10" className="hero__icon-xs" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.3">
       <path d="M2 3.5 5 6.5 8 3.5" />
     </svg>
   );
 }
 function DownloadIcon() {
   return (
-    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg viewBox="0 0 16 16" className="hero__icon-sm" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M8 2v8M4.5 6.8 8 10.3l3.5-3.5M2.5 11v2.5h11V11" />
     </svg>
   );
 }
 function InfoIcon() {
   return (
-    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" className="hero__info">
+    <svg viewBox="0 0 16 16" aria-hidden="true" className="hero__info">
       <circle cx="8" cy="8" r="7" fill="currentColor" />
       <path d="M8 7v4.5M8 4.6v.2" stroke="var(--color-on-ink)" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
@@ -266,7 +281,7 @@ function InfoIcon() {
 }
 function PhoneIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="currentColor" className="hero__phone">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className="hero__phone">
       <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" />
       <path d="M15 3.5a6 6 0 0 1 5.5 5.5M15 7a2.5 2.5 0 0 1 2 2" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>

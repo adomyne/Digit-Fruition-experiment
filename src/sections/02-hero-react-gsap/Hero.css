@@ -1,5 +1,6 @@
-/* Hero (baseline). All values come from tokens.css. GSAP owns transforms and
-   opacity on every animated element; CSS only handles colors on hover. */
+/* Hero (baseline). All values come from tokens.css, which is synced from the
+   Figma frame. GSAP owns transforms and opacity on every animated element;
+   CSS only handles colors on hover. */
 
 .hero {
   height: 100%;
@@ -9,21 +10,29 @@
   font-family: var(--font-sans);
 }
 
-/* ---------- Header ---------- */
+/* ---------- Header (Figma: Menu) ---------- */
 .hero__header {
   max-width: var(--width-page);
+  height: var(--header-height);
   margin: 0 auto;
-  padding: var(--space-6) var(--space-8) 0;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  padding: 0 var(--space-5);
+  display: flex;
   align-items: center;
-  gap: var(--space-24);
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+.hero__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
 }
 
+/* Stand-in for the DF logo PNG (asset download blocked, see notes.md). */
 .hero__logo {
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
+  padding: 0 var(--space-3);
   color: var(--color-text);
   text-decoration: none;
   line-height: 1;
@@ -50,62 +59,70 @@
 
 .hero__nav {
   display: flex;
-  justify-self: start;
-  border: 1px solid var(--color-border);
+  height: var(--control-height);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  overflow: hidden;
 }
 .hero__nav-item {
-  min-width: 6.25rem;
-  height: var(--control-height);
+  min-width: var(--tab-width);
   display: flex;
   align-items: center;
   padding: 0 var(--space-4);
-  border-top: 2px solid transparent;
-  color: var(--color-text-body);
+  border-top: var(--bar-height) solid transparent;
+  color: var(--color-ink);
   font-size: var(--text-base);
+  line-height: var(--leading-h6);
   text-decoration: none;
+  white-space: nowrap;
   transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
 }
-.hero__nav-item + .hero__nav-item { border-left: 1px solid var(--color-border); }
-.hero__nav-item[aria-current='page'] { border-top-color: var(--color-accent); color: var(--color-text); }
+.hero__nav-item + .hero__nav-item { border-left: 1px solid var(--color-divider); }
+.hero__nav-item[aria-current='page'] { border-top-color: var(--color-accent-light); color: var(--color-text); }
 .hero__nav-item:hover { color: var(--color-accent); }
 
 .hero__tools {
   display: flex;
   align-items: center;
-  gap: var(--space-10);
+  gap: var(--space-5);
 }
 .hero__lang {
+  height: var(--control-height);
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 0;
-  background: none;
+  gap: var(--space-1-75);
+  padding: 0 var(--space-3-5);
   border: 0;
-  color: var(--color-text-body);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-ink);
   font: inherit;
   font-size: var(--text-base);
+  line-height: var(--leading-h6);
   cursor: pointer;
 }
 .hero__audit {
   height: var(--control-height);
   display: inline-flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   padding: 0 var(--space-5);
   border-radius: var(--radius-sm);
   background: var(--color-ink);
   color: var(--color-on-ink);
   font-size: var(--text-base);
+  line-height: var(--leading-h6);
   text-decoration: none;
+  white-space: nowrap;
   transition: background-color var(--duration-fast) var(--ease-out);
 }
 .hero__audit:hover { background: var(--color-text); }
 
-/* ---------- Main ---------- */
+/* ---------- Main (Figma: Hero Content) ---------- */
 .hero__main {
   max-width: var(--width-page);
   margin: 0 auto;
-  padding: calc(var(--space-24) + var(--space-12)) var(--space-8) var(--space-16);
+  padding: var(--space-16) var(--space-5) var(--space-16);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -113,21 +130,23 @@
 }
 
 .hero__title {
+  min-height: var(--brand-height);
   margin: 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: baseline;
-  column-gap: 0.28em;
+  align-items: center;
+  column-gap: var(--space-7);
+  font-family: var(--font-display);
   font-size: var(--text-display);
-  font-weight: var(--weight-regular);
-  line-height: var(--leading-tight);
-  letter-spacing: -0.02em;
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-h1);
 }
+.hero__title-words { display: inline-flex; column-gap: 0.25em; }
 .hero__title-word { display: inline-block; }
 
-/* Stand-in for the Amazon wordmark: set in type with a drawn smile. Swap in
-   the real asset from Figma when it can be exported. */
+/* Stand-in for the Amazon logo SVG: set in type with a drawn smile. Swap in
+   the Figma asset (node 142:1121) when it can be downloaded. */
 .hero__amazon {
   position: relative;
   display: inline-block;
@@ -157,99 +176,112 @@
 
 .hero__sub {
   max-width: var(--width-copy);
-  margin: var(--space-24) 0 0;
+  margin: var(--space-21) 0 0;
   color: var(--color-text-body);
-  font-size: var(--text-lg);
-  line-height: var(--leading-snug);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-h5);
 }
 
 .hero__cta {
-  margin-top: var(--space-10);
-  min-height: var(--cta-height);
+  margin-top: var(--space-11);
+  height: var(--cta-height);
   display: inline-flex;
   align-items: center;
-  gap: var(--space-4);
-  padding: 0 var(--space-10) 0 var(--space-8);
-  border-radius: var(--radius-sm);
+  gap: calc(var(--space-7) * 0.4); /* 11.2px */
+  padding: 0 var(--space-7);
+  border-radius: var(--radius-md);
   background: var(--color-accent);
   color: var(--color-on-accent);
   box-shadow: var(--shadow-cta);
   font-size: var(--text-lg);
+  line-height: var(--leading-h6);
   text-decoration: none;
+  white-space: nowrap;
   transition: background-color var(--duration-fast) var(--ease-out);
 }
 .hero__cta:hover { background: color-mix(in srgb, var(--color-accent) 88%, var(--color-text)); }
+.hero__phone { width: var(--icon-lg); height: var(--icon-lg); }
 
-/* ---------- Chart ---------- */
+/* ---------- Chart (Figma: Performance Dashboard) ---------- */
 .hero__chart {
   width: 100%;
   max-width: var(--width-chart);
   margin-top: var(--space-20);
-  --axis-left: var(--space-20);
-  --axis-right: var(--space-16);
 }
 
 .hero__metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border: 1px solid var(--color-border);
   text-align: left;
 }
 .hero__metric {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border-top: 2px solid transparent;
+  gap: var(--space-1-75);
+  padding: calc(var(--bar-height) + var(--space-1)) var(--space-3) var(--space-1);
+  border: 1px solid var(--color-border);
+  box-shadow: inset 0 var(--bar-height) 0 var(--bar, transparent);
 }
-.hero__metric + .hero__metric { border-left: 1px solid var(--color-border); }
-.hero__metric.is-active { border-top-color: var(--color-accent); }
+.hero__metric--accent { --bar: var(--color-accent); }
+.hero__metric--accent-light { --bar: var(--color-accent-light); }
 .hero__metric-label {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  color: var(--color-text-body);
+  gap: var(--space-2-5);
+  color: var(--color-text);
   font-size: var(--text-sm);
+  line-height: var(--leading-label);
 }
-.hero__metric-label .hero__info { margin-left: var(--space-3); color: var(--color-axis); }
+.hero__metric-label .hero__info { color: var(--color-axis); }
 .hero__metric-value {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: var(--weight-bold);
+  line-height: var(--leading-h6);
 }
 
 .hero__graph {
-  margin-top: var(--space-4);
+  margin-top: var(--space-6);
+  height: var(--chart-height);
   display: grid;
-  grid-template-columns: var(--axis-left) 1fr var(--axis-right);
+  grid-template-columns: var(--chart-axis-left) 1fr var(--chart-axis-right);
+  column-gap: var(--chart-gap);
+}
+
+/* Axis labels and gridlines share one box (the plot minus headroom and
+   foot) and the same tick positions, so each label sits centred on its line. */
+.hero__axis,
+.hero__plot-area {
+  position: absolute;
+  inset: var(--chart-headroom) 0 var(--chart-foot);
+}
+.hero__axis-col { position: relative; }
+.hero__axis span,
+.hero__grid i {
+  position: absolute;
+  top: calc((1 - var(--t) / 25) * 100%);
+  transform: translateY(-50%);
 }
 .hero__axis {
-  height: 18rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  font-family: var(--font-display);
   font-size: var(--text-md);
-  line-height: 1;
-  /* labels sit centred on their gridline */
-  margin: calc(var(--text-md) * -0.5) 0;
-  padding: 0;
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-h5);
+  white-space: nowrap;
 }
-.hero__axis--left { color: var(--color-text-subtle); text-align: right; padding-right: var(--space-4); }
-.hero__axis--right { color: var(--color-accent-soft); text-align: left; padding-left: var(--space-4); }
+.hero__axis--left { color: var(--color-text-subtle); }
+.hero__axis--left span { right: 0; }
+.hero__axis--right { color: var(--color-accent-soft); }
+.hero__axis--right span { left: 0; }
 
 .hero__plot {
   position: relative;
-  height: 18rem;
   cursor: crosshair;
   touch-action: pan-y;
 }
-.hero__grid {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: space-between;
-}
-.hero__grid i { display: block; height: 2px; background: var(--color-border); }
+.hero__grid { position: absolute; inset: 0; }
+.hero__grid i { left: 0; right: 0; height: 2px; background: var(--color-grid); }
 .hero__grid i:first-child { background: var(--color-axis); }
 
 .hero__lines {
@@ -261,24 +293,26 @@
 }
 .hero__lines path {
   fill: none;
-  stroke: var(--color-accent);
-  stroke-width: 1.75;
+  stroke-width: 2;
   stroke-linejoin: round;
 }
+.hero__line--sales { stroke: var(--color-accent-light); }
+.hero__line--acos { stroke: var(--color-accent); }
 
 .hero__guide {
   position: absolute;
   top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--color-border);
+  bottom: var(--chart-foot);
+  width: 2px;
+  margin-left: -1px;
+  background: var(--color-grid);
   pointer-events: none;
 }
 .hero__dot {
   position: absolute;
-  width: var(--space-4);
-  height: var(--space-4);
-  margin: calc(var(--space-2) * -1) 0 0 calc(var(--space-2) * -1);
+  width: var(--chart-dot);
+  height: var(--chart-dot);
+  margin: calc(var(--chart-dot) / -2) 0 0 calc(var(--chart-dot) / -2);
   border-radius: var(--radius-full);
   background: var(--color-accent);
   pointer-events: none;
@@ -286,28 +320,32 @@
 
 .hero__dates {
   position: relative;
-  height: var(--text-md);
+  height: calc(var(--text-md) * var(--leading-label));
   margin-top: var(--space-6);
-  color: var(--color-text-subtle);
+  color: var(--color-text-faint);
   font-size: var(--text-md);
-  line-height: 1;
+  line-height: var(--leading-label);
 }
 .hero__dates span { position: absolute; top: 0; white-space: nowrap; }
 .hero__dates span:first-child { left: 0; }
 .hero__dates span:nth-child(2) {
-  left: calc(var(--axis-left) + (100% - var(--axis-left) - var(--axis-right)) * var(--at));
+  --plot-left: calc(var(--chart-axis-left) + var(--chart-gap));
+  --plot-width: calc(100% - var(--chart-axis-left) - var(--chart-axis-right) - 2 * var(--chart-gap));
+  left: calc(var(--plot-left) + var(--plot-width) * var(--at));
   transform: translateX(-50%);
 }
 .hero__dates span:last-child { right: 0; }
 
 .hero__live {
-  margin-top: var(--space-8);
+  margin-top: var(--space-6);
   padding: 0;
   background: none;
   border: 0;
   color: var(--color-accent);
-  font: inherit;
+  font-family: var(--font-display);
   font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-h5);
   text-decoration: underline;
   text-underline-offset: 0.15em;
   cursor: pointer;
@@ -315,11 +353,18 @@
 
 .hero__foot {
   max-width: var(--width-copy);
-  margin: var(--space-10) 0 0;
+  /* Figma leads this text block with an empty line: one extra line height */
+  margin: calc(var(--space-6) * 2) 0 0;
   color: var(--color-text-muted);
-  font-size: var(--text-lg);
-  line-height: var(--leading-snug);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-h5);
 }
+
+.hero__icon-xs { width: var(--icon-xs); height: var(--icon-xs); }
+.hero__icon-sm { width: var(--icon-sm); height: var(--icon-sm); }
+.hero__info { width: var(--icon-md); height: var(--icon-md); }
 
 .hero a:focus-visible,
 .hero button:focus-visible {
@@ -329,18 +374,25 @@
 
 /* ---------- Small screens ---------- */
 @media (max-width: 1100px) {
-  .hero__header { grid-template-columns: auto 1fr; gap: var(--space-6); }
   .hero__nav { display: none; }
-  .hero__tools { justify-self: end; gap: var(--space-6); }
 }
 @media (max-width: 640px) {
-  .hero__header { padding: var(--space-4) var(--space-4) 0; }
+  .hero__header { padding: 0 var(--space-4); }
   .hero__lang { display: none; }
-  .hero__main { padding: var(--space-16) var(--space-4) var(--space-12); }
+  .hero__main { padding: var(--space-8) var(--space-4) var(--space-12); }
+  .hero__title { min-height: 0; flex-direction: column; row-gap: var(--space-2); }
   .hero__sub { margin-top: var(--space-12); }
   .hero__metrics { grid-template-columns: repeat(2, 1fr); }
-  .hero__metric:nth-child(3) { border-left: 0; }
-  .hero__chart { --axis-left: var(--space-12); --axis-right: var(--space-10); }
+  .hero__graph {
+    --chart-axis-left: var(--space-10);
+    --chart-axis-right: var(--space-8);
+    --chart-gap: var(--space-2);
+    height: 12rem;
+  }
+  .hero__dates {
+    --chart-axis-left: var(--space-10);
+    --chart-axis-right: var(--space-8);
+    --chart-gap: var(--space-2);
+  }
   .hero__axis, .hero__dates { font-size: var(--text-sm); }
-  .hero__axis, .hero__plot { height: 12rem; }
 }

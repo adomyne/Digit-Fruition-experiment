@@ -1,5 +1,5 @@
 /**
- * Chart series traced from the Figma export. x is 0..1 across the plot,
+ * Chart series traced from the Figma frame (the plot is one vector there). x is 0..1 across the plot,
  * y is in axis units (thousands of euros on the left, percent on the right,
  * both 0..25 so they share one scale).
  */
@@ -30,11 +30,12 @@ export const acos: Point[] = [
 /** Where the highlight sits at rest (Dec 2). */
 export const HIGHLIGHT_X = 0.6875;
 
+/** Top bar color per card, as in the frame: Sales dark orange, ACOS light. */
 export const metrics = [
-  { label: 'Spend', value: '€ 24,000.00', active: false },
-  { label: 'Sales', value: '€ 270,000.00', active: true },
-  { label: 'ACOS', value: '8.72%', active: true },
-  { label: 'Impressions', value: '21,000,00', active: false },
+  { label: 'Spend', value: '€ 24,000.00', bar: null },
+  { label: 'Sales', value: '€ 270,000.00', bar: 'accent' },
+  { label: 'ACOS', value: '8.72%', bar: 'accent-light' },
+  { label: 'Impressions', value: '21,000,00', bar: null },
 ] as const;
 
 /** SVG path in a 1000 x 250 box (y flipped so 0 is the baseline). */
