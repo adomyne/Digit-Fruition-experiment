@@ -1,0 +1,78 @@
+---
+/**
+ * Lab shell: one experiment per screen. ← / → (and horizontal swipe) go to
+ * the previous / next route with a full page load, so each section's
+ * framework and animations are torn down on leave. The section number lives
+ * in the URL (/1, /2, ...) so a reload stays put.
+ */
+import '../styles/tokens.css';
+import '../styles/shell.css';
+import { sections } from '../registry';
+
+interface Props {
+  index: number; // 1-based
+}
+
+const { index } = Astro.props;
+const total = sections.length;
+const section = sections[index - 1];
+const pad = (n: number) => String(n).padStart(2, '0');
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const prev = `${base}/${index === 1 ? total : index - 1}`;
+const next = `${base}/${index === total ? 1 : index + 1}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pad(index)} {section.title} · Frontend Lab</title>
+    <link rel="prefetch" href={prev} />
+    <link rel="prefetch" href={next} />
+  </head>
+  <body>
+    <main class="lab-stage" data-section={section.id}>
+      <slot />
+    </main>
+
+    <nav class="lab-label" aria-label="Lab navigation">
+      <a href={prev} aria-label="Previous section" class="lab-arrow">←</a>
+      <span class="lab-count">{pad(index)} / {pad(total)}</span>
+      <span class="lab-title">{section.title}</span>
+      <span class="lab-meta">{section.stack} · {section.animation}</span>
+      {section.figma && <a href={section.figma} class="lab-figma" target="_blank" rel="noopener">Figma</a>}
+      <a href={next} aria-label="Next section" class="lab-arrow">→</a>
+    </nav>
+
+    <script is:inline define:vars={{ prev, next }}>
+      const isTyping = (el) =>
+        el instanceof HTMLElement &&
+        (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName));
+
+      document.addEventListener('keydown', (e) => {
+        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isTyping(document.activeElement)) return;
+        if (e.key === 'ArrowLeft') location.assign(prev);
+        if (e.key === 'ArrowRight') location.assign(next);
+      });
+
+      // Horizontal swipe. Sections that need horizontal drags of their own
+      // can opt out by putting data-lab-noswipe on the element.
+      let start = null;
+      document.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        start = e.target.closest?.('[data-lab-noswipe]') ? null : { x: t.clientX, y: t.clientY };
+      }, { passive: true });
+      document.addEventListener('touchend', (e) => {
+        if (!start) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - start.x;
+        const dy = t.clientY - start.y;
+        start = null;
+        if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        location.assign(dx > 0 ? prev : next);
+      }, { passive: true });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,96 @@
+---
+// Static section that proves the loop: registry → route → shell → tokens.
+// Every value here comes from tokens.css, so it doubles as a token specimen.
+const swatches = ['bg', 'surface', 'text', 'text-muted', 'accent', 'border'];
+const spaces = [1, 2, 3, 4, 6, 8, 12, 16];
+---
+
+<section class="static-check">
+  <p class="eyebrow">Frontend Lab · 01</p>
+  <h1>The loop works.</h1>
+  <p class="lede">Press <kbd>←</kbd> or <kbd>→</kbd> (or swipe) to page through experiments. Reload and you stay on the same one.</p>
+
+  <div class="specimen">
+    <div>
+      <h2>Color</h2>
+      <ul class="swatches">
+        {swatches.map((s) => (
+          <li>
+            <span class="chip" style={`background: var(--color-${s})`} />
+            <code>--color-{s}</code>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h2>Spacing</h2>
+      <ul class="spaces">
+        {spaces.map((n) => (
+          <li>
+            <span class="bar" style={`width: var(--space-${n})`} />
+            <code>--space-{n}</code>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .static-check {
+    height: 100%;
+    overflow-y: auto;
+    padding: var(--space-16) var(--space-8);
+    max-width: 72rem;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font: var(--text-sm) / 1 var(--font-mono);
+    color: var(--color-accent);
+    margin: 0 0 var(--space-4);
+  }
+  h1 {
+    font-size: var(--text-display);
+    line-height: var(--leading-tight);
+    font-weight: var(--weight-bold);
+    margin: 0 0 var(--space-6);
+  }
+  .lede {
+    font-size: var(--text-lg);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+    max-width: 40rem;
+    margin: 0 0 var(--space-12);
+  }
+  kbd {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+  .specimen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-12);
+  }
+  h2 {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-4);
+  }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+  li { display: flex; align-items: center; gap: var(--space-3); }
+  code { font: var(--text-sm) / 1 var(--font-mono); }
+  .chip {
+    width: var(--space-8);
+    height: var(--space-8);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+  }
+  .bar { height: var(--space-3); background: var(--color-accent); border-radius: var(--radius-sm); }
+</style>

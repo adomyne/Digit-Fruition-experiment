@@ -1,0 +1,26 @@
+---
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import LabShell from '../layouts/LabShell.astro';
+import { sections } from '../registry';
+
+// Each section folder exports its entry as Section.astro. Framework islands
+// are mounted from inside that file (client:load, or client:only if a
+// library breaks during server rendering).
+const modules = import.meta.glob<{ default: AstroComponentFactory }>('../sections/*/Section.astro', {
+  eager: true,
+});
+
+export function getStaticPaths() {
+  return sections.map((_, i) => ({ params: { n: String(i + 1) } }));
+}
+
+const index = Number(Astro.params.n);
+const section = sections[index - 1];
+const mod = modules[`../sections/${section.id}/Section.astro`];
+if (!mod) throw new Error(`Missing src/sections/${section.id}/Section.astro for registry entry "${section.id}"`);
+const Section = mod.default;
+---
+
+<LabShell index={index}>
+  <Section />
+</LabShell>
