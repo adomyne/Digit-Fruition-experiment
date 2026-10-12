@@ -1,6 +1,6 @@
 # 02 · Hero (baseline)
 
-**Stack:** React island + GSAP · **Status:** in progress (learning-order step 2)
+**Stack:** React island + GSAP · **Status:** done (learning-order step 2)
 **Built by:** Claude Code (cloud), from the Figma MCP server.
 
 **Figma:** [Digit Fruition, node 60:159](https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159)

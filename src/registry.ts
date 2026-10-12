@@ -38,6 +38,6 @@ export const sections: Section[] = [
     stack: 'react',
     animation: 'gsap',
     figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
-    status: 'in-progress',
+    status: 'done',
   },
 ];
