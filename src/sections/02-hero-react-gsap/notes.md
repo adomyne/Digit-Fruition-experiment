@@ -27,8 +27,7 @@
 | Element | Start | Duration | Notes |
 | --- | --- | --- | --- |
 | Logo, nav, header actions | 0 | 0.6 | y -16 → 0, fade, stagger 0.08 |
-| Amazon word | 0.15 | 0.8 | y 28 → 0, fade |
-| Smile stroke | 0.55 | 0.7 | draw on, `power2.inOut` |
+| Amazon logo | 0.15 | 0.8 | y 28 → 0, fade |
 | "PPC", "Agency" | 0.3 | 0.8 | y 28 → 0, stagger 0.08 |
 | Subtitle | 0.6 | 0.7 | y 16 → 0 |
 | CTA | 0.75 | 0.6 | y 12, scale 0.96 → 1, `back.out(2)` |
@@ -43,15 +42,16 @@ Hover: the guide and dot follow the pointer along the ACOS line (0.35s) and
 settle back on Dec 2 on leave (0.6s). Live mode re-noises both series every
 1.4s with a 1.1s `sine.inOut` morph. Reduced motion skips the intro timeline.
 
+## Assets
+`assets/` holds the frame's own exports, downloaded through the Figma MCP
+server and used at their Figma sizes: `df-logo.png` (node 142:1077),
+`amazon-logo.svg` (142:1121), and the globe, chevron-down, download,
+info-circle and phone-call icons. The chart series in `chartData.ts` are the
+points of the Figma chart vector (142:1188), mapped to the plot's axis scale
+rather than traced.
+
 ## Unfinished
-- **Assets are stand-ins.** The cloud environment's network policy denies
-  www.figma.com, so the MCP asset URLs can't be downloaded. Still drawn here:
-  the DF logo (PNG, node `142:1077`), the Amazon logo (SVG, node `142:1121`),
-  and the globe, chevron, download, info and phone icons. Once www.figma.com
-  is allowed, download them into this folder and swap them in.
 - **Neue Montreal** (nav, buttons, metric cards, dates) is a licensed font
   and isn't in the repo; Inter stands in, which makes the CTA about 24px wider
   than in Figma. Manrope is installed from Fontsource.
-- The chart is a single vector in Figma, so the series in `chartData.ts` are
-  traced from it rather than read as data.
-- No `frame.png` yet (same download block).
+- No `frame.png` in the folder yet.

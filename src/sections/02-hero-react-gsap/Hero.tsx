@@ -11,6 +11,13 @@ import {
   valueAt,
   type Point,
 } from './chartData';
+import dfLogo from './assets/df-logo.png?url';
+import amazonLogo from './assets/amazon-logo.svg?url';
+import globe from './assets/globe.svg?url';
+import chevronDown from './assets/chevron-down.svg?url';
+import download from './assets/download.svg?url';
+import infoCircle from './assets/info-circle.svg?url';
+import phoneCall from './assets/phone-call.svg?url';
 import './Hero.css';
 
 const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
@@ -58,13 +65,7 @@ export default function Hero() {
         gsap
           .timeline({ defaults: { ease: 'power3.out' } })
           .from('.hero__logo, .hero__nav, .hero__tools > *', { y: -16, autoAlpha: 0, duration: 0.6, stagger: 0.08 })
-          .from('.hero__amazon-word', { y: 28, autoAlpha: 0, duration: 0.8 }, 0.15)
-          .fromTo(
-            '.hero__smile path',
-            { strokeDashoffset: 1 },
-            { strokeDashoffset: 0, duration: 0.7, ease: 'power2.inOut' },
-            0.55,
-          )
+          .from('.hero__amazon', { y: 28, autoAlpha: 0, duration: 0.8 }, 0.15)
           .from('.hero__title-word', { y: 28, autoAlpha: 0, duration: 0.8, stagger: 0.08 }, 0.3)
           .from('.hero__sub', { y: 16, autoAlpha: 0, duration: 0.7 }, 0.6)
           .from('.hero__cta', { y: 12, scale: 0.96, autoAlpha: 0, duration: 0.6, ease: 'back.out(2)' }, 0.75)
@@ -138,8 +139,7 @@ export default function Hero() {
       <header className="hero__header">
         <div className="hero__brand">
           <a className="hero__logo" href="#" aria-label="Digit Fruition home">
-            <span className="hero__logo-digit">DIGIT</span>
-            <span className="hero__logo-fruition">Fruition</span>
+            <img src={dfLogo} width={108} height={37} alt="Digit Fruition" />
           </a>
           <nav className="hero__nav" aria-label="Main">
             {NAV.map((item, i) => (
@@ -161,13 +161,7 @@ export default function Hero() {
 
       <section className="hero__main">
         <h1 className="hero__title">
-          <span className="hero__amazon">
-            <span className="hero__amazon-word">amazon</span>
-            <svg className="hero__smile" viewBox="0 0 120 26" aria-hidden="true">
-              <path d="M4 6 Q58 34 110 8" pathLength={1} />
-              <path d="M100 4 L111 7.5 L106 18" pathLength={1} />
-            </svg>
-          </span>
+          <img className="hero__amazon" src={amazonLogo} width={246.19} height={83.28} alt="amazon" />
           <span className="hero__title-words">
             <span className="hero__title-word">PPC</span>
             <span className="hero__title-word">Agency</span>
@@ -247,43 +241,24 @@ export default function Hero() {
   );
 }
 
-/* Icons: stand-ins drawn here until the Figma SVGs can be downloaded
-   (globe-2, chevron-down, download, bxs:info-circle, bxs:phone-call). */
+/* Icons: SVGs exported from the Figma frame, kept at their Figma sizes. */
 function GlobeIcon() {
-  return (
-    <svg viewBox="0 0 16 16" className="hero__icon-sm" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4">
-      <circle cx="8" cy="8" r="6.3" />
-      <path d="M2 8h12M8 1.7c2 2 2 10.6 0 12.6M8 1.7c-2 2-2 10.6 0 12.6" />
-    </svg>
-  );
+  return <img src={globe} width={17} height={17} alt="" />;
 }
 function ChevronIcon() {
-  return (
-    <svg viewBox="0 0 10 10" className="hero__icon-xs" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.3">
-      <path d="M2 3.5 5 6.5 8 3.5" />
-    </svg>
-  );
+  return <img src={chevronDown} width={14} height={14} alt="" />;
 }
 function DownloadIcon() {
-  return (
-    <svg viewBox="0 0 16 16" className="hero__icon-sm" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M8 2v8M4.5 6.8 8 10.3l3.5-3.5M2.5 11v2.5h11V11" />
-    </svg>
-  );
+  return <img src={download} width={17} height={17} alt="" />;
 }
 function InfoIcon() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden="true" className="hero__info">
-      <circle cx="8" cy="8" r="7" fill="currentColor" />
-      <path d="M8 7v4.5M8 4.6v.2" stroke="var(--color-on-ink)" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
+  return <img src={infoCircle} width={18} height={18} alt="" />;
 }
 function PhoneIcon() {
+  // Figma clips the 33.6px glyph to a 28px box, offset by -2.8px.
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className="hero__phone">
-      <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" />
-      <path d="M15 3.5a6 6 0 0 1 5.5 5.5M15 7a2.5 2.5 0 0 1 2 2" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
+    <span className="hero__phone">
+      <img src={phoneCall} width={33.6} height={33.6} alt="" />
+    </span>
   );
 }

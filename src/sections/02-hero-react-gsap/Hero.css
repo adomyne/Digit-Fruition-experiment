@@ -27,34 +27,11 @@
   gap: var(--space-5);
 }
 
-/* Stand-in for the DF logo PNG (asset download blocked, see notes.md). */
+/* Figma: a 158px logo frame with the 108x37 PNG inset 11.8px from the left. */
 .hero__logo {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0 var(--space-3);
-  color: var(--color-text);
-  text-decoration: none;
-  line-height: 1;
-}
-.hero__logo-digit {
-  font-size: var(--text-xl);
-  font-weight: var(--weight-black);
-  font-style: italic;
-  letter-spacing: -0.02em;
-  line-height: 0.9;
-}
-.hero__logo-fruition {
-  margin-top: 1px;
-  padding: 0 var(--space-2) 0 var(--space-4);
-  background: var(--color-accent);
-  color: var(--color-text);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-bold);
-  font-style: italic;
-  letter-spacing: 0.32em;
-  transform: skewX(-12deg);
-  margin-left: calc(var(--space-2) * -1);
+  width: var(--logo-width);
+  padding-left: var(--space-3);
+  display: flex;
 }
 
 .hero__nav {
@@ -145,33 +122,11 @@
 .hero__title-words { display: inline-flex; column-gap: 0.25em; }
 .hero__title-word { display: inline-block; }
 
-/* Stand-in for the Amazon logo SVG: set in type with a drawn smile. Swap in
-   the Figma asset (node 142:1121) when it can be downloaded. */
+/* Figma sets the logo low in its 144px box so its wordmark shares the H1's
+   baseline; the drop reproduces that offset. */
 .hero__amazon {
   position: relative;
-  display: inline-block;
-  padding-bottom: 0.32em;
-  margin-bottom: -0.32em;
-}
-.hero__amazon-word {
-  display: inline-block;
-  font-weight: var(--weight-black);
-  letter-spacing: -0.045em;
-}
-.hero__smile {
-  position: absolute;
-  left: 4%;
-  bottom: 0;
-  width: 66%;
-  overflow: visible;
-}
-.hero__smile path {
-  fill: none;
-  stroke: var(--color-accent);
-  stroke-width: 5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
+  top: var(--brand-logo-drop);
 }
 
 .hero__sub {
@@ -202,7 +157,13 @@
   transition: background-color var(--duration-fast) var(--ease-out);
 }
 .hero__cta:hover { background: color-mix(in srgb, var(--color-accent) 88%, var(--color-text)); }
-.hero__phone { width: var(--icon-lg); height: var(--icon-lg); }
+.hero__phone {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  display: flex;
+  overflow: hidden;
+}
+.hero__phone img { margin: calc(var(--icon-lg) * -0.1); flex: none; }
 
 /* ---------- Chart (Figma: Performance Dashboard) ---------- */
 .hero__chart {
@@ -234,7 +195,6 @@
   font-size: var(--text-sm);
   line-height: var(--leading-label);
 }
-.hero__metric-label .hero__info { color: var(--color-axis); }
 .hero__metric-value {
   font-size: var(--text-base);
   font-weight: var(--weight-bold);
@@ -277,11 +237,12 @@
 
 .hero__plot {
   position: relative;
+  overflow: hidden; /* the series start left of the plot, as in Figma */
   cursor: crosshair;
   touch-action: pan-y;
 }
 .hero__grid { position: absolute; inset: 0; }
-.hero__grid i { left: 0; right: 0; height: 2px; background: var(--color-grid); }
+.hero__grid i { left: 0; right: 0; height: var(--chart-rule); background: var(--color-grid); }
 .hero__grid i:first-child { background: var(--color-axis); }
 
 .hero__lines {
@@ -303,9 +264,9 @@
   position: absolute;
   top: 0;
   bottom: var(--chart-foot);
-  width: 2px;
-  margin-left: -1px;
-  background: var(--color-grid);
+  width: var(--chart-guide);
+  margin-left: calc(var(--chart-guide) / -2);
+  background: var(--color-guide);
   pointer-events: none;
 }
 .hero__dot {
@@ -362,10 +323,6 @@
   line-height: var(--leading-h5);
 }
 
-.hero__icon-xs { width: var(--icon-xs); height: var(--icon-xs); }
-.hero__icon-sm { width: var(--icon-sm); height: var(--icon-sm); }
-.hero__info { width: var(--icon-md); height: var(--icon-md); }
-
 .hero a:focus-visible,
 .hero button:focus-visible {
   outline: 2px solid var(--color-accent);
@@ -381,6 +338,7 @@
   .hero__lang { display: none; }
   .hero__main { padding: var(--space-8) var(--space-4) var(--space-12); }
   .hero__title { min-height: 0; flex-direction: column; row-gap: var(--space-2); }
+  .hero__amazon { top: 0; max-width: 60%; height: auto; }
   .hero__sub { margin-top: var(--space-12); }
   .hero__metrics { grid-template-columns: repeat(2, 1fr); }
   .hero__graph {

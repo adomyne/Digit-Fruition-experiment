@@ -25,7 +25,8 @@
   --color-on-accent: #ffffff;
   --color-border: rgb(0 0 0 / 0.1); /* metric cards */
   --color-divider: #c7c7cc;         /* Grays/Gray 3: nav tabs */
-  --color-grid: #ededed;            /* chart gridlines and guide */
+  --color-grid: rgb(74 74 74 / 0.1); /* chart gridlines */
+  --color-guide: rgb(0 0 0 / 0.1);  /* chart Dec 2 guide */
   --color-axis: #424d46;            /* Secondary Gray: chart baseline, info icons */
   --color-gray: #8e8e93;            /* Grays/Gray */
 
@@ -81,6 +82,8 @@
   --width-copy: 42.8125rem;     /* 685px subtitle and closing copy */
   --header-height: 5.3125rem;   /* 85px menu bar */
   --brand-height: 11.75rem;     /* 188px logo + H1 row */
+  --brand-logo-drop: 1.48rem;   /* 23.7px: Amazon logo sits below the H1's centre */
+  --logo-width: 9.875rem;       /* 158px header logo frame */
   --control-height: 2.5rem;     /* 40px nav tabs, buttons */
   --cta-height: 3.5rem;         /* 56px */
   --bar-height: 0.1875rem;      /* 3px active bar on tabs and metrics */
@@ -92,9 +95,8 @@
   --chart-headroom: 2.0625rem;  /* 33px above the 25 gridline */
   --chart-foot: 0.625rem;       /* 10px below the baseline */
   --chart-dot: 1.25rem;         /* 20px highlight dot */
-  --icon-xs: 0.875rem;          /* 14px chevron */
-  --icon-sm: 1.0625rem;         /* 17px globe, download */
-  --icon-md: 1.125rem;          /* 18px info */
+  --chart-rule: 0.1875rem;      /* 3px gridlines and baseline */
+  --chart-guide: 0.125rem;      /* 2px guide */
   --icon-lg: 1.75rem;           /* 28px CTA phone */
 
   /* Radius */
