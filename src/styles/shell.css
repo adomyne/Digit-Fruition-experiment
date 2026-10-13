@@ -39,6 +39,23 @@ html, body {
 .lab-count, .lab-title { color: var(--color-text); }
 .lab-arrow { padding: 0 var(--space-1); }
 
+/* Section tag: a one-line window over a reel of section names. The shell
+   script sets --lab-part-at to the fractional index of the section on
+   screen, and the reel slides by that many lines. */
+.lab-part {
+  height: 1em;
+  overflow: hidden;
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--color-border);
+  color: var(--color-accent);
+}
+.lab-part[hidden] { display: none; }
+.lab-part-reel {
+  display: grid;
+  transform: translateY(calc(var(--lab-part-at, 0) * -1em));
+}
+.lab-part-reel > span { height: 1em; white-space: nowrap; }
+
 @media (max-width: 480px) {
   .lab-meta, .lab-figma { display: none; }
 }
