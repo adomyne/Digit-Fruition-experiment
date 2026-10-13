@@ -42,7 +42,9 @@ Full manifest with versions and per-sandbox idioms:
 
 Before relying on the "pending merge" rows, check whether PR #2 has merged
 (`git log origin/main -- src/sections/03-hero-svelte-gsap`). If the manifest
-and the repo disagree, trust the repo and update the manifest.
+and the repo disagree, trust the repo and say so in your summary. Don't
+edit the skill's own files as part of a section change; the manifest is
+updated in its own change.
 
 ## The hard rule
 
