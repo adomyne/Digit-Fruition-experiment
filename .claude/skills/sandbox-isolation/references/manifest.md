@@ -1,6 +1,6 @@
 # Sandbox manifest
 
-Surveyed 2026-10-13 from `main` at e4e6270 (PR #2 and #3 merged). Versions are the ones the lockfile
+Surveyed 2026-10-13 from `main` at a8c34c9 (PRs #2, #3 and #5 merged). Versions are the ones the lockfile
 resolves. Re-survey if the repo has moved on; the repo wins over this file.
 
 ## Shared lab (repo root)
@@ -22,7 +22,7 @@ resolves. Re-survey if the repo has moved on; the repo wins over this file.
   loads `../sections/<id>/Section.astro` via `import.meta.glob` (eager).
 - **Shell:** `src/layouts/LabShell.astro` imports `tokens.css` and
   `shell.css`, renders `.lab-stage` (`position: fixed; overflow: hidden`) and
-  the corner label, and handles ← / → and swipe with an `is:inline
+  the corner label (with the section tag, see SKILL.md), and handles ← / → and swipe with an `is:inline
   define:vars` script doing full page loads (`location.assign`). Elements with
   `data-lab-noswipe` opt out of swipe. Prefetches prev/next.
 - **Tokens:** `src/styles/tokens.css`, generated from Figma variables
@@ -109,6 +109,21 @@ resolves. Re-survey if the repo has moved on; the repo wins over this file.
   loads, so unload does the work.
 - **Gotchas:** live-mode button state (`aria-pressed`, label) is set by hand.
   Anime ease names differ from GSAP's (`outQuart` = `power3.out`).
+
+## 06-landing-skeleton (`/6`), on main, in progress
+
+- **Stack:** plain Astro component, no island, no client JS of its own.
+- **Animation:** none.
+- **What it is:** the 11 landing page sections from `docs/site-structure.md`
+  (Hero, Ads, Audits, Process, About us, Results, Case studies, Testimonials,
+  Form, Logo, Footer) as placeholder blocks in one `.skeleton` scroll
+  container. Each block's root carries `data-lab-part="<name>"`, which drives
+  the shell's section tag as you scroll.
+- **Styling:** Astro scoped `<style>`, tokens only; `class:list` for the short
+  Logo and Footer blocks.
+- **Gotchas:** real sections replace the blocks one by one and must keep
+  `data-lab-part` on their root. The registry entry has no `part`, because the
+  tag comes from the markup here (the heroes do the opposite).
 
 ## apps/ (none yet)
 

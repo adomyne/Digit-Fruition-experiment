@@ -38,6 +38,7 @@ Full manifest with versions and per-sandbox idioms:
 | `src/sections/03-hero-svelte-gsap` | `/3` | Svelte 5 island (runes) | GSAP 3 |
 | `src/sections/04-hero-vue-motion` | `/4` | Vue 3 island (`<script setup>`) | Motion for Vue (`motion-v`) |
 | `src/sections/05-hero-vanilla-anime` | `/5` | Astro markup + one bundled `<script>` | Anime.js v4 |
+| `src/sections/06-landing-skeleton` | `/6` | Plain Astro, no island (placeholder blocks, one scroll container) | none |
 | `apps/` | n/a | Next.js / SvelteKit / Nuxt, none built yet | n/a |
 
 `main` is deployed to GitHub Pages on every push
@@ -142,6 +143,25 @@ the server at build time, and that is where the stacks differ:
   (AGENTS.md); don't add `typeof window` checks to a sibling that doesn't
   need them.
 
+### Section tag (`data-lab-part`)
+
+The shell's info bar names the landing page section on screen, using the
+names and order in `docs/site-structure.md`. The shell does the work (a
+capture-phase scroll listener and a `MutationObserver` on the stage); a
+section only marks itself, and how depends on the section:
+
+- **One-screen sections** (02-05 heroes) set `part` in their registry entry.
+  Don't also put `data-lab-part` in their markup.
+- **Scrolling sections** (06 skeleton) put `data-lab-part="<name>"` on each
+  landing section's root, inside the section's own scroll container, and
+  set no registry `part`. The shell finds the scroll container itself, so
+  don't add scroll listeners for the tag.
+- When a real section replaces a skeleton block, keep the attribute on its
+  root. In an island, render it in the component's own markup (`data-lab-part`
+  works the same in JSX, Svelte and Vue templates); the observer picks up
+  nodes that islands add after hydration, so no extra wiring is needed.
+- Use the names exactly as `docs/site-structure.md` spells them.
+
 ### Routing
 
 - Sections are **not** routes and contain no pages. The only routes are
@@ -186,7 +206,7 @@ the server at build time, and that is where the stacks differ:
 - `Hero.css` comment: the animation library owns `transform` and `opacity` on
   animated elements; CSS only handles hover colours. Keep it that way in every
   port.
-- Each section scrolls inside its own container (`.hero` has
+- Each section scrolls inside its own container (`.hero` and `.skeleton` have
   `overflow-y: auto`; the stage is `overflow: hidden`). ScrollTrigger needs
   `scroller` pointed at it.
 
@@ -228,8 +248,9 @@ the server at build time, and that is where the stacks differ:
 (`integrations: [react(), svelte(), vue()]`, `site`, `base`),
 `svelte.config.js` (`vitePreprocess()`), `tsconfig.json`,
 `.github/workflows/deploy.yml`, `src/registry.ts`,
-`src/layouts/LabShell.astro`, `src/pages/`, `src/styles/tokens.css`,
-`src/styles/shell.css`.
+`src/layouts/LabShell.astro` (navigation and the section tag script),
+`src/pages/`, `src/styles/tokens.css`, `src/styles/shell.css`,
+`docs/site-structure.md` (landing section names and order).
 
 **De-facto shared (lives in one sandbox, imported by others):**
 `src/sections/02-hero-react-gsap/Hero.css`, `chartData.ts`, `assets/`, used
