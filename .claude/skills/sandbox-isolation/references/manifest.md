@@ -1,6 +1,6 @@
 # Sandbox manifest
 
-Surveyed 2026-10-13 from `main` at a8c34c9 (PRs #2, #3 and #5 merged) and PR #6's branch at 63aa72f (07 and `apps/next`, not merged yet). Versions are the ones the lockfile
+Surveyed 2026-10-13 from `main` at a8c34c9 (PRs #2, #3 and #5 merged) and PR #6's branch at eb216b3 (07 and `apps/next`, not merged yet). Versions are the ones the lockfile
 resolves. Re-survey if the repo has moved on; the repo wins over this file.
 
 ## Shared lab (repo root)
@@ -162,8 +162,8 @@ resolves. Re-survey if the repo has moved on; the repo wins over this file.
   app only; separate from the root even where the names match.
 - **Running:** `cd apps/next && pnpm install && pnpm dev` (port 3000). Not
   in the lab registry, not in the Pages deploy.
-- **Gotchas:** `next build` warns about two lockfiles and picks the lab root
-  as the Turbopack workspace root; set `turbopack.root`. The root
+- **Gotchas:** two lockfiles in one repo; `next.config.ts` pins
+  `turbopack.root` to the app folder so Next doesn't take the lab root. The root
   `tsconfig.json` excludes `apps` so the lab's type check skips it.
 
 ## apps/ (other frameworks)

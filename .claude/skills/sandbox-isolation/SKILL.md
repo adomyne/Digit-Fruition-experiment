@@ -317,10 +317,11 @@ Next.js specifics (`apps/next`, PR #6):
 - Its own deps (`next` pinned `16.4.0`, `motion`, `three`, React types) are
   versioned separately from the root. A bump in one `package.json` doesn't
   move the other; keep them in step on purpose and note it.
-- `next build` warns that it inferred the lab's `pnpm-lock.yaml` as the
-  workspace root (there are two lockfiles). Set `turbopack.root` in
-  `apps/next/next.config.ts` to the app folder to silence it; don't delete
-  either lockfile.
+- There are two lockfiles (the lab's and the app's), so Next would infer the
+  lab root as its Turbopack workspace root. `apps/next/next.config.ts` pins
+  `turbopack.root` to the app folder (`dirname(fileURLToPath(import.meta.url))`;
+  the package is ESM, so no `__dirname`). Keep it, and don't delete either
+  lockfile. A new app in `apps/` needs the same.
 - `'use client'` belongs only in `apps/next` client components
   (`app/Scene.tsx`). Astro islands never take it; the Astro equivalent is the
   `client:*` directive in `Section.astro`. Moving a scene between the two
