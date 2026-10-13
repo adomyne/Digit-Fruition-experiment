@@ -130,9 +130,11 @@ where.
   prints them (it knows 03 to 05 import 02's shared files).
 - When you do need a search, use `rg` (it skips `.gitignore`d `node_modules`,
   `dist`, `.astro`) and give it a path: `rg -n "createScope" src/sections`.
-  Once `apps/<name>/` spikes exist, they have their own `node_modules` and
-  build output (`.next`, `.svelte-kit`, `.nuxt`); keep them out of lab
-  searches with a path, and keep lab paths out of app searches.
+  `apps/next/` (and any later spike) has its own `node_modules` and build
+  output (`.next`, `.svelte-kit`, `.nuxt`); keep apps out of lab searches with
+  a path, and keep lab paths out of app searches. The root `tsconfig.json`
+  excludes `apps/`, so `pnpm check` never type-checks them; check an app with
+  its own `pnpm build` inside its folder.
 
 ## 6. Verification ladder: the narrowest check first
 

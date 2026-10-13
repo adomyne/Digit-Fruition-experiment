@@ -64,4 +64,12 @@ export const sections: Section[] = [
     figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
     status: 'done',
   },
+  {
+    id: '06-three-react-motion',
+    title: 'Three.js · React',
+    stack: 'react',
+    animation: 'motion',
+    figma: null,
+    status: 'in-progress',
+  },
 ];
