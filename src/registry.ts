@@ -83,7 +83,7 @@ export const sections: Section[] = [
     status: 'in-progress',
   },
   {
-    id: '06-three-react-motion',
+    id: '07-three-react-motion',
     title: 'Three.js · React',
     stack: 'react',
     animation: 'motion',

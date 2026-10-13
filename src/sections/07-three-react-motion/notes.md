@@ -1,4 +1,4 @@
-# 06 · Three.js · React
+# 07 · Three.js · React
 
 **Stack:** React island + Three.js (WebGL) + Motion (`motion/react`) · **Status:** in progress
 **Built by:** Claude Code (cloud), as a starter so Three.js and Motion are wired into the lab.
