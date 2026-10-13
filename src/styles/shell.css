@@ -19,8 +19,6 @@ html, body {
 
 .lab-label {
   position: fixed;
-  flex-wrap: wrap;
-  justify-content: flex-end;
   right: var(--space-4);
   bottom: var(--space-4);
   z-index: 1000;
@@ -52,23 +50,6 @@ html, body {
   color: var(--color-accent);
 }
 .lab-part[hidden] { display: none; }
-
-/* Outline: every landing section's name on its own row above the controls.
-   The script sets --lit (0 to 1) on each name; 1 is the section on screen. */
-.lab-outline {
-  flex-basis: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--space-1) var(--space-3);
-  margin: 0;
-  padding: 0 0 var(--space-2);
-  border-bottom: 1px solid var(--color-border);
-  list-style: none;
-}
-.lab-outline li {
-  color: color-mix(in srgb, var(--color-accent) calc(var(--lit, 0) * 100%), var(--color-text-faint));
-}
 .lab-part-reel {
   display: grid;
   transform: translateY(calc(var(--lab-part-at, 0) * -1em));
@@ -76,5 +57,5 @@ html, body {
 .lab-part-reel > span { height: 1em; white-space: nowrap; }
 
 @media (max-width: 480px) {
-  .lab-meta, .lab-figma, .lab-outline { display: none; }
+  .lab-meta, .lab-figma { display: none; }
 }
