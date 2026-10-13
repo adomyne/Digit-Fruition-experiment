@@ -16,6 +16,9 @@ the viewport, its name is pushed out of the tag by the same amount.
   container itself.
 - One-screen sections: set `part` in the registry entry instead.
 - Sections with neither show no tag.
+- Every page's info bar also lists all 11 names from `src/landing.ts` and
+  lights the section on screen (split between two while one pushes the
+  other out). Names in `data-lab-part` and `part` must match that list.
 
 ## Unfinished
 - Placeholder blocks only. Swap each block for the real section as it is

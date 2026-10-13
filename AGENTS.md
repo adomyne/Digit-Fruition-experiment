@@ -59,7 +59,8 @@ apps/                     Next.js / SvelteKit / Nuxt spikes with their own dev s
 - **Section tag.** The info bar names the landing page section on screen
   (order in `docs/site-structure.md`). Scrolling sections put
   `data-lab-part="<name>"` on each landing section's root; one-screen sections
-  set `part` in the registry instead.
+  set `part` in the registry instead. Names must match `src/landing.ts`,
+  which the info bar lists on every page with the on-screen section lit.
 - **Horizontal drag/swipe inside a section**: add `data-lab-noswipe` to the
   element so the shell's swipe navigation ignores it.
 - **Lanes.** One agent per branch or worktree per experiment. Never edit files
