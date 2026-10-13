@@ -21,7 +21,10 @@ framework and animation library differ. At 1440px the settled page matches
   `onUnmounted`.
 - Reduced motion: `initial` is `false`, so the intro is skipped.
 - Motion components render their initial state on the server, so the hero
-  doesn't flash fully drawn before hydration (02 and 03 do).
+  doesn't flash fully drawn before hydration (02 and 03 do). The flip side is
+  a blank page if the island never hydrates, so \`Section.astro\` has a CSS
+  fallback: while the island still carries Astro's \`ssr\` attribute, the
+  content fades in after 1.5s (the guide and dot stay hidden).
 
 ## Motion spec
 Same timings as 02. Eases are cubic-beziers: power3.out `[0.25, 1, 0.5, 1]`,
