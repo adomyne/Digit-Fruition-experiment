@@ -1,12 +1,10 @@
-/* Shell chrome only. Sections style themselves with tokens. */
-*, *::before, *::after { box-sizing: border-box; }
-
+/* Shell chrome only. Nothing here styles a section: no element-wide rules,
+   no inherited font or color on <body>. Each section sets its own base
+   (font, color, background, box-sizing) on its root inside its own CSS, from
+   the tokens in tokens.css. */
 html, body {
   margin: 0;
   height: 100%;
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-sans);
 }
 
 /* One screen at a time. Scroll-driven sections bring their own scroll
@@ -17,6 +15,7 @@ html, body {
   overflow: hidden;
 }
 
+.lab-label, .lab-label * { box-sizing: border-box; }
 .lab-label {
   position: fixed;
   right: var(--space-4);

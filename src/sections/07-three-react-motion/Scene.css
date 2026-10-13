@@ -1,40 +1,48 @@
-/* Shared by the island and the Astro fallback slot, so both look the same. */
-.three-stage {
-  position: relative;
-  height: 100%;
-  overflow: hidden;
-  background: var(--color-bg);
-  font-family: var(--font-sans);
-  color: var(--color-text);
-}
+/* Shared by the island and the Astro fallback slot, so both look the same.
+   Sandboxed: every rule sits inside [data-sandbox="07-three-react-motion"],
+   the section's root element, so nothing here can style another section and
+   nothing global styles this one. Values come only from tokens.css. */
 
-.three-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
+[data-sandbox="07-three-react-motion"] {
+  &, & *, & *::before, & *::after { box-sizing: border-box; }
 
-.three-copy {
-  position: absolute;
-  left: var(--space-16);
-  bottom: var(--space-16);
-  max-width: var(--width-copy);
-  pointer-events: none;
-}
+  & {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    background: var(--color-bg);
+    font-family: var(--font-sans);
+    color: var(--color-text);
+  }
 
-.three-title {
-  margin: 0 0 var(--space-4);
-  font-family: var(--font-display);
-  font-size: var(--text-display);
-  font-weight: var(--weight-medium);
-  line-height: var(--leading-h1);
-}
+  .three-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
 
-.three-sub {
-  margin: 0;
-  font-size: var(--text-md);
-  line-height: var(--leading-h5);
-  color: var(--color-text-body);
+  .three-copy {
+    position: absolute;
+    left: var(--space-16);
+    bottom: var(--space-16);
+    max-width: var(--width-copy);
+    pointer-events: none;
+  }
+
+  .three-title {
+    margin: 0 0 var(--space-4);
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-h1);
+  }
+
+  .three-sub {
+    margin: 0;
+    font-size: var(--text-md);
+    line-height: var(--leading-h5);
+    color: var(--color-text-body);
+  }
 }

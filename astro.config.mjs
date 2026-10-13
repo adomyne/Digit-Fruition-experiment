@@ -30,5 +30,11 @@ export default defineConfig({
   site: 'https://adomyne.github.io',
   base: process.env.LAB_BASE ?? '/',
   integrations: [react(), svelte(), vue()],
-  vite: { plugins: vueRefreshPlugins },
+  vite: {
+    plugins: vueRefreshPlugins,
+    // Sections fence their CSS with native nesting ([data-sandbox] { ... }).
+    // Browsers only read that since late 2023, so the build flattens it to
+    // plain selectors for older ones. `pnpm dev` serves it as written.
+    build: { cssTarget: ['chrome100', 'edge100', 'firefox100', 'safari15'] },
+  },
 });

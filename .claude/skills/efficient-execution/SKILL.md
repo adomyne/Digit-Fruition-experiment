@@ -40,7 +40,7 @@ the start of a 40-call turn costs roughly forty times its size. So:
   unless something else changed it (a build tool, a merge, another agent).
 - **Map before you read big files.** The hero components are 230 to 290 lines
   (`Hero.tsx`, `Hero.svelte`, `Hero.vue`, `05/Section.astro`) and
-  `02/Hero.css` is 357. Run
+  each port's `Hero.css` is about 360. Run
   `node .claude/skills/efficient-execution/scripts/outline.mjs <files>` to get
   line numbers for script blocks, hooks, `hero__*` elements, CSS selectors or
   markdown headings, then read just that range.
@@ -101,9 +101,9 @@ for a 39-call build turn.
   Edit per spot or `replace_all`, never a regenerate.
 - **Porting the hero to another stack** is the one time a whole new file is
   right. Write it once, then fix review findings and build errors with Edit.
-- **Shared baseline files** (`02/Hero.css`, `chartData.ts`, `assets/`) reach
-  routes 2 to 5. Change the one rule you need. Don't copy `Hero.css` into a
-  new sandbox to tweak it.
+- **No shared section files.** Each hero port (02-05) has its own `Hero.css`,
+  `chartData.ts` and `assets/`; a change to one reaches one route. Change the
+  one rule you need in the section you're working on.
 - **Repeated PR descriptions:** only update a PR body when its content
   changed, not on every push.
 

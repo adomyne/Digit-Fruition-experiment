@@ -7,7 +7,7 @@
 
 ## What's built
 The baseline hero in Vue 3 `<script setup>`. Markup and class names match 02,
-and it imports 02's `Hero.css`, `chartData.ts` and `assets/`, so only the
+and it has its own copies of 02's `Hero.css`, `chartData.ts` and `assets/`, so only the
 framework and animation library differ. At 1440px the settled page matches
 02's screenshot pixel for pixel apart from the corner label.
 
@@ -22,7 +22,7 @@ framework and animation library differ. At 1440px the settled page matches
 - Reduced motion: `initial` is `false`, so the intro is skipped.
 - Motion components render their initial state on the server, so the hero
   doesn't flash fully drawn before hydration (02 and 03 do). The flip side is
-  a blank page if the island never hydrates, so `Section.astro` has a CSS
+  a blank page if the island never hydrates, so its `Hero.css` ends with a CSS
   fallback: while the island still carries Astro's `ssr` attribute, the
   content fades in after 1.5s (the guide and dot stay hidden).
 

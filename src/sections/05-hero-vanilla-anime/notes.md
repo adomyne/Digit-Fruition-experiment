@@ -7,7 +7,7 @@
 
 ## What's built
 The baseline hero as static Astro markup with one `<script>` that Vite bundles.
-It imports 02's `Hero.css`, `chartData.ts` and `assets/`, so only the
+It has its own copies of 02's `Hero.css`, `chartData.ts` and `assets/`, so only the
 runtime differs. At 1440px the settled page matches 02's screenshot pixel for
 pixel apart from the corner label.
 

@@ -4,20 +4,20 @@
 // Same markup, CSS, assets, chart data and motion spec as the baseline (02).
 // See notes.md.
 import '@fontsource-variable/manrope';
-import '../02-hero-react-gsap/Hero.css';
-import { AXIS_TICKS, HIGHLIGHT_X, acos, metrics, sales, toPath } from '../02-hero-react-gsap/chartData';
-import dfLogo from '../02-hero-react-gsap/assets/df-logo.png?url';
-import amazonLogo from '../02-hero-react-gsap/assets/amazon-logo.svg?url';
-import globe from '../02-hero-react-gsap/assets/globe.svg?url';
-import chevronDown from '../02-hero-react-gsap/assets/chevron-down.svg?url';
-import download from '../02-hero-react-gsap/assets/download.svg?url';
-import infoCircle from '../02-hero-react-gsap/assets/info-circle.svg?url';
-import phoneCall from '../02-hero-react-gsap/assets/phone-call.svg?url';
+import './Hero.css';
+import { AXIS_TICKS, HIGHLIGHT_X, acos, metrics, sales, toPath } from './chartData';
+import dfLogo from './assets/df-logo.png?url';
+import amazonLogo from './assets/amazon-logo.svg?url';
+import globe from './assets/globe.svg?url';
+import chevronDown from './assets/chevron-down.svg?url';
+import download from './assets/download.svg?url';
+import infoCircle from './assets/info-circle.svg?url';
+import phoneCall from './assets/phone-call.svg?url';
 
 const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
 ---
 
-<div class="hero" data-hero>
+<div class="hero" data-hero data-sandbox="05-hero-vanilla-anime">
   <header class="hero__header">
     <div class="hero__brand">
       <a class="hero__logo" href="#top" aria-label="Digit Fruition home">
@@ -121,7 +121,7 @@ const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
 
 <script>
   import { animate, createScope, createTimeline, stagger, svg, utils } from 'animejs';
-  import { AXIS_MAX, HIGHLIGHT_X, acos, sales, toPath, valueAt, type Point } from '../02-hero-react-gsap/chartData';
+  import { AXIS_MAX, HIGHLIGHT_X, acos, sales, toPath, valueAt, type Point } from './chartData';
 
   // GSAP's powerN is Anime's Quad/Cubic/Quart/Quint (power3 = Quart).
   const EASE = 'outQuart';

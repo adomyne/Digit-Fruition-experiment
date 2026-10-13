@@ -135,7 +135,7 @@ export default function Hero() {
   }, [live]);
 
   return (
-    <div className="hero" ref={root}>
+    <div className="hero" data-sandbox="02-hero-react-gsap" ref={root}>
       <header className="hero__header">
         <div className="hero__brand">
           <a className="hero__logo" href="#" aria-label="Digit Fruition home">

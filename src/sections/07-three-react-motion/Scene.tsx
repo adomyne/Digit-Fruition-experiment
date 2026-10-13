@@ -75,7 +75,7 @@ export default function Scene() {
         };
 
   return (
-    <div className="three-stage">
+    <div className="three-stage" data-sandbox="07-three-react-motion">
       <canvas ref={canvas} className="three-canvas" aria-hidden="true" />
       <div className="three-copy">
         <motion.h1 className="three-title" {...enter(0.1)}>
