@@ -1,23 +1,13 @@
 ---
+import { LANDING_PARTS } from '../../landing';
+
 // The landing page's section order (docs/site-structure.md) as plain blocks
 // in one scroll container. Each block carries data-lab-part, so the info
 // bar's section tag follows the scroll. Real sections replace the blocks as
 // they are built.
-const PARTS = [
-  'Hero',
-  'Ads',
-  'Audits',
-  'Process',
-  'About us',
-  'Results',
-  'Case studies',
-  'Testimonials',
-  'Form',
-  'Logo',
-  'Footer',
-];
+const PARTS = LANDING_PARTS;
 // Logo strip and footer are short on the real page; the rest fill a screen.
-const SHORT = new Set(['Logo', 'Footer']);
+const SHORT = new Set<string>(['Logo', 'Footer']);
 ---
 
 <div class="skeleton">

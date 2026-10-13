@@ -62,12 +62,19 @@ apps/                     Next.js / SvelteKit / Nuxt spikes with their own dev s
 - **Section tag.** The info bar names the landing page section on screen
   (order in `docs/site-structure.md`). Scrolling sections put
   `data-lab-part="<name>"` on each landing section's root; one-screen sections
-  set `part` in the registry instead.
+  set `part` in the registry instead. Names must match `src/landing.ts`,
+  which the info bar lists on every page with the on-screen section lit.
 - **Horizontal drag/swipe inside a section**: add `data-lab-noswipe` to the
   element so the shell's swipe navigation ignores it.
 - **Lanes.** One agent per branch or worktree per experiment. Never edit files
   another agent is working on. The human merges. Review is done by the agent
   that didn't write the code.
+- **Lane check first.** Before the first edit of any task, run
+  `.claude/skills/lane-check/scripts/lane-check.sh <files you plan to edit>`
+  and post the lane card from `.claude/skills/lane-check/SKILL.md` as your
+  first message: your branch, directory, shared files, and any collision with
+  another open branch. On a collision, ask the human before coding. Re-run it
+  before each push and before opening a PR.
 - **Reverse-engineered sections** are private study: rebuild from a written spec,
   never paste the source site's code, images, fonts or copy. Note the source in `notes.md`.
 - Before finishing: update the section's `notes.md` and its registry `status`,
