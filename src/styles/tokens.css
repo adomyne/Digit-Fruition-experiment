@@ -1,46 +1,112 @@
 /*
- * Design tokens. PLACEHOLDER VALUES: no Figma file is connected yet.
- * Replace by having Claude Code read the Figma variables (Figma MCP) and
- * rewrite this file. Keep the variable names stable so sections don't break.
+ * Design tokens for Digit Fruition.
+ *
+ * SOURCE: Figma variables and the hero layers of frame 60:159, read with
+ * get_variable_defs / get_design_context. Figma variable names are noted next
+ * to each value. Values Figma sets as layer opacity on text (axis labels,
+ * dates, body copy) are folded into the color here.
+ * Keep the variable names stable so sections don't break.
  * Every section and island imports this file (via the shell layout).
  */
 :root {
   /* Color */
-  --color-bg: #0e0e10;
-  --color-surface: #18181c;
-  --color-text: #f2f2f0;
-  --color-text-muted: #9a9aa2;
-  --color-accent: #c6f432;
-  --color-border: #2a2a31;
+  --color-bg: #ffffff;              /* Backgrounds/Primary */
+  --color-surface: #ffffff;         /* Backgrounds/Primary */
+  --color-text: #171b19;            /* Darkest: headline, labels, values */
+  --color-text-body: rgb(23 27 25 / 0.9);   /* Darkest @ 90%: hero subtitle */
+  --color-text-muted: rgb(23 27 25 / 0.7);  /* Darkest @ 70%: closing copy */
+  --color-text-faint: rgb(23 27 25 / 0.6);  /* Darkest @ 60%: chart dates */
+  --color-text-subtle: rgb(45 51 48 / 0.6); /* Gray @ 60%: left chart axis */
+  --color-ink: #2d3330;             /* Gray: dark button, nav links */
+  --color-on-ink: #ffffff;
+  --color-accent: #ff6201;          /* orange darker: CTA, ACOS line, dot, Live mode */
+  --color-accent-light: #f68012;    /* orange lighter: active tab, Sales line */
+  --color-accent-soft: rgb(246 128 18 / 0.6); /* orange lighter @ 60%: right % axis */
+  --color-on-accent: #ffffff;
+  --color-border: rgb(0 0 0 / 0.1); /* metric cards */
+  --color-divider: #c7c7cc;         /* Grays/Gray 3: nav tabs */
+  --color-grid: rgb(74 74 74 / 0.1); /* chart gridlines */
+  --color-guide: rgb(0 0 0 / 0.1);  /* chart Dec 2 guide */
+  --color-axis: #424d46;            /* Secondary Gray: chart baseline, info icons */
+  --color-gray: #8e8e93;            /* Grays/Gray */
 
-  /* Type */
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Type
+   * Display = Manrope (H1, H5). Figma sets H2-H4 and H6 in Neue Montreal;
+   * by the owner's call the site uses Manrope Variable there too, so both
+   * tokens point at the same face. */
+  --font-display: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
+  --font-sans: 'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
   --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.25rem;
+  --text-sm: 0.875rem;    /* 14px: metric labels */
+  --text-base: 1rem;      /* 16px: H6, nav, metric values */
+  --text-md: 1.3125rem;   /* 21px: H5, subtitle, chart axes and dates, Live mode */
+  --text-lg: 1.4rem;      /* 22.4px: CTA */
   --text-xl: 2rem;
-  --text-display: clamp(2.5rem, 7vw, 6rem);
+  --text-display: clamp(2.5rem, 4.65vw, 4.1875rem); /* H1: 67px at 1440 */
   --leading-tight: 1.05;
+  --leading-snug: 1.3;
   --leading-normal: 1.5;
+  --leading-h1: 1.194;    /* 80 / 67 */
+  --leading-h5: 1.143;    /* 24 / 21 */
+  --leading-h6: 1.25;     /* 20 / 16 */
+  --leading-label: 1.42;  /* metric labels, chart dates */
   --weight-regular: 400;
+  --weight-medium: 500;
   --weight-bold: 700;
+  --weight-black: 800;
 
   /* Spacing */
   --space-1: 0.25rem;
+  --space-1-75: 0.4375rem; /* 7px */
   --space-2: 0.5rem;
+  --space-2-5: 0.625rem;   /* 10px */
   --space-3: 0.75rem;
+  --space-3-5: 0.875rem;   /* 14px */
   --space-4: 1rem;
+  --space-5: 1.25rem;
   --space-6: 1.5rem;
+  --space-7: 1.75rem;      /* 28px */
   --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-11: 2.75rem;     /* 44px */
   --space-12: 3rem;
   --space-16: 4rem;
+  --space-20: 5rem;
+  --space-21: 5.25rem;     /* 84px */
+  --space-24: 6rem;
+
+  /* Layout */
+  --width-page: 90rem;          /* 1440 frame */
+  --width-chart: 62.75rem;      /* 1004px dashboard */
+  --width-copy: 42.8125rem;     /* 685px subtitle and closing copy */
+  --header-height: 5.3125rem;   /* 85px menu bar */
+  --brand-height: 11.75rem;     /* 188px logo + H1 row */
+  --brand-logo-drop: 1.48rem;   /* 23.7px: Amazon logo sits below the H1's centre */
+  --logo-width: 9.875rem;       /* 158px header logo frame */
+  --control-height: 2.5rem;     /* 40px nav tabs, buttons */
+  --cta-height: 3.5rem;         /* 56px */
+  --bar-height: 0.1875rem;      /* 3px active bar on tabs and metrics */
+  --tab-width: 6.25rem;         /* 100px nav tab */
+  --chart-height: 19.375rem;    /* 310px plot row */
+  --chart-axis-left: 3.25rem;   /* 52px */
+  --chart-axis-right: 2.625rem; /* 42px */
+  --chart-gap: 1.625rem;        /* 26px axis to plot */
+  --chart-headroom: 2.0625rem;  /* 33px above the 25 gridline */
+  --chart-foot: 0.625rem;       /* 10px below the baseline */
+  --chart-dot: 1.25rem;         /* 20px highlight dot */
+  --chart-rule: 0.1875rem;      /* 3px gridlines and baseline */
+  --chart-guide: 0.125rem;      /* 2px guide */
+  --icon-lg: 1.75rem;           /* 28px CTA phone */
 
   /* Radius */
   --radius-sm: 4px;
-  --radius-md: 8px;
+  --radius-md: 5.6px;     /* CTA */
   --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* Elevation */
+  --shadow-cta: 0 5.6px 5.6px rgb(0 0 0 / 0.25);
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
