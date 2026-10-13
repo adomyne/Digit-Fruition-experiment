@@ -5,41 +5,51 @@ const swatches = ['bg', 'surface', 'text', 'text-muted', 'accent', 'border'];
 const spaces = [1, 2, 3, 4, 6, 8, 12, 16];
 ---
 
-<section class="static-check">
-  <p class="eyebrow">Frontend Lab · 01</p>
-  <h1>The loop works.</h1>
-  <p class="lede">Press <kbd>←</kbd> or <kbd>→</kbd> (or swipe) to page through experiments. Reload and you stay on the same one.</p>
+<div class="sandbox" data-sandbox="01-static-check">
+  <section class="static-check">
+    <p class="eyebrow">Frontend Lab · 01</p>
+    <h1>The loop works.</h1>
+    <p class="lede">Press <kbd>←</kbd> or <kbd>→</kbd> (or swipe) to page through experiments. Reload and you stay on the same one.</p>
 
-  <div class="specimen">
-    <div>
-      <h2>Color</h2>
-      <ul class="swatches">
-        {swatches.map((s) => (
-          <li>
-            <span class="chip" style={`background: var(--color-${s})`} />
-            <code>--color-{s}</code>
-          </li>
-        ))}
-      </ul>
+    <div class="specimen">
+      <div>
+        <h2>Color</h2>
+        <ul class="swatches">
+          {swatches.map((s) => (
+            <li>
+              <span class="chip" style={`background: var(--color-${s})`} />
+              <code>--color-{s}</code>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h2>Spacing</h2>
+        <ul class="spaces">
+          {spaces.map((n) => (
+            <li>
+              <span class="bar" style={`width: var(--space-${n})`} />
+              <code>--space-{n}</code>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
-    <div>
-      <h2>Spacing</h2>
-      <ul class="spaces">
-        {spaces.map((n) => (
-          <li>
-            <span class="bar" style={`width: var(--space-${n})`} />
-            <code>--space-{n}</code>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <style>
-  .static-check {
+  /* Astro scopes these rules to this file, so they can't reach other
+     sections. The root sets its own base instead of inheriting the page's. */
+  .sandbox {
     height: 100%;
     overflow-y: auto;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+  }
+  .sandbox, .sandbox * { box-sizing: border-box; }
+  .static-check {
     padding: var(--space-16) var(--space-8);
     max-width: 72rem;
     margin: 0 auto;

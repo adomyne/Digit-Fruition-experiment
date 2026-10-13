@@ -68,11 +68,11 @@ Before editing or generating any code:
    from a sibling sandbox, even when the sibling's file looks like a
    line-for-line match. The hero ports deliberately share markup and class
    names; that sameness is exactly what makes copying across them dangerous.
-3. **Treat the shared baseline files as shared.** Sections 03-05 import
-   `Hero.css`, `chartData.ts` and `assets/` from
-   `src/sections/02-hero-react-gsap/` (see "Shared vs isolated" below). An
-   edit there changes four routes. Only make it if the task is about all of
-   them, and say so.
+3. **Never import from a sibling sandbox.** Every section owns its own
+   stylesheet, data and assets. The hero ports (02-05) each have their own
+   `Hero.css`, `chartData.ts` and `assets/`; they started as copies of 02's
+   and are free to drift. To reuse something, copy it into your folder.
+   Imports of `../<other-section>/` are a bug.
 4. **Never edit another sandbox's folder** as a side effect, and never edit
    files another agent is working on (AGENTS.md lanes rule).
 5. **Check before finishing:** run through the contamination checklist below
@@ -156,8 +156,8 @@ the server at build time, and that is where the stacks differ:
 - **02 and 03** server-render the hero fully drawn, then GSAP hides and
   replays it on hydration (a brief flash).
 - **04** server-renders Motion's initial (hidden) state. To avoid a blank page
-  if the island never hydrates, its `Section.astro` has an `is:global` CSS
-  fallback keyed on `astro-island[ssr]`. Copying that fallback into a GSAP
+  if the island never hydrates, its `Hero.css` ends with a CSS
+  fallback keyed on `astro-island[ssr] [data-sandbox="04-hero-vue-motion"]`. Copying that fallback into a GSAP
   section would fight GSAP; leaving it out of a new Motion section ships a
   blank page without JS.
 - **05** has no hydration at all: markup is static Astro and the `<script>`
@@ -230,11 +230,30 @@ section only marks itself, and how depends on the section:
 - All values come from `src/styles/tokens.css` (imported by the shell, so
   every route has it). No raw hex or pixel spacing in sections; no Tailwind
   classes (CLAUDE.md), even though Figma MCP output is React + Tailwind.
-- The hero ports share one global BEM stylesheet (`02/Hero.css`, classes like
-  `.hero__metric--accent`). Svelte and Vue sections don't add scoped
-  `<style>` blocks for those classes; 01 uses an Astro scoped `<style>`, and
-  04 uses `<style is:global>` only for its hydration fallback.
-- `Hero.css` comment: the animation library owns `transform` and `opacity` on
+- **Per-section CSS, no global styles.** The user wants each section styled
+  on its own, from tokens only, with nothing carrying over from the page or
+  another section. So:
+  - `tokens.css` is the only shared CSS a section uses, and it only defines
+    custom properties on `:root`. It never styles an element.
+  - `shell.css` styles the lab chrome (`.lab-*`) and `html, body { margin:
+    0; height: 100% }`, nothing else: no `*` reset, no font, color or
+    background on `body`. Don't add any.
+  - Each section's root element carries `data-sandbox="<section id>"` and
+    sets its own base: `font-family`, `color`, `background` (from tokens) and
+    `box-sizing` for itself and its descendants.
+  - A plain `.css` file (React, Svelte, Vue or vanilla islands) wraps every
+    rule in one nested block, `[data-sandbox="<id>"] { ... }`, using `& { }`
+    for the root's own rules. Rules that must start outside the root (04's
+    `astro-island[ssr]` fallback) name the root in the selector, and their
+    `@keyframes` names carry the section number (`hero-04-fallback-in`).
+  - An Astro scoped `<style>` (01, 06) is already confined to its file; it
+    still sets the base on its root. Never use `<style is:global>` or
+    `:global()` in a section.
+  - Svelte `<style>` and Vue `<style scoped>` are also fine for a new
+    section; pick one approach per section and keep it.
+  - Two sections may use the same class names (all hero ports use
+    `.hero__*`); the `data-sandbox` wrapper is what keeps them apart.
+- Each `Hero.css` comment: the animation library owns `transform` and `opacity` on
   animated elements; CSS only handles hover colours. Keep it that way in every
   port.
 - Each section scrolls inside its own container (`.hero` and `.skeleton` have
@@ -258,7 +277,7 @@ section only marks itself, and how depends on the section:
   client code via `import.meta.env`. Don't reach for `process.env`,
   `NEXT_PUBLIC_`, `NUXT_PUBLIC_`/`useRuntimeConfig`, or SvelteKit's
   `$env/static/public` in `src/`; those belong to their `apps/` spike only.
-- Data is static TypeScript (`02/chartData.ts`). No `fetch` in components,
+- Data is static TypeScript (each hero port's own `chartData.ts`). No `fetch` in components,
   no `getServerSideProps`, no `load` functions, no Astro endpoints.
 
 ### TypeScript and JSX
@@ -287,17 +306,17 @@ section only marks itself, and how depends on the section:
 `svelte.config.js` (`vitePreprocess()`), `tsconfig.json`,
 `.github/workflows/deploy.yml`, `src/registry.ts`,
 `src/layouts/LabShell.astro` (navigation and the section tag script),
-`src/pages/`, `src/styles/tokens.css`, `src/styles/shell.css`,
+`src/pages/`, `src/styles/tokens.css` (variables only),
+`src/styles/shell.css` (lab chrome only),
 `docs/site-structure.md` (landing section names and order).
 
-**De-facto shared (lives in one sandbox, imported by others):**
-`src/sections/02-hero-react-gsap/Hero.css`, `chartData.ts`, `assets/`, used
-by 03, 04 and 05 so only the framework differs. Changing them is a four-route
-change; regressions show up on routes you didn't open.
+**Nothing lives in one sandbox and is imported by another.** The hero ports
+used to import 02's `Hero.css`, `chartData.ts` and `assets/`; each now has
+its own copy, so editing one route can't change another.
 
 **Isolated per sandbox:** everything else in the section folder: the
-component file, `Section.astro`, `notes.md`, `frame.png`, its own scoped
-styles and any island-only helpers. A new helper belongs in the folder that
+component file, `Section.astro`, `notes.md`, `frame.png`, its own
+sandboxed stylesheet, `chartData.ts`, `assets/` and any island-only helpers. A new helper belongs in the folder that
 uses it; don't move one into 02 or a shared folder unless every user is
 updated in the same change.
 

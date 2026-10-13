@@ -6,23 +6,3 @@ import Hero from './Hero.vue';
 
 <Hero client:load />
 
-<style is:global>
-  /* Motion server-renders each element in its intro start state (hidden), so
-     if the island never hydrates (a script blocked or failed) the page would
-     stay blank. Astro drops the island's `ssr` attribute once it hydrates;
-     until then, after a short grace period, these fade the content in. The
-     chart's guide and dot stay hidden: only script can place them. */
-  @keyframes hero-fallback-in {
-    to { opacity: 1; transform: none; stroke-dasharray: none; }
-  }
-  @keyframes hero-fallback-fade {
-    to { opacity: 1; }
-  }
-  astro-island[ssr] .hero [style*='transform']:not(.hero__guide, .hero__dot),
-  astro-island[ssr] .hero__lines path {
-    animation: hero-fallback-in 0.6s 1.5s both;
-  }
-  astro-island[ssr] .hero [style*='opacity:0']:not([style*='transform']) {
-    animation: hero-fallback-fade 0.6s 1.5s both;
-  }
-</style>

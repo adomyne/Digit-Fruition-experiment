@@ -15,15 +15,15 @@ import {
   toPath,
   valueAt,
   type Point,
-} from '../02-hero-react-gsap/chartData';
-import dfLogo from '../02-hero-react-gsap/assets/df-logo.png?url';
-import amazonLogo from '../02-hero-react-gsap/assets/amazon-logo.svg?url';
-import globe from '../02-hero-react-gsap/assets/globe.svg?url';
-import chevronDown from '../02-hero-react-gsap/assets/chevron-down.svg?url';
-import download from '../02-hero-react-gsap/assets/download.svg?url';
-import infoCircle from '../02-hero-react-gsap/assets/info-circle.svg?url';
-import phoneCall from '../02-hero-react-gsap/assets/phone-call.svg?url';
-import '../02-hero-react-gsap/Hero.css';
+} from './chartData';
+import dfLogo from './assets/df-logo.png?url';
+import amazonLogo from './assets/amazon-logo.svg?url';
+import globe from './assets/globe.svg?url';
+import chevronDown from './assets/chevron-down.svg?url';
+import download from './assets/download.svg?url';
+import infoCircle from './assets/info-circle.svg?url';
+import phoneCall from './assets/phone-call.svg?url';
+import './Hero.css';
 
 const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
 
@@ -148,7 +148,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="hero">
+  <div class="hero" data-sandbox="04-hero-vue-motion">
     <header class="hero__header">
       <div class="hero__brand">
         <motion.a class="hero__logo" href="#top" aria-label="Digit Fruition home" v-bind="enter(-16, 0, 0.6)">

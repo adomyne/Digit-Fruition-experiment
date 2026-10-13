@@ -35,8 +35,8 @@ if (!changed.length) {
 const ids = [...readFileSync('src/registry.ts', 'utf8').matchAll(/id:\s*'([^']+)'/g)].map((m) => m[1]);
 const routeOf = (id) => ids.indexOf(id) + 1;
 
-// Sections that import a file from another section folder (the 02 baseline's
-// Hero.css, chartData.ts and assets/ are imported by 03, 04 and 05).
+// Sections that import a file from another section folder. None should
+// (each section owns its CSS, data and assets); this catches it if one does.
 const importers = (sectionId) =>
   ids.filter((id) => {
     const dir = `src/sections/${id}`;

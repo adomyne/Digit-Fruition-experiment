@@ -48,6 +48,14 @@ apps/                     Next.js / SvelteKit / Nuxt spikes with their own dev s
 - `tokens.css` is generated from Figma variables (via Figma MCP in Claude Code).
   Keep variable names stable; change values, not names.
 - The shell imports `tokens.css`, so every island on every route gets it.
+  It only defines variables; it never styles an element.
+- **Per-section CSS.** No global styles reach a section: `shell.css` styles
+  only the lab chrome. Each section's root has `data-sandbox="<id>"` and
+  sets its own font, color, background and box-sizing from tokens; a plain
+  `.css` file nests every rule inside `[data-sandbox="<id>"] { }`, and Astro
+  sections use a scoped `<style>`. Never import CSS, data or assets from
+  another section's folder; copy them in. Details in the sandbox-isolation
+  skill.
 
 ## Rules
 - **One animation library per element.** Two libraries on the same `transform`

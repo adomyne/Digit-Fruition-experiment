@@ -7,8 +7,8 @@
 
 ## What's built
 The baseline hero in Svelte 5 (runes). Markup and class names match 02, and it
-imports 02's `Hero.css`, `chartData.ts` and `assets/` so the design is
-identical and only the framework differs. At 1440px the settled page matches
+has its own copies of 02's `Hero.css`, `chartData.ts` and `assets/` so the
+design is identical and only the framework differs. At 1440px the settled page matches
 02's screenshot pixel for pixel apart from the corner label.
 
 - Intro, hover and live mode use the same GSAP code as 02, inside one

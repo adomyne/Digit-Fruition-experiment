@@ -1,0 +1,385 @@
+/* Hero (Vue 3 + Motion for Vue). Started as a copy of 02's Hero.css and
+   now belongs to this section only. Motion owns transforms and opacity on
+   every animated element; CSS only handles colors on hover.
+
+   Sandboxed: every rule sits inside [data-sandbox="04-hero-vue-motion"], the
+   section's root element, so nothing here can style another section and
+   nothing global styles this one. Values come only from tokens.css. */
+
+[data-sandbox="04-hero-vue-motion"] {
+  &, & *, & *::before, & *::after { box-sizing: border-box; }
+
+  & {
+    height: 100%;
+    overflow-y: auto; /* the stage is overflow: hidden; the hero scrolls itself */
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+  }
+
+  /* ---------- Header (Figma: Menu) ---------- */
+  .hero__header {
+    max-width: var(--width-page);
+    height: var(--header-height);
+    margin: 0 auto;
+    padding: 0 var(--space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+  }
+  .hero__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  /* Figma: a 158px logo frame with the 108x37 PNG inset 11.8px from the left. */
+  .hero__logo {
+    width: var(--logo-width);
+    padding-left: var(--space-3);
+    display: flex;
+  }
+
+  .hero__nav {
+    display: flex;
+    height: var(--control-height);
+    border: 1px solid var(--color-divider);
+    background: var(--color-surface);
+    overflow: hidden;
+  }
+  .hero__nav-item {
+    min-width: var(--tab-width);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-4);
+    border-top: var(--bar-height) solid transparent;
+    color: var(--color-ink);
+    font-size: var(--text-base);
+    line-height: var(--leading-h6);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+  }
+  .hero__nav-item + .hero__nav-item { border-left: 1px solid var(--color-divider); }
+  .hero__nav-item[aria-current='page'] { border-top-color: var(--color-accent-light); color: var(--color-text); }
+  .hero__nav-item:hover { color: var(--color-accent); }
+
+  .hero__tools {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+  .hero__lang {
+    height: var(--control-height);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-75);
+    padding: 0 var(--space-3-5);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font: inherit;
+    font-size: var(--text-base);
+    line-height: var(--leading-h6);
+    cursor: pointer;
+  }
+  .hero__audit {
+    height: var(--control-height);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0 var(--space-5);
+    border-radius: var(--radius-sm);
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+    font-size: var(--text-base);
+    line-height: var(--leading-h6);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .hero__audit:hover { background: var(--color-text); }
+
+  /* ---------- Main (Figma: Hero Content) ---------- */
+  .hero__main {
+    max-width: var(--width-page);
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-5) var(--space-16);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero__title {
+    min-height: var(--brand-height);
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: var(--space-7);
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-h1);
+  }
+  .hero__title-words { display: inline-flex; column-gap: 0.25em; }
+  .hero__title-word { display: inline-block; }
+
+  /* Figma sets the logo low in its 144px box so its wordmark shares the H1's
+     baseline; the drop reproduces that offset. */
+  .hero__amazon {
+    position: relative;
+    top: var(--brand-logo-drop);
+  }
+
+  .hero__sub {
+    max-width: var(--width-copy);
+    margin: var(--space-21) 0 0;
+    color: var(--color-text-body);
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-h5);
+  }
+
+  .hero__cta {
+    margin-top: var(--space-11);
+    height: var(--cta-height);
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--space-7) * 0.4); /* 11.2px */
+    padding: 0 var(--space-7);
+    border-radius: var(--radius-md);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: var(--shadow-cta);
+    font-size: var(--text-lg);
+    line-height: var(--leading-h6);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .hero__cta:hover { background: color-mix(in srgb, var(--color-accent) 88%, var(--color-text)); }
+  .hero__phone {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    display: flex;
+    overflow: hidden;
+  }
+  .hero__phone img { margin: calc(var(--icon-lg) * -0.1); flex: none; }
+
+  /* ---------- Chart (Figma: Performance Dashboard) ---------- */
+  .hero__chart {
+    width: 100%;
+    max-width: var(--width-chart);
+    margin-top: var(--space-20);
+  }
+
+  .hero__metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: left;
+  }
+  .hero__metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-75);
+    padding: calc(var(--bar-height) + var(--space-1)) var(--space-3) var(--space-1);
+    border: 1px solid var(--color-border);
+    box-shadow: inset 0 var(--bar-height) 0 var(--bar, transparent);
+  }
+  .hero__metric--accent { --bar: var(--color-accent); }
+  .hero__metric--accent-light { --bar: var(--color-accent-light); }
+  .hero__metric-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    line-height: var(--leading-label);
+  }
+  .hero__metric-value {
+    font-size: var(--text-base);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-h6);
+  }
+
+  .hero__graph {
+    margin-top: var(--space-6);
+    height: var(--chart-height);
+    display: grid;
+    grid-template-columns: var(--chart-axis-left) 1fr var(--chart-axis-right);
+    column-gap: var(--chart-gap);
+  }
+
+  /* Axis labels and gridlines share one box (the plot minus headroom and
+     foot) and the same tick positions, so each label sits centred on its line. */
+  .hero__axis,
+  .hero__plot-area {
+    position: absolute;
+    inset: var(--chart-headroom) 0 var(--chart-foot);
+  }
+  .hero__axis-col { position: relative; }
+  .hero__axis span,
+  .hero__grid i {
+    position: absolute;
+    top: calc((1 - var(--t) / 25) * 100%);
+    transform: translateY(-50%);
+  }
+  .hero__axis {
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-h5);
+    white-space: nowrap;
+  }
+  .hero__axis--left { color: var(--color-text-subtle); }
+  .hero__axis--left span { right: 0; }
+  .hero__axis--right { color: var(--color-accent-soft); }
+  .hero__axis--right span { left: 0; }
+
+  .hero__plot {
+    position: relative;
+    overflow: hidden; /* the series start left of the plot, as in Figma */
+    cursor: crosshair;
+    touch-action: pan-y;
+  }
+  .hero__grid { position: absolute; inset: 0; }
+  .hero__grid i { left: 0; right: 0; height: var(--chart-rule); background: var(--color-grid); }
+  .hero__grid i:first-child { background: var(--color-axis); }
+
+  .hero__lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .hero__lines path {
+    fill: none;
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+  .hero__line--sales { stroke: var(--color-accent-light); }
+  .hero__line--acos { stroke: var(--color-accent); }
+
+  .hero__guide {
+    position: absolute;
+    top: 0;
+    bottom: var(--chart-foot);
+    width: var(--chart-guide);
+    margin-left: calc(var(--chart-guide) / -2);
+    background: var(--color-guide);
+    pointer-events: none;
+  }
+  .hero__dot {
+    position: absolute;
+    width: var(--chart-dot);
+    height: var(--chart-dot);
+    margin: calc(var(--chart-dot) / -2) 0 0 calc(var(--chart-dot) / -2);
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    pointer-events: none;
+  }
+
+  .hero__dates {
+    position: relative;
+    height: calc(var(--text-md) * var(--leading-label));
+    margin-top: var(--space-6);
+    color: var(--color-text-faint);
+    font-size: var(--text-md);
+    line-height: var(--leading-label);
+  }
+  .hero__dates span { position: absolute; top: 0; white-space: nowrap; }
+  .hero__dates span:first-child { left: 0; }
+  .hero__dates span:nth-child(2) {
+    --plot-left: calc(var(--chart-axis-left) + var(--chart-gap));
+    --plot-width: calc(100% - var(--chart-axis-left) - var(--chart-axis-right) - 2 * var(--chart-gap));
+    left: calc(var(--plot-left) + var(--plot-width) * var(--at));
+    transform: translateX(-50%);
+  }
+  .hero__dates span:last-child { right: 0; }
+
+  .hero__live {
+    margin-top: var(--space-6);
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--color-accent);
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-h5);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    cursor: pointer;
+  }
+
+  .hero__foot {
+    max-width: var(--width-copy);
+    /* Figma leads this text block with an empty line: one extra line height */
+    margin: calc(var(--space-6) * 2) 0 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-h5);
+  }
+
+  & a:focus-visible,
+  & button:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Small screens ---------- */
+  @media (max-width: 1100px) {
+    .hero__nav { display: none; }
+  }
+  @media (max-width: 640px) {
+    .hero__header { padding: 0 var(--space-4); }
+    .hero__lang { display: none; }
+    .hero__main { padding: var(--space-8) var(--space-4) var(--space-12); }
+    .hero__title { min-height: 0; flex-direction: column; row-gap: var(--space-2); }
+    .hero__amazon { top: 0; max-width: 60%; height: auto; }
+    .hero__sub { margin-top: var(--space-12); }
+    .hero__metrics { grid-template-columns: repeat(2, 1fr); }
+    .hero__graph {
+      --chart-axis-left: var(--space-10);
+      --chart-axis-right: var(--space-8);
+      --chart-gap: var(--space-2);
+      height: 12rem;
+    }
+    .hero__dates {
+      --chart-axis-left: var(--space-10);
+      --chart-axis-right: var(--space-8);
+      --chart-gap: var(--space-2);
+    }
+    .hero__axis, .hero__dates { font-size: var(--text-sm); }
+  }
+}
+
+/* No-JS fallback. Motion server-renders each element in its intro start state
+   (hidden), so if the island never hydrates (a script blocked or failed) the
+   page would stay blank. Astro drops the island's `ssr` attribute once it
+   hydrates; until then, after a short grace period, these fade the content
+   in. The chart's guide and dot stay hidden: only script can place them.
+   These sit outside the block above because they start at the island wrapper,
+   which is outside the section root; they still only match inside it. */
+@keyframes hero-04-fallback-in {
+  to { opacity: 1; transform: none; stroke-dasharray: none; }
+}
+@keyframes hero-04-fallback-fade {
+  to { opacity: 1; }
+}
+astro-island[ssr] [data-sandbox="04-hero-vue-motion"] [style*='transform']:not(.hero__guide, .hero__dot),
+astro-island[ssr] [data-sandbox="04-hero-vue-motion"] .hero__lines path {
+  animation: hero-04-fallback-in 0.6s 1.5s both;
+}
+astro-island[ssr] [data-sandbox="04-hero-vue-motion"] [style*='opacity:0']:not([style*='transform']) {
+  animation: hero-04-fallback-fade 0.6s 1.5s both;
+}
