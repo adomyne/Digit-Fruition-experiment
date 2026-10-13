@@ -10,3 +10,6 @@ pnpm dev        # http://localhost:4321
 ```
 
 Rules for humans and agents: [AGENTS.md](AGENTS.md).
+
+Site plan (sitemap, landing page section order, what the stack comparison
+covers): [docs/site-structure.md](docs/site-structure.md).
