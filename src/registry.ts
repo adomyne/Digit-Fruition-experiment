@@ -82,4 +82,12 @@ export const sections: Section[] = [
     figma: null,
     status: 'in-progress',
   },
+  {
+    id: '07-three-react-motion',
+    title: 'Three.js · React',
+    stack: 'react',
+    animation: 'motion',
+    figma: null,
+    status: 'in-progress',
+  },
 ];

@@ -1,0 +1,18 @@
+---
+// Three.js + Motion starter (React island). Three.js draws the canvas, Motion
+// (`motion/react`, formerly Framer Motion) animates the DOM copy; see notes.md.
+// WebGL only exists in the browser, so the island is client-only and the
+// fallback slot is what shows before it loads or without JS.
+import '@fontsource-variable/manrope';
+import Scene from './Scene';
+import './Scene.css';
+---
+
+<Scene client:only="react">
+  <div class="three-stage" slot="fallback">
+    <div class="three-copy">
+      <h1 class="three-title">Three.js + Motion</h1>
+      <p class="three-sub">A WebGL scene from Three.js, with the text animated by Motion.</p>
+    </div>
+  </div>
+</Scene>

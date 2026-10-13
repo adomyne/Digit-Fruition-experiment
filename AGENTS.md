@@ -8,10 +8,13 @@ starting.
 - Astro 7 (Vite under the hood), TypeScript strict, pnpm, Node 22.12+.
 - Framework islands: React, Svelte 5, Vue 3, added per section as needed
   with `pnpm astro add react|svelte|vue`. Not installed until a section needs one.
-- Animation: GSAP, Anime.js v4, Motion (`motion/react`), Motion for Vue (`motion-v`).
+- Animation: GSAP, Anime.js v4, Motion (`motion/react`, formerly Framer Motion), Motion for Vue (`motion-v`).
   Motion has no Svelte package: Svelte sections use GSAP, Anime.js, Svelte
   transitions or Motion's vanilla `animate()`.
+- 3D: Three.js (`three`), installed at the root so any section can use it.
+- Design input: Figma through the Figma MCP server. No Anima.
 - Full frameworks (Next.js, SvelteKit, Nuxt) live in `apps/`, never in `src/`.
+  `apps/next/` is a Next.js 16 spike with its own `package.json` and lockfile.
 
 ## Layout
 ```
