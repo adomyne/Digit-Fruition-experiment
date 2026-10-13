@@ -9,7 +9,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "node scripts/check-sandboxes.mjs && astro check && astro build",
+    "check:sandboxes": "node scripts/check-sandboxes.mjs",
     "preview": "astro preview",
     "check": "astro check"
   },

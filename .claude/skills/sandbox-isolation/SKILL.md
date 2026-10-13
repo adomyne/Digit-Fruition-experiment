@@ -253,6 +253,13 @@ section only marks itself, and how depends on the section:
     section; pick one approach per section and keep it.
   - Two sections may use the same class names (all hero ports use
     `.hero__*`); the `data-sandbox` wrapper is what keeps them apart.
+  - `scripts/check-sandboxes.mjs` enforces all of the above, plus no raw
+    colors (hex, `rgb()`, `0xRRGGBB` ...) anywhere in a section. It runs at
+    the start of `pnpm build`; run `pnpm check:sandboxes` after any style
+    change. Don't weaken it to get a build through; fix the section.
+  - The build flattens the nesting to plain selectors for older browsers
+    (`vite.build.cssTarget` in `astro.config.mjs`); `pnpm dev` serves it
+    nested, which every current browser reads.
 - Each `Hero.css` comment: the animation library owns `transform` and `opacity` on
   animated elements; CSS only handles hover colours. Keep it that way in every
   port.
