@@ -55,5 +55,11 @@ info-circle and phone-call icons. The chart series in `chartData.ts` are the
 points of the Figma chart vector (142:1188), mapped to the plot's axis scale
 rather than traced.
 
+## Reference
+`frame.png` is the 1x Figma export of the hero part of the frame: the Menu
+(142:1074) and the Hero Section (142:1117), stacked at their positions in
+the frame (1440 x 1362). The rest of frame 60:159 is the full landing page and
+belongs to later sections.
+
 ## Unfinished
-- No `frame.png` in the folder yet.
+- Nothing for this section.
