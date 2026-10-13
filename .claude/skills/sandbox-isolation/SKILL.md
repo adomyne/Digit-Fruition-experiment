@@ -31,20 +31,22 @@ their own dev servers. Today it holds only a README: there are no apps yet.
 Full manifest with versions and per-sandbox idioms:
 [references/manifest.md](references/manifest.md). Summary:
 
-| Sandbox | Route | Stack | Animation | On main? |
-| --- | --- | --- | --- | --- |
-| `src/sections/01-static-check` | `/1` | Plain Astro, no island | none | yes |
-| `src/sections/02-hero-react-gsap` | `/2` | React 19 island | GSAP 3 | yes |
-| `src/sections/03-hero-svelte-gsap` | `/3` | Svelte 5 island (runes) | GSAP 3 | pending merge (PR #2) |
-| `src/sections/04-hero-vue-motion` | `/4` | Vue 3 island (`<script setup>`) | Motion for Vue (`motion-v`) | pending merge (PR #2) |
-| `src/sections/05-hero-vanilla-anime` | `/5` | Astro markup + one bundled `<script>` | Anime.js v4 | pending merge (PR #2) |
-| `apps/` | n/a | Next.js / SvelteKit / Nuxt, none built yet | n/a | README only |
+| Sandbox | Route | Stack | Animation |
+| --- | --- | --- | --- |
+| `src/sections/01-static-check` | `/1` | Plain Astro, no island | none |
+| `src/sections/02-hero-react-gsap` | `/2` | React 19 island | GSAP 3 |
+| `src/sections/03-hero-svelte-gsap` | `/3` | Svelte 5 island (runes) | GSAP 3 |
+| `src/sections/04-hero-vue-motion` | `/4` | Vue 3 island (`<script setup>`) | Motion for Vue (`motion-v`) |
+| `src/sections/05-hero-vanilla-anime` | `/5` | Astro markup + one bundled `<script>` | Anime.js v4 |
+| `apps/` | n/a | Next.js / SvelteKit / Nuxt, none built yet | n/a |
 
-Before relying on the "pending merge" rows, check whether PR #2 has merged
-(`git log origin/main -- src/sections/03-hero-svelte-gsap`). If the manifest
-and the repo disagree, trust the repo and say so in your summary. Don't
-edit the skill's own files as part of a section change; the manifest is
-updated in its own change.
+`main` is deployed to GitHub Pages on every push
+(`.github/workflows/deploy.yml`) under a `/Digit-Fruition-experiment` base
+path. Only the static Astro lab is published; nothing in `apps/` is.
+
+If the manifest and the repo disagree, trust the repo and say so in your
+summary. Don't edit the skill's own files as part of a section change; the
+manifest is updated in its own change.
 
 ## The hard rule
 
@@ -152,8 +154,15 @@ the server at build time, and that is where the stacks differ:
 - No client-side routers in sections. Next.js App Router folders, SvelteKit
   `+page.svelte`/`load`, and Nuxt `pages/` belong only inside an `apps/<name>/`
   spike, linked from the registry with `appUrl`.
-- In links, use `import.meta.env.BASE_URL` like the shell does; hero links are
-  `#top` placeholders.
+- The deployed lab lives under a base path (`/Digit-Fruition-experiment/` on
+  GitHub Pages; `/` locally). Build internal links from
+  `import.meta.env.BASE_URL` like the shell does, and reference files through
+  imports (`?url`), never root-relative strings like `/2` or `/assets/x.png`;
+  those work in `pnpm dev` and break on Pages. Hero links are `#top`
+  placeholders.
+- `[n].astro` currently requires a `Section.astro` for every registry entry,
+  including ones with `appUrl`; an app entry needs that handled (a stub
+  `Section.astro` that frames the app, or an `appUrl` branch in `[n].astro`).
 
 ### Imports, aliases, assets
 
@@ -183,8 +192,17 @@ the server at build time, and that is where the stacks differ:
 
 ### Env vars and data
 
-- Nothing reads env vars today except `import.meta.env.BASE_URL` (shell,
-  `index.astro`). `.env` is gitignored.
+- Sections read no env vars today; only the shell and `index.astro` read
+  `import.meta.env.BASE_URL`. `astro.config.mjs` is the one place that reads
+  `process.env` (`LAB_BASE`, set by the deploy workflow). `.env` is gitignored.
+- A var needed on the live site must also be passed to `pnpm build` in
+  `.github/workflows/deploy.yml`. Values are inlined at build time (static
+  output), so a change needs a redeploy, not a restart.
+- Read a var once, in the sandbox's `Section.astro`, and hand it to the
+  island as a prop in that framework's own way (React props, Svelte
+  `$props()`, Vue `defineProps`), rather than adding a module every island
+  imports. A shared module is a new cross-sandbox dependency; add one only
+  when the task says the sandboxes should share it, and say so.
 - If a section ever needs one: Astro exposes only `PUBLIC_`-prefixed vars to
   client code via `import.meta.env`. Don't reach for `process.env`,
   `NEXT_PUBLIC_`, `NUXT_PUBLIC_`/`useRuntimeConfig`, or SvelteKit's
@@ -207,10 +225,11 @@ the server at build time, and that is where the stacks differ:
 
 **Shared across every sandbox (repo root, one copy):**
 `package.json`, `pnpm-lock.yaml`, `node_modules`, `astro.config.mjs`
-(`integrations: [react(), svelte(), vue()]` once PR #2 lands),
-`svelte.config.js` (PR #2: `vitePreprocess()`), `tsconfig.json`,
-`src/registry.ts`, `src/layouts/LabShell.astro`, `src/pages/`,
-`src/styles/tokens.css`, `src/styles/shell.css`.
+(`integrations: [react(), svelte(), vue()]`, `site`, `base`),
+`svelte.config.js` (`vitePreprocess()`), `tsconfig.json`,
+`.github/workflows/deploy.yml`, `src/registry.ts`,
+`src/layouts/LabShell.astro`, `src/pages/`, `src/styles/tokens.css`,
+`src/styles/shell.css`.
 
 **De-facto shared (lives in one sandbox, imported by others):**
 `src/sections/02-hero-react-gsap/Hero.css`, `chartData.ts`, `assets/`, used
@@ -228,6 +247,22 @@ updated in the same change.
 packages to the root `package.json`, don't add a pnpm workspace that hoists
 `apps/*` into the lab's `node_modules` unless that's the explicit task, and
 don't import from `src/` into an app (copy tokens if needed and note it).
+Setup gotchas a Next.js spike ran into here (check them against the version
+you install):
+
+- Add `apps` to the root `tsconfig.json` `exclude`, or `astro check` (and so
+  `pnpm build`) type-checks the app and fails.
+- Next looks upward for a lockfile and may take the lab's `pnpm-lock.yaml` as
+  its workspace root; pin the root to the app folder in `next.config`.
+- `next dev` can write its own `AGENTS.md` into the app. The lab keeps one
+  rules file at the root; turn that off or delete the generated file.
+- Write the app in its framework's own idioms (Next: App Router, server
+  components by default, `'use client'` only where needed, `next/font`,
+  `next/image`). Copying 02's island in with `'use client'` on top measures
+  React-in-Next, not Next, and say which you did in `notes.md`.
+- Apps aren't part of the Pages deploy. A registry `appUrl` pointing at
+  `localhost` shows nothing on the live lab; note that in the section's
+  `notes.md` until the app is hosted.
 
 Dependency rules that follow from the single `package.json`:
 

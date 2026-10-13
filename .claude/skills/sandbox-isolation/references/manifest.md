@@ -1,7 +1,6 @@
 # Sandbox manifest
 
-Surveyed 2026-10-13 from `main` (1a3cd7a) and PR #2's branch
-`claude/project-thread-c54d4t` (43fd86e). Versions are the ones the lockfile
+Surveyed 2026-10-13 from `main` at e4e6270 (PR #2 and #3 merged). Versions are the ones the lockfile
 resolves. Re-survey if the repo has moved on; the repo wins over this file.
 
 ## Shared lab (repo root)
@@ -12,8 +11,12 @@ resolves. Re-survey if the repo has moved on; the repo wins over this file.
 - **Tooling:** pnpm 10.28.0 (`packageManager`), Node >= 22.12. One
   `package.json`, one lockfile, no pnpm workspace. `pnpm build` =
   `astro check && astro build`.
-- **Integrations** (`astro.config.mjs`): `react()` on main; `react(), svelte(), vue()`
-  with PR #2. `svelte.config.js` (PR #2) only sets `vitePreprocess()`.
+- **Integrations** (`astro.config.mjs`): `react(), svelte(), vue()`, plus
+  `site: 'https://adomyne.github.io'` and `base: process.env.LAB_BASE ?? '/'`.
+  `svelte.config.js` only sets `vitePreprocess()`.
+- **Deploy:** `.github/workflows/deploy.yml` builds on every push to `main`
+  with `LAB_BASE=/Digit-Fruition-experiment` and publishes `dist/` to GitHub
+  Pages. Only the Astro lab is published.
 - **Routing:** `src/pages/index.astro` meta-refreshes to `/1`;
   `src/pages/[n].astro` builds one static page per `src/registry.ts` entry and
   loads `../sections/<id>/Section.astro` via `import.meta.glob` (eager).
@@ -53,12 +56,12 @@ resolves. Re-survey if the repo has moved on; the repo wins over this file.
 - **Assets:** `assets/*.svg|png` imported with `?url`.
 - **Reference:** `frame.png` (1x Figma export), Figma node 60:159.
 - **Gotchas:** `Hero.css`, `chartData.ts` and `assets/` are imported by
-  03, 04 and 05 (once PR #2 lands); treat them as shared. `notes.md` holds
+  03, 04 and 05; treat them as shared. `notes.md` holds
   the motion spec table every port follows. JSX uses `className`, a `tick()`
   helper casting `{ '--t': t }` to `CSSProperties`, and an extensionless
   `import Hero from './Hero'`.
 
-## 03-hero-svelte-gsap (`/3`), pending merge (PR #2)
+## 03-hero-svelte-gsap (`/3`), on main
 
 - **Stack:** Svelte 5.57.2 with runes (`@astrojs/svelte` 9.0.1),
   `Hero.svelte`, `<script lang="ts">`, `<Hero client:load />`.
@@ -73,7 +76,7 @@ resolves. Re-survey if the repo has moved on; the repo wins over this file.
 - **Gotchas:** Svelte 4 syntax (`on:click`, `export let`, `$:`) is wrong
   here. No Motion package for Svelte.
 
-## 04-hero-vue-motion (`/4`), pending merge (PR #2)
+## 04-hero-vue-motion (`/4`), on main
 
 - **Stack:** Vue 3.5.44 (`@astrojs/vue` 7.0.3), `Hero.vue` with
   `<script setup lang="ts">`, `<Hero client:load />`.
@@ -91,7 +94,7 @@ resolves. Re-survey if the repo has moved on; the repo wins over this file.
   `initial: false`, guarded by `typeof window`. GSAP `back.out(n)` has no exact
   bezier; approximations are listed in `notes.md`.
 
-## 05-hero-vanilla-anime (`/5`), pending merge (PR #2)
+## 05-hero-vanilla-anime (`/5`), on main
 
 - **Stack:** no UI framework. `Section.astro` renders the markup at build
   time; one processed `<script>` (Vite-bundled module, runs once) animates it.

@@ -15,7 +15,7 @@ table in the PR description. Measure on the same build, same machine.
 | Code size / DX | `wc -l` of the component file(s); what fought you | `notes.md` |
 | Dependencies added | Packages added to the shared `package.json` and what else they affect | PR description |
 
-Baseline numbers for the hero (PR #2's branch, measured with the script):
+Baseline numbers for the hero (measured with the script on 2026-10-13):
 
 | Route | Stack | JS gzip | Component lines |
 | --- | --- | --- | --- |
