@@ -15,6 +15,8 @@
   The `fallback` slot in `Section.astro` shows the same copy before the island
   loads or without JS.
 - Reduced motion: the knot renders once without spinning and the copy skips its intro.
+- Three.js is loaded with a dynamic `import()` inside the effect, so the copy
+  and Motion show first and the 3D library arrives in its own chunk.
 - Cleanup: the effect return stops the animation loop, disconnects the
   `ResizeObserver` and disposes the geometry, material and renderer.
 

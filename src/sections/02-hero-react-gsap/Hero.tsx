@@ -22,6 +22,10 @@ import './Hero.css';
 
 const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
 
+// Reduced motion: hover and live mode jump straight to their end values
+// instead of tweening. Checked at each call, so a changed setting applies at once.
+const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 /** Places an axis label or gridline at its tick value (see .hero__axis span). */
 const tick = (t: number) => ({ '--t': t }) as CSSProperties;
 
@@ -83,7 +87,7 @@ export default function Hero() {
       const el = plot.current;
       if (!el) return;
       const follow = (x: number, duration: number) =>
-        gsap.to(highlight.current, { x, duration, ease: 'power3.out', overwrite: true, onUpdate: placeHighlight });
+        gsap.to(highlight.current, { x, duration: still() ? 0 : duration, ease: 'power3.out', overwrite: true, onUpdate: placeHighlight });
       const onMove = (e: PointerEvent) => {
         const r = el.getBoundingClientRect();
         follow(gsap.utils.clamp(0, 1, (e.clientX - r.left) / r.width), 0.35);
@@ -116,7 +120,7 @@ export default function Hero() {
         a.map(([x, y], i): Point => [x, y + (b[i][1] - y) * mix.t]);
       tween = gsap.to(mix, {
         t: 1,
-        duration: 1.1,
+        duration: still() ? 0 : 1.1,
         ease: 'sine.inOut',
         onUpdate: () => {
           series.current = { sales: lerp(from.sales, to.sales), acos: lerp(from.acos, to.acos) };
@@ -138,12 +142,12 @@ export default function Hero() {
     <div className="hero" data-sandbox="02-hero-react-gsap" ref={root}>
       <header className="hero__header">
         <div className="hero__brand">
-          <a className="hero__logo" href="#" aria-label="Digit Fruition home">
+          <a className="hero__logo" href="#top" aria-label="Digit Fruition home">
             <img src={dfLogo} width={108} height={37} alt="Digit Fruition" />
           </a>
           <nav className="hero__nav" aria-label="Main">
             {NAV.map((item, i) => (
-              <a key={item} href="#" className="hero__nav-item" aria-current={i === 0 ? 'page' : undefined}>
+              <a key={item} href="#top" className="hero__nav-item" aria-current={i === 0 ? 'page' : undefined}>
                 {item}
               </a>
             ))}
@@ -153,7 +157,7 @@ export default function Hero() {
           <button type="button" className="hero__lang">
             <GlobeIcon /> EN <ChevronIcon />
           </button>
-          <a href="#" className="hero__audit">
+          <a href="#top" className="hero__audit">
             <DownloadIcon /> Get a Free Audit
           </a>
         </div>
@@ -173,7 +177,7 @@ export default function Hero() {
           TACOS.
         </p>
 
-        <a href="#" className="hero__cta">
+        <a href="#top" className="hero__cta">
           <PhoneIcon /> Book a Discovery Call
         </a>
 

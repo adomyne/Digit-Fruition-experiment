@@ -19,7 +19,8 @@ framework and animation library differ. At 1440px the settled page matches
 - Live mode: `animate(0, 1, { onUpdate })` per tick, inside a `watch` on
   `live`. Interval, animations and the motion-value listener are stopped in
   `onUnmounted`.
-- Reduced motion: `initial` is `false`, so the intro is skipped.
+- Reduced motion: `initial` is `false`, so the intro is skipped, and hover
+  and live mode jump straight to their end values instead of tweening.
 - Motion components render their initial state on the server, so the hero
   doesn't flash fully drawn before hydration (02 and 03 do). The flip side is
   a blank page if the island never hydrates, so its `Hero.css` ends with a CSS

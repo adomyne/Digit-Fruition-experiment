@@ -40,7 +40,8 @@
 
 Hover: the guide and dot follow the pointer along the ACOS line (0.35s) and
 settle back on Dec 2 on leave (0.6s). Live mode re-noises both series every
-1.4s with a 1.1s `sine.inOut` morph. Reduced motion skips the intro timeline.
+1.4s with a 1.1s `sine.inOut` morph. Reduced motion skips the intro timeline,
+and hover and live mode jump straight to their end values instead of tweening.
 
 ## Type
 Everything is set in Manrope Variable (`@fontsource-variable/manrope`).

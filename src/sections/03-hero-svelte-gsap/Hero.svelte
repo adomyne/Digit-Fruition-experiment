@@ -26,6 +26,10 @@
 
   const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
 
+  // Reduced motion: hover and live mode jump straight to their end values
+  // instead of tweening. Checked at each call, so a changed setting applies at once.
+  const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   let root: HTMLDivElement;
   let plot: HTMLDivElement;
   let salesPath: SVGPathElement;
@@ -81,7 +85,7 @@
       // Hover: the guide and dot follow the pointer along the ACOS line,
       // then settle back on Dec 2.
       const follow = (x: number, duration: number) =>
-        gsap.to(highlight, { x, duration, ease: 'power3.out', overwrite: true, onUpdate: placeHighlight });
+        gsap.to(highlight, { x, duration: still() ? 0 : duration, ease: 'power3.out', overwrite: true, onUpdate: placeHighlight });
       const onMove = (e: PointerEvent) => {
         const r = plot.getBoundingClientRect();
         follow(gsap.utils.clamp(0, 1, (e.clientX - r.left) / r.width), 0.35);
@@ -112,7 +116,7 @@
       const lerp = (a: Point[], b: Point[]) => a.map(([x, y], i): Point => [x, y + (b[i][1] - y) * mix.t]);
       tween = gsap.to(mix, {
         t: 1,
-        duration: 1.1,
+        duration: still() ? 0 : 1.1,
         ease: 'sine.inOut',
         onUpdate: () => {
           series = { sales: lerp(from.sales, to.sales), acos: lerp(from.acos, to.acos) };
