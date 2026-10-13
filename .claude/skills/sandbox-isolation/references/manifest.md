@@ -1,6 +1,6 @@
 # Sandbox manifest
 
-Surveyed 2026-10-13 from `main` at a8c34c9 (PRs #2, #3 and #5 merged). Versions are the ones the lockfile
+Surveyed 2026-10-13 from `main` at a8c34c9 (PRs #2, #3 and #5 merged) and PR #6's branch at 63aa72f (07 and `apps/next`, not merged yet). Versions are the ones the lockfile
 resolves. Re-survey if the repo has moved on; the repo wins over this file.
 
 ## Shared lab (repo root)
@@ -125,11 +125,50 @@ resolves. Re-survey if the repo has moved on; the repo wins over this file.
   `data-lab-part` on their root. The registry entry has no `part`, because the
   tag comes from the markup here (the heroes do the opposite).
 
-## apps/ (none yet)
+## 07-three-react-motion (`/7`), pending merge (PR #6), in progress
 
-- `apps/README.md` reserves it for Next.js 16, SvelteKit and Nuxt spikes
-  that can't be Astro islands. Each runs its own dev server; a registry entry's
-  `appUrl` points at it. The registry `Stack` union already includes
-  `'nextjs' | 'sveltekit' | 'nuxt'`. No `apps/*` folder exists yet, so there
-  are no conventions to copy; set one up with its own `package.json` and
-  lockfile.
+- **Stack:** React 19 island (`Scene.tsx`) mounted with
+  `client:only="react"`, plus Three.js 0.186 (`three`, `@types/three`).
+- **Animation:** Three.js's own `renderer.setAnimationLoop` spins a torus
+  knot inside the canvas; Motion for React (`motion` 14.2, imported from
+  `motion/react`) fades the title and subtitle in with the hero's
+  `power3.out` bezier. One library per element.
+- **Styling:** `Scene.css` (`.three-stage`, `.three-canvas`, `.three-copy`,
+  ...), imported by both `Section.astro` and `Scene.tsx` so the island and the
+  `slot="fallback"` copy look the same. Tokens only; mesh colours are read from
+  CSS variables with `getComputedStyle` at runtime.
+- **Cleanup:** the effect return stops the loop, disconnects the
+  `ResizeObserver` and disposes geometry, material and renderer.
+- **Registry:** `stack: 'react'`, `animation: 'motion'`, no `figma`, no
+  `part`.
+- **Gotchas:** WebGL needs `client:only` plus a fallback slot; `useReducedMotion`
+  from `motion/react` gates both the loop and the copy intro. The near-copy in
+  `apps/next/app/Scene.tsx` differs in `'use client'`, class names and the
+  token import; don't sync one from the other by copy-paste.
+
+## apps/next, pending merge (PR #6)
+
+- **Stack:** Next.js 16.4.0 (pinned), App Router, React 19, Turbopack. Own
+  `package.json` (`lab-next`), `pnpm-lock.yaml`, `tsconfig.json` (with an
+  `@/*` path alias) and `.gitignore`.
+- **Routing:** `app/layout.tsx` (root layout, imports `./tokens.css` and
+  `./globals.css`), `app/page.tsx` (server component rendering `<Scene />`),
+  `app/Scene.tsx` (`'use client'`, Three.js icosahedron + Motion copy).
+  `/` and `/_not-found` prerender as static.
+- **Styling:** plain global CSS in `app/globals.css` (`.stage`, `.canvas`,
+  `.copy`, `.title`, `.sub`) and `app/tokens.css`, a copy of the lab's tokens
+  ("re-copy when the lab's tokens change").
+- **Deps:** `next`, `react`, `react-dom`, `three`, `motion` installed in the
+  app only; separate from the root even where the names match.
+- **Running:** `cd apps/next && pnpm install && pnpm dev` (port 3000). Not
+  in the lab registry, not in the Pages deploy.
+- **Gotchas:** `next build` warns about two lockfiles and picks the lab root
+  as the Turbopack workspace root; set `turbopack.root`. The root
+  `tsconfig.json` excludes `apps` so the lab's type check skips it.
+
+## apps/ (other frameworks)
+
+- `apps/README.md` reserves it for Next.js, SvelteKit and Nuxt spikes that
+  can't be Astro islands. Each runs its own dev server; a registry entry's
+  `appUrl` points at it. The registry `Stack` union includes
+  `'nextjs' | 'sveltekit' | 'nuxt'`. No SvelteKit or Nuxt app exists yet.

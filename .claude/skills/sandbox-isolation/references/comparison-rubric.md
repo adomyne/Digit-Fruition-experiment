@@ -24,5 +24,18 @@ Baseline numbers for the hero (measured with the script on 2026-10-13):
 | `/4` | Vue 3 + motion-v | 76.3 KB | 286 (`Hero.vue`) + 28 (`Section.astro` fallback) |
 | `/5` | Vanilla + Anime.js v4 | 17.9 KB | 251 (`Section.astro`) |
 
+Three.js scenes (PR #6's branch, not the same scene, so read as a rough
+guide only):
+
+| Where | Stack | JS gzip |
+| --- | --- | --- |
+| `/7` | Astro + React island + Three.js + `motion/react` (torus knot) | 237.9 KB |
+| `apps/next` `/` | Next.js 16.4 + Three.js + `motion/react` (icosahedron) | 304.0 KB, plus 38.7 KB `noModule` polyfills only old browsers load |
+
+For an `apps/` page, `route-js.mjs` doesn't apply; sum the gzipped
+`/_next/static/**.js` files the built HTML references
+(`.next/server/app/index.html` for Next), and list `noModule` scripts
+separately.
+
 The shell's own navigation script is `is:inline` and not counted by the
 script; it is the same on every route.
