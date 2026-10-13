@@ -32,7 +32,7 @@ const next = `${base}/${index === total ? 1 : index + 1}`;
     <link rel="prefetch" href={next} />
   </head>
   <body>
-    <main class="lab-stage" data-section={section.id}>
+    <main class="lab-stage" data-section={section.id} data-lab-part={section.part}>
       <slot />
     </main>
 
@@ -40,6 +40,9 @@ const next = `${base}/${index === total ? 1 : index + 1}`;
       <a href={prev} aria-label="Previous section" class="lab-arrow">←</a>
       <span class="lab-count">{pad(index)} / {pad(total)}</span>
       <span class="lab-title">{section.title}</span>
+      <span class="lab-part" hidden>
+        <span class="lab-part-reel" aria-hidden="true"></span>
+      </span>
       <span class="lab-meta">{section.stack} · {section.animation}</span>
       {section.figma && <a href={section.figma} class="lab-figma" target="_blank" rel="noopener">Figma</a>}
       <a href={next} aria-label="Next section" class="lab-arrow">→</a>
@@ -73,6 +76,82 @@ const next = `${base}/${index === total ? 1 : index + 1}`;
         if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
         location.assign(dx > 0 ? prev : next);
       }, { passive: true });
+
+      // Section tag: names the landing page section on screen. The names sit
+      // in a one-line reel that moves with the scroll, so as the next section
+      // pushes the current one off the top of the viewport, its name pushes
+      // the current name out of the tag by the same fraction.
+      const stage = document.querySelector('.lab-stage');
+      const tag = document.querySelector('.lab-part');
+      const reel = tag.querySelector('.lab-part-reel');
+      let parts = [];
+      let scroller = null;
+      let frame = 0;
+
+      const scrollerOf = (el) => {
+        for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+          const { overflowY } = getComputedStyle(n);
+          if ((overflowY === 'auto' || overflowY === 'scroll') && n.scrollHeight > n.clientHeight) return n;
+        }
+        return null;
+      };
+
+      const scan = () => {
+        const marked = [...stage.querySelectorAll('[data-lab-part]')];
+        const next = marked.length ? marked : stage.dataset.labPart ? [stage] : [];
+        const names = next.map((el) => el.dataset.labPart);
+        if (names.join('\n') !== parts.map((el) => el.dataset.labPart).join('\n')) {
+          reel.replaceChildren(...names.map((name) => Object.assign(document.createElement('span'), { textContent: name })));
+        }
+        parts = next;
+        scroller = parts.length > 1 ? scrollerOf(parts[0]) : null;
+        tag.hidden = parts.length === 0;
+        update();
+      };
+
+      // Position in the list: 2.5 means the third section is half pushed out
+      // and the fourth fills the other half of the viewport. A section moves
+      // out as its top travels from the viewport top to the next section's
+      // top. Sections that never reach the top (the last screen of the page)
+      // share the remaining scroll evenly, so the tag still ends on the last.
+      const position = () => {
+        if (!scroller || parts.length < 2) return 0;
+        const s = scroller.scrollTop;
+        const max = scroller.scrollHeight - scroller.clientHeight;
+        const origin = scroller.getBoundingClientRect().top - s;
+        const at = parts.map((el) => el.getBoundingClientRect().top - origin);
+        const last = at.length - 1;
+        const tail = at.findIndex((t) => t > max);
+        if (tail > 0) {
+          const from = at[tail - 1];
+          for (let i = tail; i <= last; i++) at[i] = from + ((max - from) * (i - tail + 1)) / (last - tail + 1);
+        }
+        if (s <= at[0]) return 0;
+        for (let i = 0; i < last; i++) {
+          if (s < at[i + 1]) return i + (s - at[i]) / (at[i + 1] - at[i] || 1);
+        }
+        return last;
+      };
+
+      function update() {
+        frame = 0;
+        const p = position();
+        reel.style.setProperty('--lab-part-at', String(p));
+        tag.setAttribute('aria-label', `Section: ${parts[Math.round(p)]?.dataset.labPart ?? ''}`);
+      }
+      const schedule = () => { frame ||= requestAnimationFrame(update); };
+
+      // Scroll events don't bubble, so listen in the capture phase to hear
+      // whichever container the section scrolls in.
+      document.addEventListener('scroll', schedule, { capture: true, passive: true });
+      addEventListener('resize', schedule);
+      // Islands that render on the client add their parts after this runs.
+      let rescan = 0;
+      new MutationObserver(() => {
+        clearTimeout(rescan);
+        rescan = setTimeout(scan, 50);
+      }).observe(stage, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-lab-part'] });
+      scan();
     </script>
   </body>
 </html>

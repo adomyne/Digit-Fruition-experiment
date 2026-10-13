@@ -59,6 +59,10 @@ apps/                     Next.js / SvelteKit / Nuxt spikes with their own dev s
   plain scripts also clean up on `astro:before-swap`.
 - **Scroll sections** scroll inside their own container (the stage is
   `overflow: hidden`); point ScrollTrigger's `scroller` at that container.
+- **Section tag.** The info bar names the landing page section on screen
+  (order in `docs/site-structure.md`). Scrolling sections put
+  `data-lab-part="<name>"` on each landing section's root; one-screen sections
+  set `part` in the registry instead.
 - **Horizontal drag/swipe inside a section**: add `data-lab-noswipe` to the
   element so the shell's swipe navigation ignores it.
 - **Lanes.** One agent per branch or worktree per experiment. Never edit files

@@ -21,6 +21,12 @@ export interface Section {
   status: Status;
   /** For apps in apps/: a URL to link to or iframe instead of a section component. */
   appUrl?: string;
+  /**
+   * Landing page section this screen shows, for the info bar's section tag
+   * (see docs/site-structure.md). Scrolling sections mark each part with
+   * data-lab-part="<name>" instead, and the tag follows the scroll.
+   */
+  part?: string;
 }
 
 export const sections: Section[] = [
@@ -39,6 +45,7 @@ export const sections: Section[] = [
     animation: 'gsap',
     figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
     status: 'done',
+    part: 'Hero',
   },
   {
     id: '03-hero-svelte-gsap',
@@ -47,6 +54,7 @@ export const sections: Section[] = [
     animation: 'gsap',
     figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
     status: 'done',
+    part: 'Hero',
   },
   {
     id: '04-hero-vue-motion',
@@ -55,6 +63,7 @@ export const sections: Section[] = [
     animation: 'motion-v',
     figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
     status: 'done',
+    part: 'Hero',
   },
   {
     id: '05-hero-vanilla-anime',
@@ -63,6 +72,15 @@ export const sections: Section[] = [
     animation: 'animejs',
     figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
     status: 'done',
+    part: 'Hero',
+  },
+  {
+    id: '06-landing-skeleton',
+    title: 'Landing skeleton',
+    stack: 'astro',
+    animation: 'none',
+    figma: null,
+    status: 'in-progress',
   },
   {
     id: '06-three-react-motion',
