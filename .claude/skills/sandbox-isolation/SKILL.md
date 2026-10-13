@@ -237,6 +237,13 @@ section only marks itself, and how depends on the section:
   file compiles as React. Adding Preact, Solid or Vue JSX would need per-file
   pragmas or integration `include` patterns; Vue and Svelte SFCs are
   unaffected because they use their own compilers.
+- React's Fast Refresh leaks into Vue in `pnpm dev`: `@vitejs/plugin-vue`
+  compiles `<script lang="ts">` with the oxc options `@vitejs/plugin-react`
+  set, so a Vue file calling a `use*()` composable got `$RefreshSig$()` calls
+  and every route returned 500 (all sections load together). The
+  `lab:vue-refresh-shim` plugin in `astro.config.mjs` neutralises them; keep
+  it while both integrations are installed. `pnpm build` never showed it, so
+  open a changed route in `pnpm dev` too, not just the build.
 - Svelte uses `<script lang="ts">`, Vue `<script setup lang="ts">`; Svelte 5
   runes (`$state`, `$effect`), never Svelte 4 `export let` / `$:` / stores
   for new code.
