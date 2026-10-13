@@ -8,7 +8,6 @@
 import '../styles/tokens.css';
 import '../styles/shell.css';
 import { sections } from '../registry';
-import { LANDING_PARTS } from '../landing';
 
 interface Props {
   index: number; // 1-based
@@ -38,9 +37,6 @@ const next = `${base}/${index === total ? 1 : index + 1}`;
     </main>
 
     <nav class="lab-label" aria-label="Lab navigation">
-      <ol class="lab-outline" aria-label="Landing page sections">
-        {LANDING_PARTS.map((name) => <li>{name}</li>)}
-      </ol>
       <a href={prev} aria-label="Previous section" class="lab-arrow">←</a>
       <span class="lab-count">{pad(index)} / {pad(total)}</span>
       <span class="lab-title">{section.title}</span>
@@ -88,10 +84,6 @@ const next = `${base}/${index === total ? 1 : index + 1}`;
       const stage = document.querySelector('.lab-stage');
       const tag = document.querySelector('.lab-part');
       const reel = tag.querySelector('.lab-part-reel');
-      // Outline: every landing section's name. The one on screen is lit, and
-      // while one section pushes out another the light is split between them.
-      const outline = [...document.querySelectorAll('.lab-outline li')];
-      const outlineNames = outline.map((li) => li.textContent);
       let parts = [];
       let scroller = null;
       let frame = 0;
@@ -146,19 +138,6 @@ const next = `${base}/${index === total ? 1 : index + 1}`;
         const p = position();
         reel.style.setProperty('--lab-part-at', String(p));
         tag.setAttribute('aria-label', `Section: ${parts[Math.round(p)]?.dataset.labPart ?? ''}`);
-
-        // Map the position among this page's parts onto the full outline,
-        // so a page that holds only some sections still lights the right ones.
-        const indexOf = (i) => outlineNames.indexOf(parts[i]?.dataset.labPart);
-        const lo = indexOf(Math.floor(p));
-        const hi = indexOf(Math.ceil(p));
-        const at = lo < 0 || hi < 0 ? null : lo + (hi - lo) * (p - Math.floor(p));
-        outline.forEach((li, i) => {
-          const lit = at === null ? 0 : Math.max(0, 1 - Math.abs(at - i));
-          li.style.setProperty('--lit', String(lit));
-          if (at !== null && Math.round(at) === i) li.setAttribute('aria-current', 'true');
-          else li.removeAttribute('aria-current');
-        });
       }
       const schedule = () => { frame ||= requestAnimationFrame(update); };
 
