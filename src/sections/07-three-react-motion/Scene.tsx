@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import * as THREE from 'three';
 import './Scene.css';
 
 // Motion owns the copy's transform/opacity; Three.js owns everything inside
@@ -11,57 +10,70 @@ export default function Scene() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const reduce = useReducedMotion();
 
+  // Three.js is about 150 KB gzipped, so it loads after the copy is on
+  // screen instead of in the island's first bundle.
   useEffect(() => {
     const el = canvas.current;
     if (!el) return;
-    const css = getComputedStyle(el);
-    const token = (name: string) => new THREE.Color(css.getPropertyValue(name).trim());
+    let cleanup: (() => void) | undefined;
+    let cancelled = false;
 
-    const renderer = new THREE.WebGLRenderer({ canvas: el, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-    camera.position.set(0, 0, 6);
+    import('three').then((THREE) => {
+      if (cancelled) return;
+      const css = getComputedStyle(el);
+      const token = (name: string) => new THREE.Color(css.getPropertyValue(name).trim());
 
-    const geometry = new THREE.TorusKnotGeometry(1, 0.32, 200, 24);
-    const material = new THREE.MeshStandardMaterial({
-      color: token('--color-accent'),
-      roughness: 0.35,
-      metalness: 0.1,
-    });
-    const knot = new THREE.Mesh(geometry, material);
-    scene.add(knot);
-    scene.add(new THREE.AmbientLight(token('--color-on-accent'), 0.6));
-    const key = new THREE.DirectionalLight(token('--color-on-accent'), 2.2);
-    key.position.set(3, 4, 5);
-    scene.add(key);
+      const renderer = new THREE.WebGLRenderer({ canvas: el, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+      camera.position.set(0, 0, 6);
 
-    const resize = () => {
-      const { clientWidth: w, clientHeight: h } = el;
-      renderer.setSize(w, h, false);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.render(scene, camera);
-    };
-    const observer = new ResizeObserver(resize);
-    observer.observe(el);
-    resize();
-
-    if (!reduce) {
-      renderer.setAnimationLoop((ms) => {
-        const t = ms / 1000;
-        knot.rotation.x = t * 0.25;
-        knot.rotation.y = t * 0.4;
-        renderer.render(scene, camera);
+      const geometry = new THREE.TorusKnotGeometry(1, 0.32, 200, 24);
+      const material = new THREE.MeshStandardMaterial({
+        color: token('--color-accent'),
+        roughness: 0.35,
+        metalness: 0.1,
       });
-    }
+      const knot = new THREE.Mesh(geometry, material);
+      scene.add(knot);
+      scene.add(new THREE.AmbientLight(token('--color-on-accent'), 0.6));
+      const key = new THREE.DirectionalLight(token('--color-on-accent'), 2.2);
+      key.position.set(3, 4, 5);
+      scene.add(key);
+
+      const resize = () => {
+        const { clientWidth: w, clientHeight: h } = el;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.render(scene, camera);
+      };
+      const observer = new ResizeObserver(resize);
+      observer.observe(el);
+      resize();
+
+      if (!reduce) {
+        renderer.setAnimationLoop((ms) => {
+          const t = ms / 1000;
+          knot.rotation.x = t * 0.25;
+          knot.rotation.y = t * 0.4;
+          renderer.render(scene, camera);
+        });
+      }
+
+      cleanup = () => {
+        renderer.setAnimationLoop(null);
+        observer.disconnect();
+        geometry.dispose();
+        material.dispose();
+        renderer.dispose();
+      };
+    });
 
     return () => {
-      renderer.setAnimationLoop(null);
-      observer.disconnect();
-      geometry.dispose();
-      material.dispose();
-      renderer.dispose();
+      cancelled = true;
+      cleanup?.();
     };
   }, [reduce]);
 

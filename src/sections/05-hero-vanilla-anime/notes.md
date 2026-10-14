@@ -30,5 +30,7 @@ back.out(n) `outBack(n)`.
 ## JS shipped
 17.9 KB gzipped (45 KB raw) for the route, against 98.6 KB for 02.
 
+Reduced motion: hover and live mode jump straight to their end values instead of tweening.
+
 ## Unfinished
 - Nothing for this section.

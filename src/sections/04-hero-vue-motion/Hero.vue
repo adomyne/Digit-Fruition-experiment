@@ -40,6 +40,9 @@ const EASE = {
 
 // Reduced motion skips the intro: everything renders in its end state.
 const still = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Hover and live mode check it at each call instead, so they jump straight to
+// their end values (and follow a setting changed after load).
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** Props for a motion element that rises (or drops) into place and fades in. */
 const enter = (y: number, delay: number, duration: number, extra: Record<string, number> = {}, ease = EASE.power3Out) => ({
@@ -95,7 +98,7 @@ function placeHighlight() {
 // settle back on Dec 2. A new animate() on the same value stops the last.
 let follow: AnimationPlaybackControls | undefined;
 const followTo = (x: number, duration: number) => {
-  follow = animate(highlightX, x, { duration, ease: EASE.power3Out });
+  follow = animate(highlightX, x, { duration: reduced() ? 0 : duration, ease: EASE.power3Out });
 };
 const onMove = (e: PointerEvent) => {
   const r = plot.value!.getBoundingClientRect();
@@ -125,7 +128,7 @@ watch(live, (on) => {
     const to = { sales: jitter(sales, 2.5), acos: jitter(acos, 1.5) };
     const lerp = (a: Point[], b: Point[], t: number) => a.map(([x, y], i): Point => [x, y + (b[i][1] - y) * t]);
     liveAnim = animate(0, 1, {
-      duration: 1.1,
+      duration: reduced() ? 0 : 1.1,
       ease: EASE.sineInOut,
       onUpdate: (t) => {
         salesNow = lerp(from.sales, to.sales, t);

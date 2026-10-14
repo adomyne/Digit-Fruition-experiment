@@ -24,5 +24,7 @@ Same as 02 (see `../02-hero-react-gsap/notes.md`), GSAP eases unchanged.
 ## JS shipped
 45.7 KB gzipped (117 KB raw) for the route, against 98.6 KB for 02.
 
+Reduced motion: hover and live mode jump straight to their end values instead of tweening.
+
 ## Unfinished
 - Nothing for this section.

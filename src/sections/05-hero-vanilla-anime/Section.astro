@@ -179,11 +179,15 @@ const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
       .add(dot, { scale: [0, 1], duration: 500, ease: 'outBack(3)' }, 2500);
   });
 
+  // Reduced motion: hover and live mode jump straight to their end values
+  // instead of tweening. Checked at each call, so a changed setting applies at once.
+  const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // Hover: the guide and dot follow the pointer along the ACOS line, then
   // settle back on Dec 2. `composition: 'replace'` lets each new animation
   // take over the running one.
   const follow = (x: number, duration: number) =>
-    animate(highlight, { x, duration, ease: EASE, composition: 'replace', onUpdate: placeHighlight });
+    animate(highlight, { x, duration: still() ? 0 : duration, ease: EASE, composition: 'replace', onUpdate: placeHighlight });
   const onMove = (e: PointerEvent) => {
     const r = plot.getBoundingClientRect();
     follow(utils.clamp((e.clientX - r.left) / r.width, 0, 1), 350);
@@ -206,7 +210,7 @@ const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
       const lerp = (a: Point[], b: Point[]) => a.map(([x, y], i): Point => [x, y + (b[i][1] - y) * mix.t]);
       anim = animate(mix, {
         t: 1,
-        duration: 1100,
+        duration: still() ? 0 : 1100,
         ease: 'inOutSine',
         onUpdate: () => {
           series = { sales: lerp(from.sales, to.sales), acos: lerp(from.acos, to.acos) };
