@@ -2,9 +2,9 @@
 // Form & FAQ: the free audit request form beside the FAQ list.
 // Figma: Quick answers FAQ 142:1606 (1440 x 627). Figma sets the form in
 // Arimo and the buttons in Neue Montreal; this build uses Manrope for both
-// (open question in the project, see notes.md).
+// (owner's call, see notes.md).
 import selectChevron from '../assets/select-chevron.svg?url';
-import shieldCheck from '../assets/shield-check.svg?url';
+import shieldCheck from '../assets/shield-check-white.svg?url';
 import download from '../assets/download.svg?url';
 import phoneCall from '../assets/phone-call-sm.svg?url';
 
@@ -151,12 +151,12 @@ const questions = [
     gap: var(--space-1-5);
     min-width: 0;
   }
-  /* White on white, as in Figma (open question in the project). */
+  /* Figma has these white on white; the owner chose dark, readable labels. */
   .field__label {
     font-size: var(--text-small);
     font-weight: var(--weight-bold);
     line-height: var(--leading-heading);
-    color: var(--color-on-ink);
+    color: var(--color-text);
   }
   .field__select { position: relative; }
   .field__input {

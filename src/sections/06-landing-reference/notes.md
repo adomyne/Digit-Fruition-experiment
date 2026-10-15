@@ -51,26 +51,25 @@ export (upscaled to 1440). Section heights match within 1px except where
 noted below. Hero, Ads, Process and the Results numbers differ in under 3%
 of pixels (anti-aliasing and the upscaled export).
 
-## Open design questions (each has its own project thread)
-Built with the default; change here when the owner answers.
-1. Form and FAQ share one block, so the parts list has "Form & FAQ" in
-   Form's place; Results covers the pile and the numbers poster.
-2. Value cards: Figma breaks long words ("Outsourc / ing"). Kept, because
-   whole words don't fit the 123px card and get clipped.
-3. Form labels are white on white and the shield icon is orange on orange,
-   copied as in Figma.
-4. Fonts: Figma's Arimo (form) and Neue Montreal (CTA, form buttons) are
-   set in Manrope, following the earlier Neue Montreal call.
+## Design decisions (owner's answers, 2026-10-15)
+Where these differ from Figma, the build follows the decision.
+1. Form and FAQ stay one block, "Form & FAQ"; Results covers the pile and
+   the numbers poster.
+2. Value cards keep whole words (Figma breaks "Outsourc / ing"). The title
+   uses the card's side padding and is 20px instead of 21px, the only
+   way "Communication" fits the 154px card whole.
+3. Form labels are dark (Figma: white on white) and the privacy shield is
+   white on the orange circle (`shield-check-white.svg`, Figma: orange).
+4. Manrope everywhere: Figma's Arimo (form) and Neue Montreal (CTA, form
+   buttons) are not loaded.
 5. Only the 1440 layout exists; narrower windows scroll sideways.
-6. Ads shows one service (3, Streaming TV); the carousel comes with the
-   Ads brief.
-7. Testimonials heading kept at Figma's 44.65px, not the 50px H2.
+6. Ads shows one service (3, Streaming TV); the full section is planned in
+   its own brief.
+7. Testimonials heading uses the 50px H2 (Figma: 44.65px).
 
 ## Known differences
 - The footer text box is 112px tall in Figma but holds six lines, so the
   last line hangs below the 153px footer. Kept as in Figma.
-- Value card titles borrow 2px of padding per side: browsers set Manrope
-  about 1% wider than Figma, and without it they wrap on different words.
 - A stray "Line 18" (60:230) and a hidden "Sales 250.000,00" label sit on
   the frame outside the Page frame; not built.
 

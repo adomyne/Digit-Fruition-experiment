@@ -168,14 +168,13 @@ const partners = [
     height: 10.3886rem; /* 166.22px */
     object-fit: cover;
   }
-  /* Figma lets long words break to fit the 123px card (open question).
-     Browsers set Manrope about 1% wider than Figma, so the box borrows 2px
-     of padding on each side to wrap on the same words. */
+  /* Whole words only (owner's call). "Communication" is wider than the
+     123px text box Figma gives it, so the title may use the card's side
+     padding and is set 5% smaller (20px) instead of breaking the word. */
   .value__title {
-    width: calc(100% + var(--space-1));
-    margin-inline: calc(var(--space-1) / -2);
-    overflow-wrap: break-word;
-    font-size: var(--text-md);
+    width: calc(100% + 1.9302rem); /* + 2 x 15.44px padding */
+    margin-inline: -0.9651rem;
+    font-size: calc(var(--text-md) * 0.95);
     font-weight: var(--weight-bold);
     line-height: var(--leading-heading);
     text-align: center;
