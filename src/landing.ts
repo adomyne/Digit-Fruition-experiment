@@ -1,7 +1,7 @@
 /**
  * The landing page's sections, in page order (docs/site-structure.md).
- * The 06 skeleton builds its blocks from this list; names here must match
- * the data-lab-part / registry `part` values the info bar's tag shows.
+ * Names here must match the data-lab-part / registry `part` values the info
+ * bar's tag shows (06-landing-reference puts one on each part's root).
  */
 export const LANDING_PARTS = [
   'Hero',
@@ -12,7 +12,7 @@ export const LANDING_PARTS = [
   'Results',
   'Case studies',
   'Testimonials',
-  'Form',
+  'Form & FAQ',
   'Logo',
   'Footer',
 ] as const;

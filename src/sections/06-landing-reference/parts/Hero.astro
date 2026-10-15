@@ -1,0 +1,406 @@
+---
+// Hero: menu bar, headline, performance dashboard and CTA.
+// Figma: Menu 142:1074, Hero Content 142:1118, Chart Container 214:222.
+import logoMark from '../assets/logo-mark.svg?url';
+import logoDigit from '../assets/logo-digit.svg?url';
+import logoFruition from '../assets/logo-fruition.svg?url';
+import globe from '../assets/globe.svg?url';
+import chevronDown from '../assets/chevron-down.svg?url';
+import download from '../assets/download.svg?url';
+import metricChevron from '../assets/metric-chevron.svg?url';
+import metricInfo from '../assets/metric-info.svg?url';
+import chart from '../assets/chart.svg?url';
+import phoneCall from '../assets/phone-call.svg?url';
+
+const nav = [
+  { label: 'Home', active: true },
+  { label: 'Services' },
+  { label: 'About' },
+  { label: 'Resources', wide: true },
+  { label: 'Contact Us', wide: true },
+];
+
+const metrics = [
+  { label: 'Spend', value: '€ 24,000.00' },
+  { label: 'Sales', value: '€ 270,000.00', bar: 'accent' },
+  { label: 'ACOS', value: '8.72%', bar: 'light' },
+  { label: 'Impressions', value: '21,000,00' },
+];
+
+const leftAxis = ['€25K', '€20K', '€15K', '€10K', '€5K', '€0'];
+const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
+---
+
+<section class="hero" data-lab-part="Hero">
+  <header class="menu">
+    <nav class="tabs" aria-label="Main">
+      <a class="tabs__brand" href="#" aria-label="Digit Fruition home">
+        <span class="logo">
+          <img class="logo__mark" src={logoMark} alt="" />
+          <img class="logo__digit" src={logoDigit} alt="" />
+          <img class="logo__fruition" src={logoFruition} alt="" />
+        </span>
+      </a>
+      {nav.map((item) => (
+        <a
+          class:list={['tab', item.active && 'tab--active', item.wide && 'tab--wide']}
+          href="#"
+          aria-current={item.active ? 'page' : undefined}
+        >
+          <span class="tab__label">{item.label}</span>
+        </a>
+      ))}
+    </nav>
+    <div class="actions">
+      <button class="lang" type="button">
+        <img class="icon-17" src={globe} alt="" />
+        <span>EN</span>
+        <img class="icon-14" src={chevronDown} alt="" />
+      </button>
+      <a class="audit-button" href="#">
+        <img class="icon-17" src={download} alt="" />
+        <span>Get a Free Audit</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="intro">
+    <h1 class="title">
+      <span>Amazon</span>
+      <span class="title__accent">PPC</span>
+      <span>Agency</span>
+    </h1>
+    <p class="subtitle">
+      We help Amazon brands scale to $1M in monthly revenue with a custom ad strategy at a sustainable TACOS.
+    </p>
+  </div>
+
+  <div class="dashboard">
+    <div class="chart">
+      <div class="metrics">
+        {metrics.map((m) => (
+          <div class:list={['metric', m.bar && `metric--${m.bar}`]}>
+            <div class="metric__details">
+              <div class="metric__label">
+                <span>{m.label}</span>
+                <img class="metric__chevron" src={metricChevron} alt="" />
+                <img class="metric__info" src={metricInfo} alt="" />
+              </div>
+              <p class="metric__value">{m.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="performance">
+        <div class="performance__row">
+          <div class="axis axis--left">{leftAxis.map((t) => <span>{t}</span>)}</div>
+          <div class="plot">
+            <img class="plot__lines" src={chart} alt="Sales and ACOS from Oct 15 to Dec 29" />
+          </div>
+          <div class="axis axis--right">{rightAxis.map((t) => <span>{t}</span>)}</div>
+        </div>
+        <div class="dates"><span>Oct 15</span><span>Dec 29</span></div>
+      </div>
+    </div>
+    <p class="live">Live mode</p>
+    <p class="closing">
+      Unlike the big guys, we only work with a select few brands, giving you the VIP treatment with laser-focused attention to detail.
+    </p>
+  </div>
+
+  <a class="cta" href="#">
+    <span class="cta__icon"><img src={phoneCall} alt="" /></span>
+    <span>Book a Discovery Call</span>
+  </a>
+</section>
+
+<style>
+  /* Scoped to this file by Astro. The root sets its own base. */
+  .hero {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: var(--space-18);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+  }
+  .hero *, .hero *::before, .hero *::after { box-sizing: border-box; }
+  p, h1 { margin: 0; }
+  img { display: block; }
+  a { color: inherit; text-decoration: none; }
+
+  /* Menu: Figma places it at x 20 with 20px padding, so 40px from the edge. */
+  .menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: var(--width-page);
+    height: var(--space-16);
+    padding-inline: var(--space-10);
+  }
+  .tabs {
+    display: flex;
+    height: var(--control-height);
+    overflow: hidden;
+    background: var(--color-bg);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-sm);
+  }
+  .tabs__brand {
+    display: flex;
+    align-items: center;
+    padding-inline: var(--space-2);
+  }
+  .logo {
+    position: relative;
+    display: block;
+    width: 5.4375rem; /* 87px */
+    height: 1.5625rem; /* 25px */
+  }
+  /* The wordmark is three vector groups placed by Figma's insets. */
+  .logo img { position: absolute; }
+  .logo__mark { top: 1.71%; left: 72.04%; width: 28.02%; height: 96.74%; }
+  .logo__digit { top: 1.54%; left: 0.18%; width: 62.12%; height: 58.3%; }
+  .logo__fruition { top: 77.38%; left: 0.18%; width: 58.47%; height: 20.52%; }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    width: var(--tab-width);
+    border-left: 1px solid var(--color-divider);
+    color: var(--color-ink);
+  }
+  .tab--wide { width: 6.75rem; /* 108px */ }
+  .tab::before {
+    content: '';
+    display: block;
+    height: var(--bar-height);
+  }
+  .tab--active { color: var(--color-text); }
+  .tab--active::before { background: var(--color-accent-light); }
+  .tab__label {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    padding-inline: var(--space-4);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    letter-spacing: var(--tracking-wide);
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--color-accent); }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-5);
+    width: 18.5rem; /* 296px */
+  }
+  .lang, .audit-button {
+    display: flex;
+    align-items: center;
+    height: var(--control-height);
+    border-radius: var(--radius-sm);
+    font: var(--weight-regular) var(--text-base) / var(--leading-body) var(--font-sans);
+    white-space: nowrap;
+  }
+  .lang {
+    gap: var(--space-1-75);
+    padding: 0 var(--space-3-5);
+    border: 0;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+  .audit-button {
+    gap: var(--space-2);
+    padding: 0 var(--space-5);
+    border: 1px solid var(--color-on-ink);
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+  }
+  .icon-17 { width: var(--icon-sm); height: var(--icon-sm); }
+  .icon-14 { width: var(--space-3-5); height: var(--space-3-5); }
+
+  /* Headline */
+  .intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-9);
+    padding: var(--space-16) 0 var(--space-5);
+  }
+  .title {
+    display: flex;
+    gap: var(--space-3-5);
+    font-size: var(--text-h1);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-h1);
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+  .title__accent { color: var(--color-accent); }
+  .subtitle {
+    width: var(--width-copy);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-heading);
+    color: var(--color-text-body);
+    text-align: center;
+  }
+
+  /* Dashboard */
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    width: var(--width-content);
+    margin-top: var(--space-10);
+  }
+  .chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-7);
+    width: 100%;
+  }
+  .metrics {
+    display: flex;
+    width: 49.375rem; /* 790px */
+  }
+  .metric {
+    flex: 1;
+    border: 0.659px solid var(--color-border);
+  }
+  .metric::before {
+    content: '';
+    display: block;
+    height: 0.1235rem; /* 1.976px */
+  }
+  .metric--accent::before { background: var(--color-accent); }
+  .metric--light::before { background: var(--color-accent-light); }
+  .metric__details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-1-5) 0.4939rem; /* 6px 7.903px */
+  }
+  .metric__label {
+    display: flex;
+    align-items: center;
+    gap: 0.4116rem; /* 6.586px */
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    letter-spacing: var(--tracking-wide);
+    white-space: nowrap;
+  }
+  .metric__chevron { width: 0.5763rem; height: 0.5763rem; }
+  .metric__info { width: 0.7409rem; height: 0.7409rem; }
+  .metric__value {
+    font-size: var(--text-base);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-body);
+  }
+
+  .performance {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+  }
+  .performance__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    width: 50.5rem; /* 808px */
+    height: 16.125rem; /* 258px */
+  }
+  .axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 14.5125rem; /* 232.2px */
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    white-space: nowrap;
+  }
+  .axis--left { flex: 1; align-items: flex-end; color: var(--color-text-subtle); }
+  .axis--right { width: 1.9662rem; color: var(--color-accent-soft); }
+  /* Figma clips a 1062 x 392 drawing to a 689 x 259 window, centred. */
+  .plot {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 43.0625rem; /* 689px */
+    height: 16.1875rem; /* 259px */
+    padding-block: 0.7654rem; /* 12.247px */
+    overflow: hidden;
+  }
+  .plot__lines {
+    flex-shrink: 0;
+    width: 66.3611rem; /* 1061.778px */
+    height: 24.4931rem; /* 391.89px */
+  }
+  .dates {
+    display: flex;
+    justify-content: space-between;
+    width: 43.125rem; /* 690px */
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    color: var(--color-text-faint);
+  }
+  .live, .closing {
+    width: var(--width-copy);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    text-align: center;
+  }
+  .live {
+    font-weight: var(--weight-bold);
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-position: from-font;
+  }
+  .closing { color: var(--color-text-muted); }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem; /* 11.2px */
+    height: var(--cta-height);
+    margin-top: var(--space-18);
+    padding: 0 var(--space-7);
+    border: 1.4px solid var(--color-on-accent);
+    border-radius: var(--radius-md);
+    background: var(--color-accent);
+    box-shadow: var(--shadow-elevation-3);
+    color: var(--color-on-accent);
+    font-size: var(--text-lg);
+    line-height: var(--leading-button);
+    white-space: nowrap;
+  }
+  .cta__icon {
+    position: relative;
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    overflow: hidden;
+  }
+  .cta__icon img {
+    position: absolute;
+    top: -0.175rem; /* -2.8px */
+    left: -0.175rem;
+    width: 2.1rem; /* 33.6px */
+    height: 2.1rem;
+  }
+  .lang:focus-visible, .audit-button:focus-visible, .tab:focus-visible, .cta:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+</style>

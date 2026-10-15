@@ -110,20 +110,25 @@ resolves. Re-survey if the repo has moved on; the repo wins over this file.
 - **Gotchas:** live-mode button state (`aria-pressed`, label) is set by hand.
   Anime ease names differ from GSAP's (`outQuart` = `power3.out`).
 
-## 06-landing-skeleton (`/6`), on main, in progress
+## 06-landing-reference (`/6`), done
 
-- **Stack:** plain Astro component, no island, no client JS of its own.
-- **Animation:** none.
-- **What it is:** the 11 landing page sections from `docs/site-structure.md`
-  (Hero, Ads, Audits, Process, About us, Results, Case studies, Testimonials,
-  Form, Logo, Footer) as placeholder blocks in one `.skeleton` scroll
-  container. Each block's root carries `data-lab-part="<name>"`, which drives
-  the shell's section tag as you scroll.
-- **Styling:** Astro scoped `<style>`, tokens only; `class:list` for the short
-  Logo and Footer blocks.
-- **Gotchas:** real sections replace the blocks one by one and must keep
-  `data-lab-part` on their root. The registry entry has no `part`, because the
-  tag comes from the markup here (the heroes do the opposite).
+- **Stack:** plain Astro components, no island, no client JS of its own.
+- **Animation:** none (static reference).
+- **What it is:** the polished Figma frame 60:159 rebuilt at 1440px, the
+  baseline every stack experiment is compared against. `Section.astro` is the
+  `.landing` scroll container; each landing section is its own file in
+  `parts/` (Hero, Ads, Audits, Process, AboutUs, Results, CaseStudies,
+  Testimonials, FormFaq, Logo, Footer), and each part's root carries
+  `data-lab-part="<name>"` for the shell's section tag.
+- **Styling:** one Astro scoped `<style>` per part, tokens only. Each part's
+  root sets its own font, colour, background and box-sizing, so nothing
+  carries over between parts. One-off Figma geometry is written in rem with
+  the px value in a comment.
+- **Assets:** `assets/` holds the Figma exports: SVGs as `?url` imports,
+  raster images pre-converted to WebP (no `sharp` in the repo, so
+  `astro:assets` `<Image>` can't optimise at build time).
+- **Gotchas:** keep `data-lab-part` on each part's root. The registry entry
+  has no `part`, because the tag comes from the markup here.
 
 ## 07-three-react-motion (`/7`), pending merge (PR #6), in progress
 

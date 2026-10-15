@@ -75,12 +75,12 @@ export const sections: Section[] = [
     part: 'Hero',
   },
   {
-    id: '06-landing-skeleton',
-    title: 'Landing skeleton',
+    id: '06-landing-reference',
+    title: 'Landing reference',
     stack: 'astro',
     animation: 'none',
-    figma: null,
-    status: 'in-progress',
+    figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
+    status: 'done',
   },
   {
     id: '07-three-react-motion',

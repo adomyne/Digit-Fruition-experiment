@@ -39,7 +39,7 @@ Full manifest with versions and per-sandbox idioms:
 | `src/sections/03-hero-svelte-gsap` | `/3` | Svelte 5 island (runes) | GSAP 3 |
 | `src/sections/04-hero-vue-motion` | `/4` | Vue 3 island (`<script setup>`) | Motion for Vue (`motion-v`) |
 | `src/sections/05-hero-vanilla-anime` | `/5` | Astro markup + one bundled `<script>` | Anime.js v4 |
-| `src/sections/06-landing-skeleton` | `/6` | Plain Astro, no island (placeholder blocks, one scroll container) | none |
+| `src/sections/06-landing-reference` | `/6` | Plain Astro, no island (Figma landing reference, one part file per landing section, one scroll container) | none |
 | `src/sections/07-three-react-motion` (pending merge, PR #6) | `/7` | React 19 island, `client:only`, Three.js WebGL canvas | Motion for React (`motion/react`) on the DOM copy; Three.js's own loop in the canvas |
 | `apps/next` (pending merge, PR #6) | own server, `localhost:3000`; no lab route | Next.js 16.4 App Router + Three.js | Motion for React (`motion/react`) |
 
