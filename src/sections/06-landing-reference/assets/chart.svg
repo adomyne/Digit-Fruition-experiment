@@ -1,23 +1,23 @@
-<svg viewBox="186.39 66.445 689 259" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="Chart Marker" clip-path="url(#clip0_0_21)">
+<svg viewBox="133.97 84.656 692.02 185" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Chart Marker" clip-path="url(#clip0_0_15)">
 <g id="Chart Data">
 <g id="Chart Grid">
-<line id="Line 3" x1="889.285" y1="84.9363" x2="-248.218" y2="84.9362" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
-<line id="Line 4" x1="889.285" y1="132.621" x2="-248.218" y2="132.621" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
-<line id="Line 5" x1="889.285" y1="180.306" x2="-248.218" y2="180.306" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
-<line id="Line 6" x1="889.285" y1="227.991" x2="-248.218" y2="227.991" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
-<line id="Line 7" x1="889.285" y1="275.677" x2="-248.218" y2="275.676" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
-<line id="Line 8" x1="889.285" y1="323.362" x2="-248.218" y2="323.361" stroke="#424D46" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
+<line id="Line 3" x1="808.21" y1="90.8979" x2="-83.213" y2="90.8978" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.21445" vector-effect="non-scaling-stroke"/>
+<line id="Line 4" x1="808.21" y1="122.498" x2="-83.213" y2="122.498" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.21445" vector-effect="non-scaling-stroke"/>
+<line id="Line 5" x1="808.21" y1="154.098" x2="-83.213" y2="154.098" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.21445" vector-effect="non-scaling-stroke"/>
+<line id="Line 6" x1="808.21" y1="185.698" x2="-83.213" y2="185.698" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.21445" vector-effect="non-scaling-stroke"/>
+<line id="Line 7" x1="808.21" y1="217.298" x2="-83.213" y2="217.298" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.21445" vector-effect="non-scaling-stroke"/>
+<line id="Line 8" x1="808.21" y1="248.898" x2="-83.213" y2="248.898" stroke="#424D46" stroke-width="2.21445" vector-effect="non-scaling-stroke"/>
 </g>
-<path id="Vector 1" d="M-168.903 210.449L-141.927 193.882L-122.006 215.073L-94.5689 185.887L-83.8524 210.449L-43.8581 185.887L-28.2614 150.139L-12.6646 185.887L21.3922 222.114L40.7318 201.542L83.9799 174.981L101.707 134.351L132.882 167.513V201.542L152.222 222.114L185.719 201.542L205.058 222.114L238.555 201.542L247.531 222.114L274.072 193.882L308.93 273.779L341.416 239.223L357.856 201.542L392.137 180.488L411.929 201.542L446.211 180.488L474.377 210.449L493.109 167.513L534.978 152.667L559.021 127.091L588.272 145.056L609.427 122.553L642.7 134.351L655.798 104.329L692.933 64.8263L706.776 96.5545V152.667L719.915 122.553L742.74 70.2377L767.06 55.3011" stroke="#F68012" stroke-width="1.62715" vector-effect="non-scaling-stroke" stroke-miterlimit="16"/>
-<path id="Vector 2" d="M-168.903 280.692L-129.422 271.696L-102.907 294.243L-76.3917 271.696L-26.0314 260.221L-1.95849 280.692L28.6323 306.704L46.2938 280.692L97.2497 292.302L121.482 271.696L145.251 306.704L175.842 280.692L226.798 292.302L257.474 266.216L276.503 294.243L295.533 266.216L321.494 227.98L343.384 260.221L366.484 294.243L377.204 260.221L408.574 286.897L426.686 260.221L458.056 286.897L553.872 205.42L573.029 266.216L619.734 255.575L644.67 292.302L669.606 255.575L710.826 275.812L733.007 205.42L767.06 255.575" stroke="#FF6201" stroke-width="1.62715" vector-effect="non-scaling-stroke" stroke-miterlimit="16"/>
+<path id="Vector 1" d="M-152.707 190.534L-128.318 175.555L-110.307 194.714L-85.5008 168.327L-75.8119 190.534L-39.6526 168.327L-25.5515 136.006L-11.4503 168.327L19.3408 201.081L36.8259 182.481L75.9269 158.467L91.954 121.732L120.14 151.715V182.481L137.625 201.081L167.91 182.481L185.395 201.081L215.68 182.481L223.795 201.081L247.791 175.555L279.307 247.791L308.677 216.549L323.541 182.481L354.535 163.446L372.429 182.481L403.423 163.446L428.888 190.534L445.825 151.715L483.678 138.293L505.416 115.169L531.863 131.411L550.989 111.066L581.071 121.732L592.913 94.5894L626.488 58.8748L639.003 87.5606V138.293L650.882 111.066L671.518 63.7673L693.507 50.263" stroke="#F68012" stroke-width="1.47112" vector-effect="non-scaling-stroke" stroke-miterlimit="16"/>
+<path id="Vector 2" d="M-152.707 254.041L-117.012 245.908L-93.0393 266.293L-69.0665 245.908L-23.5352 235.533L-1.7707 254.041L25.8867 277.559L41.8547 254.041L87.9244 264.538L109.833 245.908L131.323 277.559L158.981 254.041L205.05 264.538L232.785 240.954L249.989 266.293L267.194 240.954L290.666 206.384L310.457 235.533L331.342 266.293L341.034 235.533L369.396 259.651L385.771 235.533L414.132 259.651L500.761 185.987L518.081 240.954L560.307 231.332L582.852 264.538L605.397 231.332L642.665 249.629L662.719 185.987L693.507 231.332" stroke="#FF6201" stroke-width="1.47112" vector-effect="non-scaling-stroke" stroke-miterlimit="16"/>
 </g>
-<line id="Line 23" x1="481.337" y1="47.946" x2="481.337" y2="298.544" stroke="black" stroke-opacity="0.1" stroke-width="1.62715" vector-effect="non-scaling-stroke"/>
-<path id="Ellipse 11" d="M480.524 195.692h0" stroke="#FF6201" stroke-width="16.2883" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+<line id="Line 23" x1="435.181" y1="43.6132" x2="435.181" y2="270.181" stroke="black" stroke-opacity="0.1" stroke-width="1.47112" vector-effect="non-scaling-stroke"/>
+<path id="Ellipse 11" d="M434.446 177.192h0" stroke="#FF6201" stroke-width="14.72642" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
 </g>
 <defs>
-<clipPath id="clip0_0_21">
-<rect width="1061.78" height="391.89" fill="white"/>
+<clipPath id="clip0_0_15">
+<rect width="959.964" height="354.312" fill="white"/>
 </clipPath>
 </defs>
 </svg>
