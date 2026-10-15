@@ -99,19 +99,21 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
           </div>
           <div class="axis axis--right">{rightAxis.map((t) => <span>{t}</span>)}</div>
         </div>
-        <div class="dates"><span>Oct 15</span><span>Dec 29</span></div>
+        <div class="dates">
+          <span>Oct 15</span>
+          <p class="live">Live mode</p>
+          <span>Dec 29</span>
+        </div>
       </div>
     </div>
-    <p class="live">Live mode</p>
     <p class="closing">
       Unlike the big guys, we only work with a select few brands, giving you the VIP treatment with laser-focused attention to detail.
     </p>
+    <a class="cta" href="#">
+      <span class="cta__icon"><img src={phoneCall} alt="" /></span>
+      <span>Book a Discovery Call</span>
+    </a>
   </div>
-
-  <a class="cta" href="#">
-    <span class="cta__icon"><img src={phoneCall} alt="" /></span>
-    <span>Book a Discovery Call</span>
-  </a>
 </section>
 
 <style>
@@ -119,14 +121,14 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
 
      Viewport fit: the hero is at least one screen tall and stacks its
      blocks in a column. The chart takes whatever height is left over
-     (between 240 and 420px), and every vertical gap shrinks on shorter
+     (from the Figma 217px up to 420px), and every vertical gap shrinks on shorter
      windows. --hero-fit is 0 when the window is just tall enough for the
-     content at its tightest (721px) and 1rem at the Figma hero height
-     (1032px), growing with the window height in between. Each gap is
+     content at its tightest (658px) and 1rem at the Figma hero height
+     (898px with the menu), growing with the window height in between. Each gap is
      clamp(its smallest size, smallest + k * --hero-fit, its Figma size),
      so at the Figma height every gap is back to the Figma value. */
   .hero {
-    --hero-fit: calc((100svh - 45.0625rem) / 19.4375);
+    --hero-fit: calc((100svh - 41.125rem) / 15);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -237,16 +239,16 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
   .icon-17 { width: var(--icon-sm); height: var(--icon-sm); }
   .icon-14 { width: var(--space-3-5); height: var(--space-3-5); }
 
-  /* Headline */
+  /* Headline (Hero Content 142:1118: 44px top and bottom, 32px gap) */
   .intro {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: clamp(var(--space-2), calc(var(--space-2) + 1.75 * var(--hero-fit)), var(--space-9));
+    gap: clamp(var(--space-2), calc(var(--space-2) + 1.5 * var(--hero-fit)), var(--space-8));
     padding:
-      clamp(var(--space-2), calc(var(--space-2) + 3.5 * var(--hero-fit)), var(--space-16))
+      clamp(var(--space-2), calc(var(--space-2) + 2.25 * var(--hero-fit)), var(--space-11))
       0
-      clamp(var(--space-1), calc(var(--space-1) + 1 * var(--hero-fit)), var(--space-5));
+      clamp(var(--space-1), calc(var(--space-1) + 2.5 * var(--hero-fit)), var(--space-11));
   }
   .title {
     display: flex;
@@ -268,15 +270,16 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
     text-align: center;
   }
 
-  /* Dashboard */
+  /* Dashboard (Chart Container 214:222): chart, closing copy and CTA,
+     40px apart, 20px below the headline block. */
   .dashboard {
     display: flex;
+    flex: 1 1 0;
     flex-direction: column;
     align-items: center;
-    flex: 1 1 0;
-    gap: clamp(var(--space-1), calc(var(--space-1) + 0.5 * var(--hero-fit)), var(--space-3));
+    gap: clamp(var(--space-2), calc(var(--space-2) + 2 * var(--hero-fit)), var(--space-10));
     width: var(--width-content);
-    margin-top: clamp(var(--space-2), calc(var(--space-2) + 2 * var(--hero-fit)), var(--space-10));
+    margin-top: clamp(var(--space-1), calc(var(--space-1) + 1 * var(--hero-fit)), var(--space-5));
   }
   /* .dashboard, .chart and .performance pass the leftover height down to
      .performance__row, the only block that stretches. */
@@ -285,7 +288,7 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
     flex: 1 1 0;
     flex-direction: column;
     align-items: center;
-    gap: clamp(var(--space-2), calc(var(--space-2) + 1.25 * var(--hero-fit)), var(--space-7));
+    gap: var(--space-1);
     width: 100%;
   }
   .metrics {
@@ -332,74 +335,80 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: clamp(var(--space-1), calc(var(--space-1) + 0.5 * var(--hero-fit)), var(--space-3));
     width: 100%;
   }
-  /* 258px in Figma; here it takes the leftover height. */
+  /* Chart Content 142:1178: 796 x 217 in Figma; here it takes the
+     leftover height, from the Figma 217px up to 420px. */
   .performance__row {
     display: flex;
     flex: 1 1 0;
     align-items: center;
     gap: var(--space-5);
-    width: 50.5rem; /* 808px */
-    min-height: 15rem; /* 240px */
+    width: 49.75rem; /* 796px */
+    min-height: 13.5625rem; /* 217px */
     max-height: 26.25rem; /* 420px */
   }
-  /* The axis labels span 232.2 of the row's 258px in Figma, so they keep
-     that share and stay level with the grid lines as the row stretches. */
+  /* The axis labels span 170 of the row's 217px in Figma (six 15px lines,
+     16px apart), so they keep that share and stay level with the grid
+     lines as the row stretches. */
   .axis {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
     justify-content: space-between;
-    height: 90%;
-    font-size: var(--text-base);
-    line-height: var(--leading-body);
+    height: 78.34%;
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    letter-spacing: var(--tracking-wide);
     white-space: nowrap;
   }
-  .axis--left { flex: 1; align-items: flex-end; color: var(--color-text-subtle); }
-  .axis--right { width: 1.9662rem; color: var(--color-accent-soft); }
-  /* Figma clips a 1062 x 392 drawing to a 689 x 259 window, centred.
-     chart.svg's viewBox is that window, and preserveAspectRatio="none"
-     stretches it to the row's height; its lines use non-scaling strokes
-     (the marker is a round-capped dot) so nothing gets thicker or oval. */
+  .axis--left { align-items: flex-end; color: var(--color-text-subtle); }
+  .axis--right { width: 1.9662rem; /* 31.459px */ color: var(--color-accent-soft); }
+  /* Chart Plot 142:1186: Figma clips a 960 x 354 drawing to the plot's
+     185px-tall window, centred. chart.svg's viewBox is that window, and
+     preserveAspectRatio="none" stretches it to the plot; its lines use
+     non-scaling strokes (the marker is a round-capped dot) so nothing gets
+     thicker or oval. The plot is 185 of the row's 217px. */
   .plot {
-    flex-shrink: 0;
-    width: 43.0625rem; /* 689px */
-    height: 100%;
+    flex: 1;
+    height: 85.25%;
   }
   .plot__lines {
     width: 100%;
     height: 100%;
   }
+  /* Chart Dates: Oct 15, Live mode (centred) and Dec 29 on one row. */
   .dates {
     display: flex;
-    justify-content: space-between;
-    width: 43.125rem; /* 690px */
+    align-items: center;
+    width: var(--width-main);
     font-size: var(--text-base);
     line-height: var(--leading-body);
     color: var(--color-text-faint);
-  }
-  .live, .closing {
-    width: var(--width-copy);
-    font-size: var(--text-base);
-    line-height: var(--leading-body);
-    text-align: center;
+    white-space: nowrap;
   }
   .live {
+    flex: 1;
     font-weight: var(--weight-bold);
     color: var(--color-accent);
+    text-align: center;
     text-decoration: underline;
     text-underline-position: from-font;
   }
-  .closing { color: var(--color-text-muted); }
+  .closing {
+    width: var(--width-copy);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    color: var(--color-text-muted);
+    text-align: center;
+  }
 
   .cta {
     display: inline-flex;
+    flex-shrink: 0;
     align-items: center;
     gap: 0.7rem; /* 11.2px */
-    flex-shrink: 0;
     height: var(--cta-height);
-    margin-top: clamp(var(--space-3), calc(var(--space-3) + 3.75 * var(--hero-fit)), var(--space-18));
     padding: 0 var(--space-7);
     border: 1.4px solid var(--color-on-accent);
     border-radius: var(--radius-md);
