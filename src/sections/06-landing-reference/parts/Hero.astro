@@ -118,23 +118,14 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
 
 <style>
   /* Scoped to this file by Astro. The root sets its own base.
-
-     Viewport fit: the hero is at least one screen tall and stacks its
-     blocks in a column. The chart takes whatever height is left over
-     (from the Figma 217px up to 420px), and every vertical gap shrinks on shorter
-     windows. --hero-fit is 0 when the window is just tall enough for the
-     content at its tightest (658px) and 1rem at the Figma hero height
-     (898px with the menu), growing with the window height in between. Each gap is
-     clamp(its smallest size, smallest + k * --hero-fit, its Figma size),
-     so at the Figma height every gap is back to the Figma value. */
+     Fixed Figma layout: the hero is 898px tall with the menu (Hero Section
+     142:1117) and runs past the bottom of shorter windows. */
   .hero {
-    --hero-fit: calc((100svh - 41.125rem) / 15);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100svh;
-    padding-bottom: clamp(var(--space-3), calc(var(--space-3) + 3.75 * var(--hero-fit)), var(--space-18));
+    padding-bottom: var(--space-18);
     background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
@@ -244,11 +235,8 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: clamp(var(--space-2), calc(var(--space-2) + 1.5 * var(--hero-fit)), var(--space-8));
-    padding:
-      clamp(var(--space-2), calc(var(--space-2) + 2.25 * var(--hero-fit)), var(--space-11))
-      0
-      clamp(var(--space-1), calc(var(--space-1) + 2.5 * var(--hero-fit)), var(--space-11));
+    gap: var(--space-8);
+    padding: var(--space-11) 0;
   }
   .title {
     display: flex;
@@ -274,18 +262,14 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
      40px apart, 20px below the headline block. */
   .dashboard {
     display: flex;
-    flex: 1 1 0;
     flex-direction: column;
     align-items: center;
-    gap: clamp(var(--space-2), calc(var(--space-2) + 2 * var(--hero-fit)), var(--space-10));
+    gap: var(--space-10);
     width: var(--width-content);
-    margin-top: clamp(var(--space-1), calc(var(--space-1) + 1 * var(--hero-fit)), var(--space-5));
+    margin-top: var(--space-5);
   }
-  /* .dashboard, .chart and .performance pass the leftover height down to
-     .performance__row, the only block that stretches. */
   .chart {
     display: flex;
-    flex: 1 1 0;
     flex-direction: column;
     align-items: center;
     gap: var(--space-1);
@@ -331,32 +315,23 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
 
   .performance {
     display: flex;
-    flex: 1 1 0;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     width: 100%;
   }
-  /* Chart Content 142:1178: 796 x 217 in Figma; here it takes the
-     leftover height, from the Figma 217px up to 420px. */
+  /* Chart Content 142:1178 */
   .performance__row {
     display: flex;
-    flex: 1 1 0;
     align-items: center;
     gap: var(--space-5);
     width: 49.75rem; /* 796px */
-    min-height: 13.5625rem; /* 217px */
-    max-height: 26.25rem; /* 420px */
+    height: 13.5625rem; /* 217px */
   }
-  /* The axis labels span 170 of the row's 217px in Figma (six 15px lines,
-     16px apart), so they keep that share and stay level with the grid
-     lines as the row stretches. */
   .axis {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    justify-content: space-between;
-    height: 78.34%;
+    gap: var(--space-4);
     font-size: var(--text-small);
     line-height: var(--leading-small);
     letter-spacing: var(--tracking-wide);
@@ -365,13 +340,11 @@ const rightAxis = ['25%', '20%', '15%', '10%', '5%', '0%'];
   .axis--left { align-items: flex-end; color: var(--color-text-subtle); }
   .axis--right { width: 1.9662rem; /* 31.459px */ color: var(--color-accent-soft); }
   /* Chart Plot 142:1186: Figma clips a 960 x 354 drawing to the plot's
-     185px-tall window, centred. chart.svg's viewBox is that window, and
-     preserveAspectRatio="none" stretches it to the plot; its lines use
-     non-scaling strokes (the marker is a round-capped dot) so nothing gets
-     thicker or oval. The plot is 185 of the row's 217px. */
+     692 x 185 window, centred. chart.svg's viewBox is that window, so it
+     draws at its natural size here. */
   .plot {
     flex: 1;
-    height: 85.25%;
+    height: 11.5625rem; /* 185px */
   }
   .plot__lines {
     width: 100%;

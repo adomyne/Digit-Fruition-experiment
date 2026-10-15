@@ -81,24 +81,13 @@ gap), 4px between metric cards and chart, a 796 x 217 chart with 13px axis
 labels, "Live mode" centred between the two dates, and the closing copy and
 CTA 40px apart inside the chart container. Hero is 898px tall with the menu.
 
-## Hero fits the window
-- `.hero` is `min-height: 100svh`, a flex column. The chart row
-  (`.performance__row`) takes the leftover height, from Figma's 217px up to
-  420px; `.dashboard`, `.chart` and `.performance` pass it down with
-  `flex: 1 1 0`.
-- `chart.svg`'s viewBox is the 692 x 185 window Figma shows of the
-  960 x 354 drawing, with `preserveAspectRatio="none"`, so it stretches to
-  the plot. Lines use non-scaling strokes and the marker is a round-capped
-  dot, so nothing gets thicker or oval. Axis columns and plot keep their
-  Figma share of the row (78.34% and 85.25%).
-- Every vertical gap is `clamp(min, min + k * --hero-fit, Figma value)`.
-  `--hero-fit` is 0 at 658px of window height (all gaps at their minimum,
-  chart at 217px) and 1rem at 898px (all gaps back to Figma). Recalibrate
-  both numbers if hero content changes height.
-- Checked with Playwright (scrollbars shown): 1440x780, 1536x730 and
-  1920x950 show the whole hero including the CTA. At 1366x650 everything
-  down to the closing copy fits; the CTA is cut off at the bottom (658px of
-  content in 635 visible, the page's sideways scrollbar takes 15px).
+## Hero height (owner's decision, 2026-10-15)
+The hero keeps the fixed Figma height, 898px with the menu, and runs past
+the bottom of shorter windows. The window-fit version (#12, #13: chart
+stretching and gaps shrinking with the window height) was removed; all
+spacing is the Figma value. `chart.svg` keeps its viewBox cropped to the
+692 x 185 window Figma shows (non-scaling strokes, round-capped marker),
+so it draws at its natural size.
 
 ## Unfinished
 - No hover or motion spec yet; each compared section (Hero, Process,
