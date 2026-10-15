@@ -1,19 +1,19 @@
-<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="1061.78" height="391.89" viewBox="0 0 1061.78 391.89" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="186.39 66.445 689 259" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Chart Marker" clip-path="url(#clip0_0_21)">
 <g id="Chart Data">
 <g id="Chart Grid">
-<line id="Line 3" x1="889.285" y1="84.9363" x2="-248.218" y2="84.9362" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931"/>
-<line id="Line 4" x1="889.285" y1="132.621" x2="-248.218" y2="132.621" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931"/>
-<line id="Line 5" x1="889.285" y1="180.306" x2="-248.218" y2="180.306" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931"/>
-<line id="Line 6" x1="889.285" y1="227.991" x2="-248.218" y2="227.991" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931"/>
-<line id="Line 7" x1="889.285" y1="275.677" x2="-248.218" y2="275.676" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931"/>
-<line id="Line 8" x1="889.285" y1="323.362" x2="-248.218" y2="323.361" stroke="#424D46" stroke-width="2.44931"/>
+<line id="Line 3" x1="889.285" y1="84.9363" x2="-248.218" y2="84.9362" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
+<line id="Line 4" x1="889.285" y1="132.621" x2="-248.218" y2="132.621" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
+<line id="Line 5" x1="889.285" y1="180.306" x2="-248.218" y2="180.306" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
+<line id="Line 6" x1="889.285" y1="227.991" x2="-248.218" y2="227.991" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
+<line id="Line 7" x1="889.285" y1="275.677" x2="-248.218" y2="275.676" stroke="#4A4A4A" stroke-opacity="0.1" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
+<line id="Line 8" x1="889.285" y1="323.362" x2="-248.218" y2="323.361" stroke="#424D46" stroke-width="2.44931" vector-effect="non-scaling-stroke"/>
 </g>
-<path id="Vector 1" d="M-168.903 210.449L-141.927 193.882L-122.006 215.073L-94.5689 185.887L-83.8524 210.449L-43.8581 185.887L-28.2614 150.139L-12.6646 185.887L21.3922 222.114L40.7318 201.542L83.9799 174.981L101.707 134.351L132.882 167.513V201.542L152.222 222.114L185.719 201.542L205.058 222.114L238.555 201.542L247.531 222.114L274.072 193.882L308.93 273.779L341.416 239.223L357.856 201.542L392.137 180.488L411.929 201.542L446.211 180.488L474.377 210.449L493.109 167.513L534.978 152.667L559.021 127.091L588.272 145.056L609.427 122.553L642.7 134.351L655.798 104.329L692.933 64.8263L706.776 96.5545V152.667L719.915 122.553L742.74 70.2377L767.06 55.3011" stroke="#F68012" stroke-width="1.62715" stroke-miterlimit="16"/>
-<path id="Vector 2" d="M-168.903 280.692L-129.422 271.696L-102.907 294.243L-76.3917 271.696L-26.0314 260.221L-1.95849 280.692L28.6323 306.704L46.2938 280.692L97.2497 292.302L121.482 271.696L145.251 306.704L175.842 280.692L226.798 292.302L257.474 266.216L276.503 294.243L295.533 266.216L321.494 227.98L343.384 260.221L366.484 294.243L377.204 260.221L408.574 286.897L426.686 260.221L458.056 286.897L553.872 205.42L573.029 266.216L619.734 255.575L644.67 292.302L669.606 255.575L710.826 275.812L733.007 205.42L767.06 255.575" stroke="#FF6201" stroke-width="1.62715" stroke-miterlimit="16"/>
+<path id="Vector 1" d="M-168.903 210.449L-141.927 193.882L-122.006 215.073L-94.5689 185.887L-83.8524 210.449L-43.8581 185.887L-28.2614 150.139L-12.6646 185.887L21.3922 222.114L40.7318 201.542L83.9799 174.981L101.707 134.351L132.882 167.513V201.542L152.222 222.114L185.719 201.542L205.058 222.114L238.555 201.542L247.531 222.114L274.072 193.882L308.93 273.779L341.416 239.223L357.856 201.542L392.137 180.488L411.929 201.542L446.211 180.488L474.377 210.449L493.109 167.513L534.978 152.667L559.021 127.091L588.272 145.056L609.427 122.553L642.7 134.351L655.798 104.329L692.933 64.8263L706.776 96.5545V152.667L719.915 122.553L742.74 70.2377L767.06 55.3011" stroke="#F68012" stroke-width="1.62715" vector-effect="non-scaling-stroke" stroke-miterlimit="16"/>
+<path id="Vector 2" d="M-168.903 280.692L-129.422 271.696L-102.907 294.243L-76.3917 271.696L-26.0314 260.221L-1.95849 280.692L28.6323 306.704L46.2938 280.692L97.2497 292.302L121.482 271.696L145.251 306.704L175.842 280.692L226.798 292.302L257.474 266.216L276.503 294.243L295.533 266.216L321.494 227.98L343.384 260.221L366.484 294.243L377.204 260.221L408.574 286.897L426.686 260.221L458.056 286.897L553.872 205.42L573.029 266.216L619.734 255.575L644.67 292.302L669.606 255.575L710.826 275.812L733.007 205.42L767.06 255.575" stroke="#FF6201" stroke-width="1.62715" vector-effect="non-scaling-stroke" stroke-miterlimit="16"/>
 </g>
-<line id="Line 23" x1="481.337" y1="47.946" x2="481.337" y2="298.544" stroke="black" stroke-opacity="0.1" stroke-width="1.62715"/>
-<circle id="Ellipse 11" cx="480.524" cy="195.692" r="8.14415" fill="#FF6201"/>
+<line id="Line 23" x1="481.337" y1="47.946" x2="481.337" y2="298.544" stroke="black" stroke-opacity="0.1" stroke-width="1.62715" vector-effect="non-scaling-stroke"/>
+<path id="Ellipse 11" d="M480.524 195.692h0" stroke="#FF6201" stroke-width="16.2883" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
 </g>
 <defs>
 <clipPath id="clip0_0_21">

@@ -73,6 +73,27 @@ Where these differ from Figma, the build follows the decision.
 - A stray "Line 18" (60:230) and a hidden "Sales 250.000,00" label sit on
   the frame outside the Page frame; not built.
 
+## Hero fits the window (2026-10-15, Claude Code)
+The Figma hero is 1032px tall, taller than most browser windows, so the
+chart and "Live mode" fell below the fold. Sizing only; design unchanged.
+- `.hero` is `min-height: 100svh`, a flex column. The chart row
+  (`.performance__row`) takes the leftover height, 240 to 420px;
+  `.dashboard`, `.chart` and `.performance` pass it down with `flex: 1 1 0`.
+- `chart.svg`'s viewBox is now Figma's 689 x 259 window with
+  `preserveAspectRatio="none"`, so the drawing stretches to the row. Lines use
+  non-scaling strokes and the marker is a round-capped dot, so nothing gets
+  thicker or oval. The axis columns keep Figma's 90% share of the row.
+- Every vertical gap is `clamp(min, min + k * --hero-fit, Figma value)`.
+  `--hero-fit` is 0 at 721px of window height (all gaps at their minimum,
+  chart at 240px) and 1rem at 1032px (all gaps back to Figma). Recalibrate
+  both numbers if hero content changes height.
+- Checked with Playwright (scrollbars shown): 1440x780, 1536x730 and
+  1920x950 show the whole hero including the CTA. At 1366x650 everything
+  down to "Live mode" and the first line of the closing copy fits; the
+  CTA is 74px below the fold (721px of content in 635 visible).
+- At the 1032px Figma height the hero matches the old build (1.4% of pixels
+  differ: the chart is 3px shorter).
+
 ## Unfinished
 - No hover or motion spec yet; each compared section (Hero, Process,
   Results) gets a brief first.
