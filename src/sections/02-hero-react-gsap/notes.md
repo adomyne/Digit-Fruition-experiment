@@ -1,6 +1,6 @@
 # 02 · Hero (baseline)
 
-**Stack:** React island + GSAP · **Status:** done (learning-order step 2)
+**Stack:** React islands + GSAP · **Status:** Hero done (learning-order step 2), Process in progress
 **Built by:** Claude Code (cloud), from the Figma MCP server.
 
 **Figma:** [Digit Fruition, node 60:159](https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159)
@@ -62,5 +62,73 @@ rather than traced.
 the frame (1440 x 1362). The rest of frame 60:159 is the full landing page and
 belongs to later sections.
 
+
+## Page structure (2026-10-15)
+The page now holds two landing sections, Hero then Process, in landing
+order. `Section.astro` renders the sandbox root (`.page`, the scroll
+container) with two islands; each section's root carries `data-lab-part`,
+so the registry entry no longer sets `part`. `Hero.css`'s root rule now
+styles that wrapper.
+
+## Process (Claude Code, 2026-10-15)
+Built from `docs/briefs/process/brief.md`. Files: `Process.tsx`,
+`Process.css`, `processArt.ts`, `assets/process/` (copies of the brief's
+SVG parts plus `arrow.svg`, copied from the /6 assets).
+
+How it works:
+- One inline SVG, viewBox 686 x 320 (the Figma graphic box). Shapes use
+  `currentColor` = `--color-accent`. The path data is read from the SVG
+  files with `?raw` imports.
+- The seed, roots and sprout sit exactly where they are in
+  `reference/seed-sprouting.svg` (offsets found by matching points); the
+  three mangoes are `mango.svg` fitted to `reference/tree-with-mangoes.svg`
+  (96 to 98% overlap). Numbers are in `processArt.ts`.
+- A camera group zooms out from the seed (step 1) to the Figma framing of
+  the tree (step 3 and 4: 277 x 320 at x 204). It is tweened through a
+  plain object that writes the `transform` attribute.
+- One paused GSAP timeline holds the whole story with labels `s0` (the
+  thumbnail) to `s4`. A step change tweens the timeline's playhead to the
+  label, so going back plays in reverse, skipping plays the steps in
+  between at double speed, and a click mid-change takes over from wherever
+  the playhead is.
+- Nothing fades (owner, 2026-10-15): every change is continuous growth
+  from the separate parts. The thumbnail's arrow pulls back into the seed
+  and the mango shrinks toward it while the seed slides to the centre; the
+  ground line draws out; roots and tree are clip-rect reveals; the sprout
+  lives in the tree's group and rides the trunk's growing edge as its tip,
+  then folds into the top leaf; the roots outgrow the seed, which shrinks
+  into them, then spread into the tree's base; leaves and mangoes grow
+  from where they attach (`svgOrigin`, `back.out`). The trunk reveal and
+  the sprout's ride share one proxy tween.
+- 1.6 s per step. Clicking the illustration (a button) shows the next
+  step (4 goes back to 1) and stops autoplay, like the stepper.
+- Step 4 -> 1 (owner, 2026-10-15) plays forwards, like the mango cycle
+  on /8: the camera closes in on the centre mango (turned upright, at the
+  seed's step 1 size) while the rest of the tree fades; then the mango's
+  outline morphs into the seed's, its highlight fades out and the seed's
+  grooves fade in. It lands on step 1's exact frame and the playhead jumps
+  back to s1. It takes two steps' time (3.2 s). The morph runs between
+  polygons of the two outlines sampled to matching points
+  (`morphPolygons` in `processArt.ts`): the seed path has far more curve
+  segments than the mango's, so morphing the paths as drawn goes lumpy.
+  Here GSAP's MorphSVG tweens between the two polygons.
+- Idle sway eases out from rest instead of jumping to its first angle.
+- Idle sway runs on wrapper groups the timeline never touches, so the two
+  never fight over one transform.
+- Autoplay: an IntersectionObserver starts it when 40% of the section is
+  visible; a `gsap.delayedCall` moves on every 5 s (step 4 rewinds to 1).
+  The first click or arrow key stops it for good. Off screen, autoplay and
+  idle pause.
+- Reduced motion: a 0.35 s cross-fade between finished scenes, no idle.
+- The body text still cross-fades (out, swap, in) on each change.
+- Everything lives in one `gsap.context`, reverted on unmount (it also
+  disconnects the observer).
+
+Easy with GSAP: label-based scrubbing of one timeline (reverse, skip and
+interrupt for free), `svgOrigin`, attribute tweens on clip rects.
+Fiddly: the camera (SVG transform attribute, so a proxy object), and
+keeping idle tweens off the elements the timeline animates.
+
 ## Unfinished
-- Nothing for this section.
+- Process: no review by a second agent yet; no Figma frame for the
+  animated version, so motion timings are the brief's, not a designer's.

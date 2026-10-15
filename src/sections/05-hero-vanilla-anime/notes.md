@@ -1,6 +1,6 @@
-# 05 · Hero · Vanilla
+# 05 · Hero + Process · Vanilla
 
-**Stack:** no framework (Astro markup + one bundled script) + Anime.js v4 · **Status:** done (learning-order step 3)
+**Stack:** no framework (Astro markup + bundled scripts) + Anime.js v4 · **Status:** Hero done (learning-order step 3), Process in progress
 **Built by:** Claude Code (cloud), rebuilt from the baseline (02), not re-read from Figma.
 
 **Figma:** [Digit Fruition, node 60:159](https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159)
@@ -22,6 +22,56 @@ pixel apart from the corner label.
   `astro:before-swap` listener reverts the scope, cancels live mode and
   removes the listeners for when view transitions arrive.
 
+## Page structure
+`Section.astro` is the sandbox root (`data-sandbox`) and the page's scroll
+container; it holds the Hero markup and then `<Process />`, in landing page
+order. Each marks itself with `data-lab-part` (`Hero`, `Process`), so the
+registry has no `part`.
+
+## Process (Claude Code, 2026-10-15)
+Built from `docs/briefs/process/brief.md`, ported from 02's `Process.tsx`.
+Files: `Process.astro` (markup + its own `<script>`), `processCopy.ts`
+(step text, shared by markup and script), `Process.css` (copy of 02's,
+renamed sandbox, plus the bar fill's start state), `processArt.ts` and
+`assets/process/` (copies of 02's). Same art, timings and numbers as 02;
+see 02's `notes.md` for what the animation does. Frames match 02 through
+every change, backwards skips included (Playwright, fake clock), and
+reduced motion lands on identical scenes.
+
+How it differs from GSAP:
+- Anime.js animates the scene's numbers in plain objects (thumbnail,
+  camera, sprouting parts, tree, leaves, mangoes), and `render()` writes
+  them to the SVG as transform and clip attributes, with each pivot in the
+  art's own units. Anime's CSS transforms on SVG can't take those pivots.
+- One paused `createTimeline` holds the story with labels `s0` to `s4`
+  (the same positions as 02, in ms). A step change animates a `play.t`
+  proxy with `animate()`, and its `onUpdate` calls `tl.seek()` then
+  `render()`. A new animation on the proxy replaces the running one, so
+  reverse, skip (double speed) and interrupt work as in 02.
+- The eases have exact Anime names: power1/2 are Quad/Cubic, and
+  `outBack(1.4 / 1.7 / 2)` uses the same formula as GSAP's back.out.
+- Leaves and mangoes stagger with `stagger()` on arrays of objects.
+- Idle sway: `animate()` on seven `{ a }` objects with `loop` and
+  `alternate`, written by `renderSway()`; a new animation on an object
+  replaces its loop.
+- The server markup is the opening thumbnail with the world hidden, so
+  nothing flashes before the script runs.
+- Cleanup on `astro:before-swap`: observer, autoplay timer, the timeline,
+  every running animation (`utils.remove`) and the listeners.
+
+- Step 4 -> 1 (owner, 2026-10-15) plays forwards, like the mango cycle
+  on /8: the camera closes in on the centre mango (turned upright, at the
+  seed's step 1 size) while the rest of the tree fades; then the mango's
+  outline morphs into the seed's, its highlight fades out and the seed's
+  grooves fade in. It lands on step 1's exact frame and the playhead jumps
+  back to s1. It takes two steps' time (3.2 s). The morph runs between
+  polygons of the two outlines sampled to matching points
+  (`morphPolygons` in `processArt.ts`): the seed path has far more curve
+  segments than the mango's, so morphing the paths as drawn goes lumpy.
+  The polygons have the same structure, so Anime.js tweens `d`
+  directly.
+- Idle sway eases out from rest instead of jumping to its first angle.
+
 ## Motion spec
 Same timings as 02. Anime names GSAP's eases differently: power3.out is
 `outQuart`, power2.inOut `inOutCubic`, sine.inOut `inOutSine`,
@@ -33,4 +83,6 @@ back.out(n) `outBack(n)`.
 Reduced motion: hover and live mode jump straight to their end values instead of tweening.
 
 ## Unfinished
-- Nothing for this section.
+- Hero: nothing.
+- Process: no review by a second agent yet; motion timings are the
+  brief's, not a designer's.

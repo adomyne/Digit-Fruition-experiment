@@ -151,7 +151,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="hero" data-sandbox="04-hero-vue-motion">
+  <div class="hero" data-lab-part="Hero">
     <header class="hero__header">
       <div class="hero__brand">
         <motion.a class="hero__logo" href="#top" aria-label="Digit Fruition home" v-bind="enter(-16, 0, 0.6)">

@@ -368,18 +368,18 @@
    page would stay blank. Astro drops the island's `ssr` attribute once it
    hydrates; until then, after a short grace period, these fade the content
    in. The chart's guide and dot stay hidden: only script can place them.
-   These sit outside the block above because they start at the island wrapper,
-   which is outside the section root; they still only match inside it. */
+   The island wrapper sits inside the page's sandbox root, so these start at
+   the root and only match the hero. */
 @keyframes hero-04-fallback-in {
   to { opacity: 1; transform: none; stroke-dasharray: none; }
 }
 @keyframes hero-04-fallback-fade {
   to { opacity: 1; }
 }
-astro-island[ssr] [data-sandbox="04-hero-vue-motion"] [style*='transform']:not(.hero__guide, .hero__dot),
-astro-island[ssr] [data-sandbox="04-hero-vue-motion"] .hero__lines path {
+[data-sandbox="04-hero-vue-motion"] astro-island[ssr] .hero [style*='transform']:not(.hero__guide, .hero__dot),
+[data-sandbox="04-hero-vue-motion"] astro-island[ssr] .hero__lines path {
   animation: hero-04-fallback-in 0.6s 1.5s both;
 }
-astro-island[ssr] [data-sandbox="04-hero-vue-motion"] [style*='opacity:0']:not([style*='transform']) {
+[data-sandbox="04-hero-vue-motion"] astro-island[ssr] .hero [style*='opacity:0']:not([style*='transform']) {
   animation: hero-04-fallback-fade 0.6s 1.5s both;
 }

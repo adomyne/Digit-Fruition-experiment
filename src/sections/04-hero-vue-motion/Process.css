@@ -1,0 +1,184 @@
+/* Process (Vue 3 + Motion for Vue). Layout from the /6 reference
+   (06-landing-reference/parts/Process.astro, Figma 142:1274). Motion owns
+   transform and opacity on the scene, the copy box and the bar fill; CSS
+   only sets layout and colours.
+
+   Sandboxed: every rule sits inside [data-sandbox="04-hero-vue-motion"].
+   Values come only from tokens.css. */
+
+[data-sandbox="04-hero-vue-motion"] {
+  .process {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-24) 0;
+    background: var(--color-accent);
+    color: var(--color-on-ink);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+  }
+  .process p, .process h2, .process h3 { margin: 0; }
+
+  .process__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-12);
+    width: 66.625rem; /* 1066px */
+    padding: var(--space-14) 0;
+    border: 1px solid var(--color-on-ink);
+    border-radius: var(--radius-panel);
+    background: var(--color-ink);
+    box-shadow: var(--shadow-panel);
+  }
+  .process__title {
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-heading);
+    white-space: nowrap;
+  }
+  .process__steps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+  }
+  .process__illustration {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-12);
+    padding-inline: var(--space-2-5);
+  }
+
+  /* The illustration is a button: a click shows the next step. */
+  .process__picture {
+    display: block;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-panel);
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .process__picture:focus-visible {
+    outline: 2px solid var(--color-on-ink);
+    outline-offset: 4px;
+  }
+
+  /* Scene: the Figma graphic box. Shapes take the accent through currentColor. */
+  .process__scene {
+    display: block;
+    width: 42.875rem; /* 686px */
+    height: 20rem; /* 320px */
+    overflow: hidden;
+    color: var(--color-accent);
+    fill: currentColor;
+  }
+  .process__ground {
+    stroke: var(--color-gray);
+    stroke-width: 1.5;
+  }
+  /* The ink outline that separates a mango from the branches behind it,
+     as in the reference drawing. */
+  .process__mango {
+    stroke: var(--color-ink);
+    stroke-width: 14;
+    paint-order: stroke;
+  }
+  /* Step 4 -> 1 morph: the mango's highlight and the seed's husk gap and
+     grooves are holes in the art; here they are drawn in the card colour. */
+  .process__morph-highlight,
+  .process__morph-grooves {
+    fill: var(--color-ink);
+    fill-rule: evenodd;
+  }
+
+  /* Timeline: a white bar behind four 48px circles. */
+  .process__timeline {
+    position: relative;
+    width: 30.875rem; /* 494px */
+    height: 3.0146rem; /* 48.23px */
+  }
+  .process__bar {
+    position: absolute;
+    top: 1.2794rem; /* 20.47px */
+    left: 1.08rem; /* 17.28px */
+    width: 29.4798rem; /* 471.68px */
+    height: 0.3601rem; /* 5.76px */
+    background: var(--color-on-ink);
+  }
+  .process__bar-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    transform: scaleX(0); /* step 1; Motion takes over on the client */
+    transform-origin: left center;
+  }
+  .process__step {
+    position: absolute;
+    top: 0;
+    width: 3.0146rem;
+    height: 3.0146rem;
+    padding: 0;
+    border: 0.09rem solid var(--color-on-ink); /* 1.44px */
+    border-radius: var(--radius-full);
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+    font: inherit;
+    font-size: var(--text-step);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-heading);
+    cursor: pointer;
+    transition: background-color var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out);
+  }
+  .process__step:hover { border-color: var(--color-accent); }
+  .process__step--active {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-text);
+    font-weight: var(--weight-bold);
+  }
+  .process__step:focus-visible {
+    outline: 2px solid var(--color-on-ink);
+    outline-offset: 3px;
+  }
+
+  /* Copy: fixed height so nothing below moves when the text changes. */
+  .process__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    width: 31.875rem; /* 510px */
+    min-height: 11.5rem; /* title + three body lines + link */
+    text-align: center;
+  }
+  .process__copy-title {
+    font-size: var(--text-h4);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-heading);
+  }
+  .process__copy-body {
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+  }
+  .process__more {
+    color: inherit;
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    text-decoration: underline;
+    text-underline-position: from-font;
+  }
+  .process__more:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  .process__live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
