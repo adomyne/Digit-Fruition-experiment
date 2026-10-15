@@ -1,0 +1,55 @@
+---
+// Landing page reference: the polished Figma frame 60:159 rebuilt in plain
+// Astro, one landing section per file in parts/. It is the visual baseline
+// every stack experiment is compared against.
+//
+// Isolation: each part is its own Astro component with a scoped <style>, so
+// no rule reaches another part. Each part's root sets its own font, colour,
+// background and box-sizing from tokens.css; nothing is inherited from here
+// except the scroll container. Each root carries data-lab-part for the info
+// bar's section tag (names from src/landing.ts).
+import '@fontsource-variable/manrope';
+import Hero from './parts/Hero.astro';
+import Ads from './parts/Ads.astro';
+import Audits from './parts/Audits.astro';
+import Process from './parts/Process.astro';
+import AboutUs from './parts/AboutUs.astro';
+import Results from './parts/Results.astro';
+import CaseStudies from './parts/CaseStudies.astro';
+import Testimonials from './parts/Testimonials.astro';
+import FormFaq from './parts/FormFaq.astro';
+import Logo from './parts/Logo.astro';
+import Footer from './parts/Footer.astro';
+---
+
+<div class="landing" data-sandbox="06-landing-reference">
+  <div class="landing__page">
+    <Hero />
+    <Ads />
+    <Audits />
+    <Process />
+    <AboutUs />
+    <Results />
+    <CaseStudies />
+    <Testimonials />
+    <FormFaq />
+    <Logo />
+    <Footer />
+  </div>
+</div>
+
+<style>
+  /* The frame is 1440px wide. Wider windows centre each part's content
+     with full-bleed backgrounds; narrower ones scroll sideways. */
+  .landing {
+    box-sizing: border-box;
+    height: 100%;
+    overflow: auto;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+  }
+  .landing__page {
+    min-width: var(--width-page);
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+// Logo: the glowing Digit Fruition wordmark on white.
+// Figma: Logo Container 142:1695 (1440 x 600).
+import logo from '../assets/logo-glow.webp?url';
+---
+
+<section class="logo" data-lab-part="Logo">
+  <img class="logo__image" src={logo} alt="Digit Fruition" loading="lazy" decoding="async" />
+</section>
+
+<style>
+  .logo {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 37.5rem; /* 600px */
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+  }
+  .logo__image {
+    display: block;
+    width: 55.7015rem; /* 891.22px */
+    height: 25.6103rem; /* 409.77px */
+    object-fit: cover;
+  }
+</style>

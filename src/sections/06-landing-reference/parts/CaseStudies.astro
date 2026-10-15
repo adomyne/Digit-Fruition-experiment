@@ -1,0 +1,227 @@
+---
+// Case studies: "Case Studies / Blogs" tabs and three result cards.
+// Figma: Latest news section 142:1503 (1440 x 715).
+import simpleleaf from '../assets/case-simpleleaf.webp?url';
+import ellington from '../assets/case-ellington.webp?url';
+import elovate from '../assets/case-elovate.webp?url';
+import grow from '../assets/grow.svg?url';
+import graphArrow from '../assets/graph-arrow.svg?url';
+import arrowRight from '../assets/arrow-right-orange.svg?url';
+import divider from '../assets/card-divider.svg?url';
+
+const cases = [
+  { months: '5 months', from: '$40K', to: '$75K', blurb: 'US-Based Amazon CPG Brand', brand: 'Simple leaf™', image: simpleleaf, fit: 'contain', width: 'w333' },
+  { months: '7 months', from: '$70K', to: '$195K', blurb: 'Premium writing instruments brand', brand: 'Elington Pens™', image: ellington, fit: 'ellington', width: 'w334' },
+  { months: '3 months', from: '$20K', to: '$44K', blurb: 'Functional nutrition brand', brand: 'Elovate™', image: elovate, fit: 'elovate', width: 'w335' },
+];
+---
+
+<section class="cases" data-lab-part="Case studies">
+  <div class="tabs" role="tablist">
+    <button class="tab tab--active" type="button" role="tab" aria-selected="true">Case Studies</button>
+    <button class="tab" type="button" role="tab" aria-selected="false">Blogs</button>
+  </div>
+  <ul class="cards">
+    {cases.map((c, i) => (
+      <>
+        {i > 0 && <li class="divider" aria-hidden="true"><img src={divider} alt="" /></li>}
+        <li class:list={['card', `card--${c.width}`]}>
+          <p class="card__months">{c.months}</p>
+          <div class="card__media">
+            <img class:list={['card__image', `card__image--${c.fit}`]} src={c.image} alt={`${c.brand} products`} loading="lazy" decoding="async" />
+          </div>
+          <div class="card__details">
+            <div class="card__metrics">
+              <p class="growth">
+                <span>{c.from}</span>
+                <span class="growth__icons" aria-label="grew to">
+                  <img class="growth__grow" src={grow} alt="" />
+                  <span class="growth__arrow"><img src={graphArrow} alt="" /></span>
+                </span>
+                <span>{c.to}</span>
+              </p>
+              <p class="card__blurb">{c.blurb}</p>
+            </div>
+            <div class="card__footer">
+              <p class="card__brand">{c.brand}</p>
+              <div class="card__action">
+                <a class="button" href="#">
+                  <span>Read more</span>
+                  <img class="button__icon" src={arrowRight} alt="" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </li>
+      </>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .cases {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+    padding: var(--space-16) 1.409rem; /* 64px 22.54px */
+    overflow: hidden;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+  }
+  .cases *, .cases *::before, .cases *::after { box-sizing: border-box; }
+  p, ul { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  img { display: block; }
+  a { color: inherit; text-decoration: none; }
+
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-12);
+  }
+  .tab {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-text-faint);
+    font: var(--weight-regular) var(--text-h3) / var(--leading-heading) var(--font-sans);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .tab--active {
+    font-weight: var(--weight-bold);
+    color: var(--color-ink);
+  }
+
+  .cards {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2-5);
+  }
+  /* A 312px hairline at 10% black, turned upright. */
+  .divider {
+    position: relative;
+    width: 0;
+    height: 19.5152rem; /* 312.24px */
+  }
+  .divider img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 19.5152rem;
+    height: 1px;
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6341rem; /* 10.145px */
+    height: 31.375rem; /* 502px */
+    padding: var(--space-5) var(--space-2);
+    background: var(--color-bg);
+  }
+  .card--w333 { width: var(--width-side); }
+  .card--w334 { width: 20.875rem; }
+  .card--w335 { width: 20.9375rem; }
+  .card__months {
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    color: var(--color-text-faint);
+  }
+  .card__media {
+    position: relative;
+    flex-shrink: 0;
+    height: 16.25rem; /* 260px */
+  }
+  .card__image {
+    position: absolute;
+    max-width: none;
+  }
+  .card__image--contain { inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  /* Figma crops these two fills to a box inside the 260px frame. */
+  .card__image--ellington { top: 6.77%; left: 13.61%; width: 72.78%; height: 86.46%; }
+  .card__image--elovate { top: 9.73%; left: 16.1%; width: 67.8%; height: 80.54%; }
+
+  .card__details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .card__metrics {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .growth {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6341rem; /* 10.145px */
+    min-height: 2.3249rem; /* 37.2px */
+    padding-right: 0.9863rem; /* 15.78px */
+    font-size: var(--text-h3);
+    line-height: var(--leading-heading);
+    white-space: nowrap;
+  }
+  .growth__icons { display: flex; gap: var(--space-1); }
+  .growth__grow { width: var(--icon-md); height: var(--icon-md); }
+  .growth__arrow {
+    position: relative;
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .growth__arrow img {
+    position: absolute;
+    top: 0.3125rem; /* 5px */
+    left: 0;
+    width: 1.5179rem; /* 24.29px */
+    height: 0.875rem; /* 14px */
+  }
+  .card__blurb {
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    color: var(--color-text-soft);
+    text-align: center;
+  }
+  .card__footer {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2-5);
+  }
+  .card__brand {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-height: 2.3249rem;
+    padding-right: 0.9863rem;
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    color: var(--color-text-faint);
+  }
+  .card__action {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    padding-left: var(--space-3);
+  }
+  .button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    height: var(--control-height);
+    padding: 0 var(--space-5);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    color: var(--color-accent);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    white-space: nowrap;
+  }
+  .button__icon { width: var(--icon-sm); height: var(--icon-sm); }
+  .button:focus-visible, .tab:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+</style>

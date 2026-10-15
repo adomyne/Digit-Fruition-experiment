@@ -1,0 +1,241 @@
+---
+// About us: values cards, partner logos and the founder photo.
+// Figma: Values and Partners 142:1298 (1440 x 780).
+import background from '../assets/about-bg.webp?url';
+import founder from '../assets/founder.webp?url';
+import noOutsourcing from '../assets/value-no-outsourcing.webp?url';
+import noAutomation from '../assets/value-no-automation.webp?url';
+import flexiblePayment from '../assets/value-flexible-payment.webp?url';
+import communication from '../assets/value-communication.webp?url';
+import cardMark from '../assets/card-logo-mark.svg?url';
+import cardDigit from '../assets/card-logo-digit.svg?url';
+import cardFruition from '../assets/card-logo-fruition.svg?url';
+import kepejas from '../assets/partner-kepejas.svg?url';
+import treciadieniai from '../assets/partner-treciadieniai.svg?url';
+import radvilos from '../assets/partner-radvilos.svg?url';
+import fourHw from '../assets/partner-4hw.svg?url';
+import linkedin from '../assets/linkedin.svg?url';
+
+const values = [
+  { title: 'No Outsourcing', icon: noOutsourcing },
+  { title: 'No Software Automation', icon: noAutomation },
+  { title: 'Flexible Payment Structure', icon: flexiblePayment },
+  { title: 'Top-Notch Communication', icon: communication },
+];
+
+const partners = [
+  { name: 'Lietuvos Kepėjas', src: kepejas, cls: 'partner--kepejas' },
+  { name: 'Trečiadieniai', src: treciadieniai, cls: 'partner--treciadieniai' },
+  { name: 'Radvilos', src: radvilos, cls: 'partner--radvilos' },
+  { name: '4hw', src: fourHw, cls: 'partner--4hw' },
+];
+---
+
+<section class="about" data-lab-part="About us">
+  <img class="about__bg" src={background} alt="" loading="lazy" decoding="async" />
+  <div class="about__frame">
+    <div class="content">
+      <div class="values">
+        <h2 class="values__title">Our <span class="accent">Values</span></h2>
+        <ul class="values__grid">
+          {values.map((v) => (
+            <li class="value">
+              <span class="card-logo" aria-hidden="true">
+                <img class="card-logo__digit" src={cardDigit} alt="" />
+                <img class="card-logo__fruition" src={cardFruition} alt="" />
+                <img class="card-logo__mark" src={cardMark} alt="" />
+              </span>
+              <div class="value__copy">
+                <img class="value__icon" src={v.icon} alt="" loading="lazy" decoding="async" />
+                <p class="value__title">{v.title}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="partners">
+        <h3 class="partners__title">Along With Our <span class="accent">Partners</span></h3>
+        <ul class="partners__logos">
+          {partners.map((p) => (
+            <li class:list={['partner', p.cls]}><img src={p.src} alt={p.name} /></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+    <figure class="profile">
+      <img class="profile__photo" src={founder} alt="Nojus Latvinskas, founder of Digit Fruition" loading="lazy" decoding="async" />
+      <figcaption class="profile__info">
+        <img class="profile__linkedin" src={linkedin} alt="LinkedIn" />
+        <span>Nojus Latvinskas<br />Founder</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .about {
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    padding-top: var(--space-12);
+    background: var(--color-text);
+    color: var(--color-on-ink);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+  }
+  .about *, .about *::before, .about *::after { box-sizing: border-box; }
+  p, h2, h3, ul, figure { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  img { display: block; }
+  .accent { color: var(--color-accent); }
+
+  .about__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .about__frame {
+    position: relative;
+    display: flex;
+    gap: var(--space-5);
+    width: var(--width-page);
+    margin-inline: auto;
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-20);
+    width: 55.4375rem; /* 887px */
+    padding-left: 12.5rem; /* 200px */
+  }
+
+  .values {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    width: var(--width-copy);
+  }
+  .values__title {
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-heading);
+    text-align: center;
+  }
+  .values__grid {
+    display: flex;
+    gap: var(--space-5);
+    height: 21.25rem; /* 340px */
+  }
+  .value {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+    padding: 1.3511rem 0.9651rem; /* 21.62px 15.44px */
+    overflow: hidden;
+    border: 1px solid var(--color-on-ink);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card-hard);
+  }
+  .value:first-child { flex: 0 0 9.75rem; /* 156px */ }
+  .card-logo {
+    position: relative;
+    display: block;
+    flex-shrink: 0;
+    width: 4.457rem; /* 71.31px */
+    height: 1.25rem; /* 20px */
+  }
+  .card-logo img { position: absolute; }
+  .card-logo__digit { top: 0; left: 0; width: 2.772rem; height: 0.752rem; }
+  .card-logo__fruition { top: 0.9781rem; left: 0; width: 2.6089rem; height: 0.2647rem; }
+  .card-logo__mark { top: 0.0019rem; left: 3.2069rem; width: 1.2501rem; height: 1.2479rem; }
+  .value__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 15.6875rem; /* 251px */
+  }
+  /* The 177px icon is wider than the card; the card clips it, as in Figma. */
+  .value__icon {
+    flex-shrink: 0;
+    width: 11.0929rem; /* 177.49px */
+    height: 10.3886rem; /* 166.22px */
+    object-fit: cover;
+  }
+  /* Whole words only (owner's call). "Communication" is wider than the
+     123px text box Figma gives it, so the title may use the card's side
+     padding and is set 5% smaller (20px) instead of breaking the word. */
+  .value__title {
+    width: calc(100% + 1.9302rem); /* + 2 x 15.44px padding */
+    margin-inline: -0.9651rem;
+    font-size: calc(var(--text-md) * 0.95);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-heading);
+    text-align: center;
+  }
+
+  .partners {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    width: var(--width-copy);
+    height: 9.5129rem; /* 152.2px */
+    padding-inline: var(--space-5);
+  }
+  .partners__title {
+    width: 40.4375rem; /* 647px */
+    font-size: var(--text-h4);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-heading);
+    text-align: center;
+  }
+  .partners__logos {
+    display: flex;
+    align-items: center;
+    gap: var(--space-22);
+    width: 44.1875rem; /* 707px */
+    opacity: 0.8;
+  }
+  .partner img { width: 100%; height: 100%; }
+  .partner--kepejas { width: 3.8011rem; height: 5.3879rem; }
+  .partner--treciadieniai { width: 8.0045rem; height: 4.0409rem; }
+  .partner--radvilos { width: 3.8912rem; height: 5.3879rem; }
+  .partner--4hw { width: 8.3118rem; height: 2.6939rem; }
+
+  .profile {
+    position: relative;
+    flex-shrink: 0;
+    width: 33.3125rem; /* 533px */
+    height: 45.75rem; /* 732px */
+    overflow: hidden;
+  }
+  /* Figma crops the photo: 561.7px wide, 102.31% tall, shifted up 2.31%. */
+  .profile__photo {
+    position: absolute;
+    top: -2.31%;
+    left: 0;
+    width: 35.1045rem; /* 561.67px */
+    height: 102.31%;
+    max-width: none;
+    object-fit: cover;
+  }
+  .profile__info {
+    position: absolute;
+    right: 1.1569rem; /* 18.51px */
+    bottom: 1.0013rem; /* 16.02px */
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    color: var(--color-caption);
+  }
+  .profile__info span { width: 7.9055rem; /* 126.49px */ text-align: center; }
+  .profile__linkedin { width: 1.375rem; height: 1.125rem; /* 22 x 18 */ }
+</style>

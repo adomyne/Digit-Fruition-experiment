@@ -1,0 +1,88 @@
+---
+// Footer: company details, social links and the website credit.
+// Figma: Footer 142:1697 (1441 x 153.2).
+import creatorLogo from '../assets/creator-logo.svg?url';
+
+const socials = ['Instagram', 'Youtube', 'Facebook', 'Tiktok', 'LinkedIn'];
+---
+
+<footer class="footer" data-lab-part="Footer">
+  <div class="footer__frame">
+    <p class="company">
+      MB DigitFruition, Girulių g. 10, LT-12112 Vilnius<br />
+      Copyright @ DigitFruition MB 2024. All rights are strictly<br />
+      reserved<br />
+      <br />
+      This site uses cookies for better user experience
+    </p>
+    <div class="links">
+      <ul class="socials">
+        {socials.map((s) => <li><a href="#">{s}</a></li>)}
+      </ul>
+      <p class="credit">
+        <span>Website created by</span>
+        <img class="credit__logo" src={creatorLogo} alt="La Croyance" />
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    box-sizing: border-box;
+    border-top: 1px solid var(--color-text);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+  }
+  .footer *, .footer *::before, .footer *::after { box-sizing: border-box; }
+  p, ul { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: var(--color-accent); }
+
+  .footer__frame {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    min-width: var(--width-page);
+    padding: var(--space-5);
+  }
+  /* Figma's text box is 112px tall, so the last line hangs below the
+     153px footer; kept, so the footer's height matches the frame. */
+  .company {
+    width: 25.0259rem; /* 400.41px */
+    height: 7.0156rem; /* 112.25px */
+  }
+  .links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    justify-content: space-between;
+  }
+  .socials {
+    display: flex;
+    align-items: center;
+    gap: 2.125rem; /* 34px */
+    white-space: nowrap;
+  }
+  .credit {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2-5);
+    width: 100%;
+    padding: var(--space-3) 0;
+    white-space: nowrap;
+  }
+  .credit__logo {
+    display: block;
+    width: 5.0625rem; /* 81px */
+    height: 3.9375rem; /* 63px */
+  }
+</style>
