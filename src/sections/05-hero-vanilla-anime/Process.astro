@@ -1,0 +1,472 @@
+---
+// Process section (docs/briefs/process/brief.md) with no framework +
+// Anime.js v4: a four-step stepper that grows a mango tree from a seed.
+// Astro renders the markup at build time; the <script> below animates it.
+// Same art, timings and numbers as 02. See notes.md.
+import './Process.css';
+import { ARROW, GROUND_Y, LEAF_LEFT, LEAF_RIGHT, MANGO, MANGOES, MORPH, PIVOT, ROOTS, SEED, SPROUT, SPROUTING, SPROUTING_SCALE, TREE, TRUNK_X, VIEW } from './processArt';
+import { STEPS, THUMB_LABEL } from './processCopy';
+
+/** The tree's scale before step 3 (kept in step with the script). */
+const TREE_START = 0.4;
+/** Figma x offsets of the four circles on the 494px timeline (rem). */
+const CIRCLE_X = [0, 9.3838, 18.7194, 27.8606];
+
+// World placement of the seed, roots and sprout (reference coordinates)
+// next to the tree: the emerge point lands on the trunk base.
+const [EX, EY] = SPROUTING.emerge;
+const SPROUTING_AT = `translate(${TRUNK_X - EX * SPROUTING_SCALE} ${GROUND_Y - EY * SPROUTING_SCALE}) scale(${SPROUTING_SCALE})`;
+// The sprout lives in the tree's group (scale 0.4 until step 3), so it is
+// scaled up to look the same size as in the sprouting reference.
+const SPROUT_AT = `translate(${TRUNK_X} ${GROUND_Y}) scale(${SPROUTING_SCALE / TREE_START}) translate(${-PIVOT.sprout[0]} ${-EY})`;
+const first = STEPS[0];
+const mangoAt = (m: (typeof MANGOES)[number]) =>
+  `translate(${m.x} ${m.y}) rotate(${m.r}) scale(${m.s}) translate(${-PIVOT.mangoCentre[0]} ${-PIVOT.mangoCentre[1]})`;
+---
+
+<section class="process" data-process data-lab-part="Process">
+  <div class="process__card">
+    <h2 class="process__title">The Process</h2>
+    <div class="process__steps">
+      <div class="process__illustration">
+        <button type="button" class="process__picture" aria-label={`${THUMB_LABEL}. Show the next step.`}>
+          <svg class="process__scene" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} aria-hidden="true">
+            <defs>
+              <clipPath id="process05-roots-clip" clipPathUnits="userSpaceOnUse">
+                <rect data-p="roots-clip" x="-10" y="-10" width="200" height="0"></rect>
+              </clipPath>
+              <clipPath id="process05-tree-clip" clipPathUnits="userSpaceOnUse">
+                <rect data-p="tree-clip" x="-20" y="575" width="530" height="0"></rect>
+              </clipPath>
+            </defs>
+
+            <!-- Thumbnail: seed, arrow, mango (screen units). -->
+            <g data-p="thumb">
+              <g data-p="thumb-seed">
+                <g transform="translate(81 45) scale(0.9625)"><path d={SEED}></path></g>
+              </g>
+              <g data-p="thumb-arrow">
+                <g transform="translate(349 132) scale(3.3)"><path d={ARROW}></path></g>
+              </g>
+              <g data-p="thumb-mango">
+                <g transform="translate(441 50) scale(0.767)"><path d={MANGO}></path></g>
+              </g>
+            </g>
+
+            <!-- The world, in tree units, seen through the camera. Hidden
+                 until the first change ends; the script poses every part. -->
+            <g data-p="world" visibility="hidden">
+              <g data-p="camera">
+                <line
+                  class="process__ground"
+                  data-p="ground"
+                  data-fade
+                  x1={TRUNK_X - 1400}
+                  x2={TRUNK_X + 1400}
+                  y1={GROUND_Y}
+                  y2={GROUND_Y}
+                  vector-effect="non-scaling-stroke"></line>
+                <g transform={SPROUTING_AT} data-fade>
+                  <g transform={`translate(${SPROUTING.seed[0]} ${SPROUTING.seed[1]})`}>
+                    <g data-sway="0">
+                      <g data-p="seed"><path d={SEED}></path></g>
+                    </g>
+                  </g>
+                  <!-- Drawn over the seed: in step 3 the roots outgrow it. -->
+                  <g transform={`translate(${SPROUTING.roots[0]} ${SPROUTING.roots[1]})`}>
+                    <g data-p="roots"><path d={ROOTS} clip-path="url(#process05-roots-clip)"></path></g>
+                  </g>
+                </g>
+                <g data-p="tree">
+                  <path d={TREE} clip-path="url(#process05-tree-clip)" data-fade></path>
+                  {[LEAF_LEFT, LEAF_RIGHT].map((d, i) => (
+                    <g data-fade>
+                      <g data-sway={2 + i}>
+                        <g data-p="leaf"><path d={d}></path></g>
+                      </g>
+                    </g>
+                  ))}
+                  <!-- The sprout, drawn inside the tree's group so it grows with it. -->
+                  <g data-p="ride">
+                    <g transform={SPROUT_AT}>
+                      <g data-sway="1">
+                        <g data-p="sprout"><path d={SPROUT}></path></g>
+                      </g>
+                    </g>
+                  </g>
+                  {MANGOES.map((m, i) => (
+                    <g data-p={i === 0 ? 'hero' : 'fruit'} data-fade={i === 0 ? undefined : ''} transform={mangoAt(m)}>
+                      <g data-sway={4 + i}>
+                        <g data-p="mango"><path class="process__mango" d={MANGO}></path></g>
+                      </g>
+                    </g>
+                  ))}
+                </g>
+              </g>
+            </g>
+
+            <!-- Step 4 -> 1 morph, in screen units. -->
+            <g data-p="morph" visibility="hidden">
+              <path data-p="morph-outline" d={MORPH.from}></path>
+              <path class="process__morph-highlight" data-p="morph-highlight" d={MORPH.highlight}></path>
+              <path class="process__morph-grooves" data-p="morph-grooves" d={MORPH.grooves} opacity="0"></path>
+            </g>
+          </svg>
+        </button>
+
+        <div class="process__timeline" data-lab-noswipe>
+          <span class="process__bar" aria-hidden="true">
+            <span class="process__bar-fill"></span>
+          </span>
+          {STEPS.map((s, i) => (
+            <button type="button" class="process__step" style={`left: ${CIRCLE_X[i]}rem`} aria-label={`Step ${s.n}`}>
+              {s.n}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="process__copy">
+        <h3 class="process__copy-title">{first.title}</h3>
+        <p class="process__copy-body">{first.body}</p>
+        <a class="process__more" href="#top">Read more</a>
+      </div>
+      <p class="process__live" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { animate, createTimeline, stagger, utils, type JSAnimation } from 'animejs';
+  import { CAMERA, cameraAt, GROUND_Y, MANGOES, morphPolygons, PIVOT, ROOTS_TO, TREE_TIP, TRUNK_X } from './processArt';
+  import { STEPS, THUMB_LABEL } from './processCopy';
+
+  /** Milliseconds per step change; skipping runs the steps in between at double speed. */
+  const STEP_TIME = 1600;
+  /** The tree's scale before step 3. */
+  const TREE_START = 0.4;
+  const AUTOPLAY_EVERY = 5000;
+  const T = STEP_TIME;
+
+  const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /** `m` (scale, rotate) applied around point `p`, in the element's own units. */
+  const about = (p: readonly number[], m: string) => `translate(${p[0]} ${p[1]}) ${m} translate(${-p[0]} ${-p[1]})`;
+
+  const root = document.querySelector<HTMLElement>('[data-process]')!;
+  const part = (name: string) => [...root.querySelectorAll<SVGElement>(`[data-p="${name}"]`)];
+  const one = (name: string) => part(name)[0];
+  const picture = root.querySelector<HTMLButtonElement>('.process__picture')!;
+  const scene = root.querySelector<SVGSVGElement>('.process__scene')!;
+  const timeline = root.querySelector<HTMLElement>('.process__timeline')!;
+  const stepButtons = [...root.querySelectorAll<HTMLButtonElement>('.process__step')];
+  const fill = root.querySelector<HTMLElement>('.process__bar-fill')!;
+  const copy = root.querySelector<HTMLElement>('.process__copy')!;
+  const copyTitle = copy.querySelector('.process__copy-title')!;
+  const copyBody = copy.querySelector('.process__copy-body')!;
+  const live = root.querySelector('.process__live')!;
+  const swayEls = [...root.querySelectorAll<SVGGElement>('[data-sway]')].sort(
+    (a, b) => Number(a.dataset.sway) - Number(b.dataset.sway),
+  );
+  const leafEls = part('leaf');
+  const mangoEls = part('mango');
+
+  // Anime.js animates plain numbers in these objects; render() writes them
+  // to the SVG as transform and clip attributes (SVG transforms need pivots
+  // in the art's own units, which CSS transforms can't express here).
+  const thumb = { mango: 1, arrow: 1, seedX: 0 };
+  const cam = { ...CAMERA[1] };
+  const sprouting = { ground: 0, rootsClip: 0, sprout: 0, seed: 1, rootsX: 0, rootsY: 0, rootsSX: 1, rootsSY: 1 };
+  const tree = { s: TREE_START, grow: 0 };
+  const leaves = [{ s: 0 }, { s: 0 }];
+  const mangoes = MANGOES.map(() => ({ s: 0, r: -12 }));
+  /** Step 4 -> 1: the rest of the tree fades, the mango's highlight fades
+   *  out, the seed's grooves fade in. */
+  const loop = { fade: 1, highlight: 1, grooves: 0 };
+  const fadeEls = [...root.querySelectorAll<SVGElement>('[data-fade]')];
+  // The outline morphs between evenly sampled polygons of the two outlines,
+  // which have the same structure, so Anime.js interpolates `d` directly.
+  const morphOutline = one('morph-outline');
+  const poly = morphPolygons(scene);
+  morphOutline.setAttribute('d', poly.fromD);
+  /** Story time (ms): the timeline's playhead, animated by step changes. */
+  const play = { t: 0 };
+  const PIVOTS_SWAY = [PIVOT.seedCentre, PIVOT.sprout, PIVOT.leafLeft, PIVOT.leafRight, PIVOT.mangoStem, PIVOT.mangoStem, PIVOT.mangoStem];
+  const sways = PIVOTS_SWAY.map(() => ({ a: 0 }));
+  const TRUNK_BASE = [TRUNK_X, GROUND_Y];
+
+  const render = () => {
+    const thumbShown = play.t < T;
+    one('thumb').setAttribute('visibility', thumbShown ? 'visible' : 'hidden');
+    one('world').setAttribute('visibility', thumbShown ? 'hidden' : 'visible');
+    one('thumb-mango').setAttribute('transform', about([441, 160], `scale(${thumb.mango})`));
+    one('thumb-arrow').setAttribute('transform', about([349, 160], `scale(${thumb.arrow} 1)`));
+    one('thumb-seed').setAttribute('transform', `translate(${thumb.seedX} 0)`);
+    one('camera').setAttribute('transform', cameraAt(cam));
+    const morphing = play.t >= T * 5;
+    one('hero').setAttribute('visibility', morphing ? 'hidden' : 'visible');
+    one('morph').setAttribute('visibility', morphing ? 'visible' : 'hidden');
+    fadeEls.forEach((el) => el.setAttribute('opacity', `${loop.fade}`));
+    one('morph-highlight').setAttribute('opacity', `${loop.highlight}`);
+    one('morph-grooves').setAttribute('opacity', `${loop.grooves}`);
+    one('ground').setAttribute('transform', about(TRUNK_BASE, `scale(${sprouting.ground} 1)`));
+    one('roots-clip').setAttribute('height', `${sprouting.rootsClip}`);
+    one('sprout').setAttribute('transform', about(PIVOT.sprout, `scale(${sprouting.sprout})`));
+    one('seed').setAttribute('transform', about(ROOTS_TO.seedTip, `scale(${sprouting.seed})`));
+    one('roots').setAttribute(
+      'transform',
+      `translate(${sprouting.rootsX} ${sprouting.rootsY}) ` + about(PIVOT.roots, `scale(${sprouting.rootsSX} ${sprouting.rootsSY})`),
+    );
+    one('tree').setAttribute('transform', about(TRUNK_BASE, `scale(${tree.s})`));
+    // The trunk grows up behind a clip edge and the sprout rides that edge,
+    // so the sprout is the growing tip of the tree; near the top it folds
+    // into the top leaf as that appears.
+    const front = 575 - tree.grow * 590;
+    const rideY = Math.min(0, Math.max(front + 40, TREE_TIP) - GROUND_Y);
+    const rideScale = utils.clamp((1 - tree.grow) / 0.18, 0, 1);
+    const clip = one('tree-clip');
+    clip.setAttribute('y', `${front}`);
+    clip.setAttribute('height', `${575 - front}`);
+    one('ride').setAttribute('transform', `translate(0 ${rideY}) ` + about(TRUNK_BASE, `scale(${rideScale})`));
+    leafEls.forEach((el, i) =>
+      el.setAttribute('transform', about(i === 0 ? PIVOT.leafLeft : PIVOT.leafRight, `scale(${leaves[i].s})`)),
+    );
+    mangoEls.forEach((el, i) =>
+      el.setAttribute('transform', about(PIVOT.mangoStem, `rotate(${mangoes[i].r}) scale(${mangoes[i].s})`)),
+    );
+  };
+  const renderSway = () =>
+    swayEls.forEach((el, k) => el.setAttribute('transform', `rotate(${sways[k].a} ${PIVOTS_SWAY[k][0]} ${PIVOTS_SWAY[k][1]})`));
+
+  // One paused timeline: label sN is the finished scene of step N. Nothing
+  // fades: every part is hidden at scale 0 or behind a clip until it grows.
+  const tl = createTimeline({ autoplay: false, defaults: { ease: 'inOutCubic' } })
+    .label('s0', 0)
+    // Thumbnail to step 1: the arrow pulls back into the seed, the mango
+    // shrinks toward it, and the seed slides to the centre.
+    .add(thumb, { mango: 0, duration: T * 0.45, ease: 'inCubic' }, 0)
+    .add(thumb, { arrow: 0, duration: T * 0.4, ease: 'inCubic' }, T * 0.2)
+    .add(thumb, { seedX: 146, duration: T * 0.75 }, T * 0.25)
+    .label('s1', T)
+    // Step 2: pull back, the ground draws out, roots grow down, the sprout up.
+    .add(cam, { ...CAMERA[2], duration: T }, T)
+    .add(sprouting, { ground: 1, duration: T * 0.6, ease: 'outCubic' }, T * 1.1)
+    .add(sprouting, { rootsClip: 160, duration: T * 0.65, ease: 'outQuad' }, T * 1.35)
+    .add(sprouting, { sprout: 1, duration: T * 0.6, ease: 'outBack(1.4)' }, T * 1.4)
+    .label('s2', T * 2)
+    // Step 3: pull back to the Figma framing. The roots outgrow the seed,
+    // which shrinks into them, then rise and spread into the tree's base;
+    // the trunk grows up out of them with the sprout on its tip, and the
+    // leaves unfold from the branches.
+    .add(cam, { ...CAMERA[3], duration: T }, T * 2)
+    .add(sprouting, { seed: 0, duration: T * 0.5, ease: 'inQuad' }, T * 2)
+    .add(
+      sprouting,
+      { rootsX: ROOTS_TO.x, rootsY: ROOTS_TO.y, rootsSX: ROOTS_TO.outgrow, rootsSY: ROOTS_TO.outgrow, duration: T * 0.45 },
+      T * 2,
+    )
+    .add(sprouting, { rootsSX: ROOTS_TO.sx, rootsSY: ROOTS_TO.sy, duration: T * 0.45 }, T * 2.45)
+    .add(tree, { s: 1, duration: T * 0.7, ease: 'outCubic' }, T * 2.3)
+    .add(tree, { grow: 1, duration: T * 0.6, ease: 'inOutQuad' }, T * 2.4)
+    .add(leaves, { s: 1, duration: T * 0.3, ease: 'outBack(2)', delay: stagger(T * 0.05) }, T * 2.65)
+    .label('s3', T * 3)
+    // Step 4: the mangoes grow from their stems, one after another.
+    .add(mangoes, { s: 1, r: 0, duration: T * 0.55, ease: 'outBack(1.7)', delay: stagger(T * 0.22) }, T * 3)
+    .label('s4', T * 4)
+    // Step 4 -> 1 (forwards only, like the mango cycle on /8): the camera
+    // closes in on the centre mango and turns it upright while the rest of
+    // the tree fades. Then its outline morphs into the seed's, the highlight
+    // fades out and the seed's grooves fade in. The last frame is step 1's,
+    // so the playhead then jumps back to s1.
+    .add(cam, { ...CAMERA.loop, duration: T }, T * 4)
+    .add(loop, { fade: 0, duration: T * 0.6, ease: 'inOutQuad' }, T * 4.2)
+    .add(loop, { highlight: 0, duration: T * 0.3, ease: 'linear' }, T * 5)
+    .add(morphOutline, { d: poly.toD, duration: T }, T * 5)
+    .add(loop, { grooves: 1, duration: T * 0.35, ease: 'linear' }, T * 5.65)
+    .label('loop', T * 6);
+
+  utils.set(fill, { scaleX: 0 });
+  render();
+
+  let target = 0;
+  let autoplay = true;
+  let visible = false;
+  let moving = false;
+  /** Bumped on every step change, so callbacks of a superseded change do nothing. */
+  let run = 0;
+  let next: number | undefined;
+  let playhead: JSAnimation | undefined;
+
+  // Idle sway once a step has finished: small, slow, out of sync. Each
+  // sways a wrapper group the timeline never touches. A new animation on a
+  // sway object replaces the one running on it.
+  // Each part eases out from where it is (no jump when a step lands), then
+  // sways back and forth.
+  const sway = (ks: number[], deg: number, dur: number) =>
+    ks.forEach((k, i) => {
+      const d = (dur + i * 0.45) * 1000;
+      animate(sways[k], {
+        a: -deg,
+        duration: d / 2,
+        delay: i * 300,
+        ease: 'outSine',
+        onUpdate: renderSway,
+        onComplete: () =>
+          animate(sways[k], { a: deg, duration: d, ease: 'inOutSine', loop: true, alternate: true, onUpdate: renderSway }),
+      });
+    });
+  const stopIdle = () => animate(sways, { a: 0, duration: 300, ease: 'outQuad', onUpdate: renderSway });
+  const startIdle = () => {
+    stopIdle();
+    if (still() || !visible || target === 0) return;
+    if (target === 1) sway([0], 2, 3.2);
+    if (target === 2) sway([1], 3, 2.8);
+    if (target >= 3) sway([2, 3], 4, 3);
+    if (target === 4) sway([4, 5, 6], 5, 2.6);
+    renderSway();
+  };
+
+  const scheduleNext = () => {
+    window.clearTimeout(next);
+    if (autoplay && visible) next = window.setTimeout(() => goTo(target === 4 ? 1 : target + 1), AUTOPLAY_EVERY);
+  };
+
+  // Bar fill: one animation per change, from wherever it is.
+  const fillTo = (n: number, duration: number) =>
+    animate(fill, { scaleX: (Math.max(n, 1) - 1) / 3, duration, ease: 'inOutCubic' });
+
+  const showStep = (n: number) => {
+    stepButtons.forEach((b, i) => {
+      b.classList.toggle('process__step--active', i === n - 1);
+      if (i === n - 1) b.setAttribute('aria-current', 'step');
+      else b.removeAttribute('aria-current');
+    });
+    picture.setAttribute('aria-label', `${n === 0 ? THUMB_LABEL : STEPS[n - 1].label}. Show the next step.`);
+  };
+  const swapText = (n: number) => {
+    copyTitle.textContent = STEPS[n - 1].title;
+    copyBody.textContent = STEPS[n - 1].body;
+  };
+  const seekTo = (t: number) => {
+    play.t = t;
+    tl.seek(t);
+    render();
+  };
+
+  function goTo(n: number) {
+    const from = play.t;
+    // From step 4 (or mid-loop), step 1 is reached forwards through the
+    // mango -> seed loop; everything else plays along the timeline.
+    const wrap = n === 1 && from >= T * 4;
+    const to = wrap ? T * 6 : n * T;
+    const id = ++run;
+    target = n;
+    showStep(n);
+    stopIdle();
+    scheduleNext();
+    live.textContent = STEPS[n - 1].label;
+
+    if (still()) {
+      // Reduced motion: a quick cross-fade between finished scenes.
+      playhead?.cancel();
+      moving = false;
+      fillTo(n, 0);
+      animate([scene, copy], {
+        opacity: 0,
+        duration: 150,
+        onComplete: () => {
+          if (id !== run) return;
+          seekTo(n * T);
+          swapText(n);
+          animate([scene, copy], { opacity: 1, duration: 200 });
+        },
+      });
+      return;
+    }
+
+    const steps = wrap ? 1 : Math.max(1, Math.round(Math.abs(to - from) / STEP_TIME));
+    const duration = wrap ? to - from : Math.abs(to - from) / (steps > 1 ? 2 : 1);
+    fillTo(n, Math.max(duration, 300));
+    // Body text: out, swap, in, inside the first half of the change.
+    animate(copy, {
+      opacity: 0,
+      y: -8,
+      duration: 250,
+      ease: 'outQuad',
+      onComplete: () => {
+        if (id !== run) return;
+        swapText(n);
+        animate(copy, { opacity: 1, y: [8, 0], duration: 350, ease: 'outCubic' });
+      },
+    });
+    // A new animation on the playhead replaces the one still running.
+    moving = true;
+    playhead = animate(play, {
+      t: to,
+      duration,
+      ease: steps > 1 || wrap ? 'linear' : 'inOutQuad',
+      onUpdate: () => seekTo(play.t),
+      onComplete: () => {
+        if (id !== run) return;
+        if (wrap) seekTo(T);
+        moving = false;
+        startIdle();
+      },
+    });
+  }
+
+  const pick = (n: number) => {
+    autoplay = false;
+    window.clearTimeout(next);
+    if (n !== target) goTo(n);
+  };
+  const onPicture = () => pick(target >= 4 ? 1 : target + 1);
+  const onStep = (e: Event) => pick(stepButtons.indexOf(e.currentTarget as HTMLButtonElement) + 1);
+  const onKey = (e: KeyboardEvent) => {
+    const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    if (!dir) return;
+    e.preventDefault();
+    const n = Math.min(4, Math.max(1, (target || 1) + dir));
+    pick(n);
+    stepButtons[n - 1].focus();
+  };
+  picture.addEventListener('click', onPicture);
+  stepButtons.forEach((b) => b.addEventListener('click', onStep));
+  timeline.addEventListener('keydown', onKey);
+
+  // Autoplay starts when the section scrolls into view and pauses (with
+  // the idle motion) while it is off screen.
+  const io = new IntersectionObserver(
+    ([entry]) => {
+      visible = entry.isIntersecting;
+      if (!visible) {
+        window.clearTimeout(next);
+        stopIdle();
+        return;
+      }
+      if (target === 0 && autoplay) goTo(1);
+      else {
+        scheduleNext();
+        if (!moving) startIdle();
+      }
+    },
+    { threshold: 0.4 },
+  );
+  io.observe(root);
+
+  // Navigation is full page loads today; once view transitions are added
+  // this tears the section down before the swap.
+  document.addEventListener(
+    'astro:before-swap',
+    () => {
+      run++;
+      io.disconnect();
+      window.clearTimeout(next);
+      tl.cancel();
+      utils.remove([play, ...sways, fill, copy, scene]);
+      picture.removeEventListener('click', onPicture);
+      stepButtons.forEach((b) => b.removeEventListener('click', onStep));
+      timeline.removeEventListener('keydown', onKey);
+    },
+    { once: true },
+  );
+</script>

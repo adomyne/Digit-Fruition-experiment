@@ -1,0 +1,138 @@
+/* Mango cycle (vanilla + GSAP). GSAP owns every transform, opacity, stroke
+   draw and morph inside the stage; CSS only lays out the page.
+
+   Sandboxed: every rule sits inside [data-sandbox="08-mango-cycle-gsap"].
+   Values come only from tokens.css. */
+
+[data-sandbox="08-mango-cycle-gsap"] {
+  &, & *, & *::before, & *::after { box-sizing: border-box; }
+
+  & {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-4);
+    overflow: hidden;
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+    font-family: var(--font-sans);
+  }
+
+  .mc__frame {
+    width: min(100%, 68vh);
+    aspect-ratio: 1;
+    border-radius: var(--radius-panel);
+    outline: none;
+  }
+  .mc__frame:focus-visible { outline: 2px solid var(--color-on-ink); outline-offset: 4px; }
+  .mc__stage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: var(--color-accent);
+    fill: currentColor;
+  }
+
+  /* Stepper: four equal columns, the track runs from the first dot's
+     centre (12.5%) to the last (87.5%). --pos (0 to 3) is the playhead as a
+     step position, written by the script; the fill and the focus ring
+     follow it. */
+  .mc__stepper {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+    width: min(100%, 34rem);
+  }
+  .mc__steps {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .mc__track {
+    position: absolute;
+    top: calc(var(--control-height) / 2 - var(--bar-height) / 2);
+    left: 12.5%;
+    right: 12.5%;
+    height: var(--bar-height);
+    background: var(--color-gray);
+  }
+  .mc__track-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    transform: scaleX(calc(var(--pos) / 3));
+    transform-origin: left center;
+  }
+  .mc__focus {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--pos) / 3 * 100%);
+    width: var(--space-8);
+    height: var(--space-8);
+    border: var(--bar-height) solid var(--color-accent);
+    border-radius: var(--radius-full);
+    background: var(--color-ink);
+    transform: translate(-50%, -50%);
+  }
+  .mc__step {
+    position: relative; /* above the track */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-caption);
+    font: inherit;
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+  .mc__dot {
+    display: grid;
+    place-items: center;
+    width: var(--control-height);
+    height: var(--control-height);
+  }
+  .mc__dot::before {
+    content: '';
+    width: var(--space-3);
+    height: var(--space-3);
+    border-radius: var(--radius-full);
+    background: var(--color-on-ink);
+  }
+  .mc__step[aria-current] { color: var(--color-on-ink); font-weight: var(--weight-bold); }
+  .mc__step[aria-current] .mc__dot::before { background: var(--color-accent); }
+  .mc__step:hover { color: var(--color-on-ink); }
+  .mc__step:focus-visible { outline: none; }
+  .mc__step:focus-visible .mc__dot::before { outline: 2px solid var(--color-accent); outline-offset: var(--space-2); }
+
+  .mc__btn {
+    min-width: 5.5rem;
+    height: var(--control-height);
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-on-ink);
+    border-radius: var(--radius-full);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: var(--text-base);
+    cursor: pointer;
+  }
+  .mc__btn:hover { border-color: var(--color-accent); }
+  .mc__btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  .mc__live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

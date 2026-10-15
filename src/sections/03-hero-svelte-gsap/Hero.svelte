@@ -137,7 +137,7 @@
 
 {#snippet chevron()}<img src={chevronDown} width="14" height="14" alt="" />{/snippet}
 
-<div class="hero" data-sandbox="03-hero-svelte-gsap" bind:this={root}>
+<div class="hero" data-lab-part="Hero" bind:this={root}>
   <header class="hero__header">
     <div class="hero__brand">
       <a class="hero__logo" href="#top" aria-label="Digit Fruition home">
