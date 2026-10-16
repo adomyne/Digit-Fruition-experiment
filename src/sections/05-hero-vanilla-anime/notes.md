@@ -86,3 +86,39 @@ Reduced motion: hover and live mode jump straight to their end values instead of
 - Hero: nothing.
 - Process: no review by a second agent yet; motion timings are the
   brief's, not a designer's.
+
+## Results (Claude Code, 2026-10-16)
+Figma: concept 142:1466 (icon pool), overlay 142:1469. Files: `Results.astro`
+(markup + its own `<script>`), `Results.css`, `resultsPhysics.ts` (the
+physics), `assets/results-icons/` (the owner's four 90 x 90 icons, unedited)
+and `assets/results/coin.png` (the overlay's faded coin, Figma export).
+Mounted after `<Process />`; both parts mark `data-lab-part="Results"`.
+
+- Phase 1, icon pool: one viewport tall (`100dvh`), sticky. Scrolling down,
+  when the section's top reaches the middle of the screen, Anime.js
+  `animate()` glides the scroll so the section fills the screen, then the
+  scroll is held for 3 s (wheel, touch, keys and scrollbar put back) while
+  icons fall from the top. Once per page load; coming back, the pile stays.
+- Icon count fills 60% of the height (about 94 at 1440 x 900, 24 on a
+  phone). Each icon is a random one of the four shapes in a random one of
+  the two orange tokens (`--color-accent`, `--color-accent-light`): the SVG
+  is a CSS mask and the token color fills it, so the files stay as uploaded.
+- Physics is hand-written, no physics library (the stacks are compared on
+  their own tools): discs (radius 46) with gravity, bounce 0.5, friction and
+  spin, walls, and a ceiling once an icon is in. Grid broad phase, 4
+  substeps x 3 passes per frame. Anime.js `createTimer` is the clock; it
+  pauses off screen and when everything is at rest.
+- Drag, throw: pointer events on the icons (`touch-action: none`), the held
+  icon follows the pointer and pushes the others, release keeps its speed.
+  The pool has `data-lab-noswipe`.
+- Glow: every contact faster than 90 px/s makes the icon glow (a
+  `drop-shadow` in its own orange that fades over about 0.4 s); resting
+  contacts don't.
+- Phase 2: the overlay (white, 4 metric rows, note, audit button, coin at
+  10%) is in normal flow after the sticky pool, so it scrolls up over it.
+- Reduced motion: no glide or hold; the pile is settled off screen and
+  appears at rest, still draggable.
+- Cleanup on `astro:before-swap`: timer, glide, hold timeout, observers,
+  listeners.
+- Not done: other stacks (02-04) once this is approved; collider is a disc,
+  so the square Plus icon's corners can touch a neighbour slightly.

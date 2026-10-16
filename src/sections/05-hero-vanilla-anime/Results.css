@@ -1,0 +1,175 @@
+/* Results: icon pool (Figma 142:1466) and the results overlay (142:1469).
+   Sandboxed: every rule sits inside [data-sandbox="05-hero-vanilla-anime"].
+   Sizes in rem are the Figma px / 16. */
+
+[data-sandbox="05-hero-vanilla-anime"] {
+  .results {
+    position: relative;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+    color: var(--color-text);
+    background: var(--color-bg);
+  }
+
+  /* Phase 1: one full viewport (the stage is the viewport). It sticks to
+     the top while the overlay scrolls up over it. */
+  .results__pool {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--color-bg);
+  }
+
+  .results__title {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding: var(--space-16) var(--space-4) 0;
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-heading);
+    text-align: center;
+    pointer-events: none; /* falling icons stay grabbable behind the text */
+  }
+
+  .results__icons {
+    position: absolute;
+    inset: 0;
+    touch-action: pan-y; /* the page still scrolls over empty space */
+    user-select: none;
+  }
+
+  .results__icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5.625rem; /* 90px, every icon */
+    height: 5.625rem;
+    color: var(--color-accent);
+    cursor: grab;
+    touch-action: none;
+    will-change: transform;
+  }
+  .results__icon--light { color: var(--color-accent-light); }
+  .results__icon.is-held { z-index: 2; cursor: grabbing; }
+  /* Impact glow: a soft halo in the icon's own orange, fading with --glow. */
+  .results__icon.is-glowing {
+    filter: drop-shadow(0 0 calc(var(--glow, 0) * 1.5rem) color-mix(in srgb, currentColor 80%, transparent));
+  }
+
+  /* The uploaded SVG is the mask; the token color fills it. */
+  .results__shape {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: currentColor;
+    mask: var(--shape) center / contain no-repeat;
+  }
+
+  /* Phase 2: the overlay, one viewport or taller, slides up over the pool. */
+  .results__overlay {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: var(--space-35) var(--space-4) var(--space-21);
+    overflow: hidden;
+    box-sizing: border-box;
+    background: var(--color-bg);
+  }
+
+  .results__coin {
+    position: absolute;
+    top: -5.7694rem; /* -92.31px */
+    left: calc(50% + 5.5725rem); /* 809.16px at 1440 */
+    width: 66.586rem; /* 1065.38px */
+    height: auto;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .results__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5625rem; /* 41px */
+    width: 100%;
+    max-width: 65.3326rem; /* 1045.32px */
+  }
+
+  .results__metrics {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .results__metric {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    height: 11.875rem; /* 190px row: 189 + the 1px divider */
+    padding-bottom: 1.625rem; /* 26px */
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--color-accent-rule);
+  }
+  .results__metric:first-child { height: 7.9375rem; } /* 127px */
+
+  .results__value {
+    font-size: var(--text-h2);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-h2);
+    letter-spacing: var(--tracking-half);
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .results__label {
+    width: 15.75rem; /* 252px */
+    font-size: var(--text-h4);
+    line-height: var(--leading-heading);
+  }
+
+  .results__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .results__note {
+    max-width: var(--width-main);
+    margin: 0;
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    color: var(--color-accent);
+  }
+
+  .results__audit {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--control-height);
+    padding: 0 var(--space-5);
+    border-radius: var(--radius-sm);
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 40rem) {
+    .results__title { font-size: var(--text-xl); }
+    .results__overlay { padding-top: var(--space-16); padding-bottom: var(--space-16); }
+    .results__metric,
+    .results__metric:first-child { height: auto; padding-top: var(--space-8); }
+    .results__value { font-size: var(--text-h4); }
+    .results__label { width: 50%; font-size: var(--text-md); }
+  }
+}
