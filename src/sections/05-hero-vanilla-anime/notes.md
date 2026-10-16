@@ -46,9 +46,15 @@ What it does:
   instant, because the wheel holds a scroll that comes down onto it.
   Below 1081px the tabs and language button move into a burger panel; below
   641px the audit button does too.
-- **Success story popup:** slides up after 5s if the reader is still on the
-  hero. Leaving the hero first cancels it for good; leaving while it shows
-  slides it away for good (Escape too). Its button scrolls to Results.
+- **Success story popup:** slides up from below the screen after 5s if the
+  reader is still on the hero, and settles with an Anime.js
+  `spring({ bounce: 0.45, duration: 2000 })`: about 18px of overshoot at
+  ~1.2s on desktop, at rest by ~2s. Reduced motion shows it in place.
+  Leaving the hero first cancels it for good; leaving while it shows slides
+  it back down for good (Escape too). Its button scrolls to Results.
+  Owner's quieter version of 329:84 (2026-10-16): a 1360 × 80 bar, H5
+  numbers and title (21px), 16px bold label, 40px button; copy and button
+  split the free width 3 : 1 (763 : 288 in Figma).
 
 Not done / open:
 - The language button and Get a Free Audit go nowhere yet.

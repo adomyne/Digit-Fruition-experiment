@@ -486,7 +486,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-6);
-    padding: var(--space-4) var(--space-5) var(--space-4) var(--space-6);
+    padding: var(--space-1-75) var(--space-5) var(--space-1-75) var(--space-6);
     border: 1px solid var(--color-accent);
     border-radius: var(--radius-panel);
     background: var(--color-ink);
@@ -501,13 +501,13 @@
     flex: none;
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
   }
   .story__numbers {
     display: flex;
     align-items: center;
     gap: var(--space-2-5);
-    font-size: var(--text-h4);
+    padding: var(--space-1-5) var(--space-4) var(--space-1-5) 0;
+    font-size: var(--text-md);
     font-weight: var(--weight-bold);
     line-height: var(--leading-heading);
     white-space: nowrap;
@@ -523,9 +523,9 @@
   .story__label {
     color: var(--color-accent-light);
     opacity: 0.8;
-    font-size: var(--text-md);
-    font-weight: var(--weight-medium);
-    line-height: var(--leading-heading);
+    font-size: var(--text-base);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-body);
   }
   .story__divider {
     flex: none;
@@ -536,16 +536,19 @@
     justify-content: center;
   }
   .story__divider img { flex: none; transform: rotate(90deg); }
+  /* Figma gives the copy 763px and the button the rest (288px at 1360):
+     the copy grows three times as fast as the button. */
   .story__text {
-    flex: 1;
+    flex: 3 1 0;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
   }
   .story__title {
+    padding-block: var(--space-1-5);
     opacity: 0.8;
-    font-size: var(--text-h4);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
     line-height: var(--leading-heading);
   }
   .story__brand {
@@ -554,8 +557,8 @@
     line-height: var(--leading-body);
   }
   .story__cta {
-    flex: none;
-    align-self: stretch;
+    flex: 1 1 0;
+    height: var(--control-height);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -596,8 +599,7 @@
     }
     .story__divider { display: none; }
     .story__text { flex-basis: 16rem; }
-    .story__title { font-size: var(--text-md); }
-    .story__cta { flex: 1 0 100%; height: var(--control-height); }
+    .story__cta { flex: 1 0 100%; }
   }
 
   @media (max-width: 640px) {
@@ -633,9 +635,9 @@
       bottom: var(--space-16);
       padding: var(--space-3) var(--space-4);
     }
-    .story__numbers { font-size: var(--text-md); }
-    .story__label { font-size: var(--text-base); }
-    .story__title { font-size: var(--text-base); line-height: var(--leading-body); }
+    .story__numbers { font-size: var(--text-base); }
+    .story__label { font-size: var(--text-small); }
+    .story__title { padding-block: 0; font-size: var(--text-base); line-height: var(--leading-body); }
     .story__brand { font-size: var(--text-small); }
   }
 
