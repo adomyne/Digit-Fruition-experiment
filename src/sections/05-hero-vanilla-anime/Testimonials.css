@@ -1,0 +1,327 @@
+/* Testimonials (Figma 142:1589; second card 203:219). A two-card carousel:
+   the active card plays its video testimonial, the next one peeks in faded
+   on the right. Anime.js owns the slides' transform and opacity and the
+   thumbnails' opacity; CSS handles everything else.
+   Sandboxed: every rule sits inside [data-sandbox="05-hero-vanilla-anime"].
+   Sizes in rem are the Figma px / 16. */
+
+[data-sandbox="05-hero-vanilla-anime"] {
+  .tm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-12);
+    padding: var(--space-16) 0 var(--space-20);
+    overflow: hidden;
+    background: var(--color-accent);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+  }
+  .tm p, .tm h2, .tm blockquote { margin: 0; }
+
+  .tm__title {
+    font-size: var(--text-h2);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-h2);
+    letter-spacing: var(--tracking-wide);
+    text-align: center;
+  }
+
+  /* Every slide sits in the same grid cell; the script slides them sideways.
+     column-gap is the space between the active card and the peek (199px);
+     the script reads it, the grid itself has one column. */
+  .tm__track {
+    display: grid;
+    column-gap: var(--space-50);
+    width: 100%;
+    max-width: var(--width-page);
+    padding-left: var(--space-50);
+    touch-action: pan-y;
+  }
+  .tm__slide {
+    grid-area: 1 / 1;
+    position: relative;
+    width: 54.125rem; /* 866px */
+  }
+  .tm__card {
+    display: flex;
+    align-items: center;
+    gap: 1.1162rem; /* 17.86px */
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: linear-gradient(to bottom, var(--color-bg) 50.921%, var(--color-accent) 77.294%);
+  }
+  /* The faded card on the right is one big button. */
+  .tm__peek {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .tm__slide[data-rank="1"] .tm__peek { display: block; }
+  .tm__peek:focus-visible { outline: 0.125rem solid var(--color-text); outline-offset: var(--space-1); }
+
+  /* ---------- Video ---------- */
+  .tm__video {
+    position: relative;
+    flex-shrink: 0;
+    width: 20.8867rem; /* 334.19px */
+    height: 26.9811rem; /* 431.7px */
+    overflow: hidden;
+    background: var(--color-ink);
+    color: var(--color-on-accent);
+  }
+  .tm__media,
+  .tm__thumb {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .tm__media { cursor: pointer; }
+  .tm__thumb {
+    object-position: 50% 0;
+    background: var(--color-bg);
+    pointer-events: none;
+  }
+
+  /* The Figma caption line over the thumbnail; while the video plays it shows
+     the current subtitle in the same spot and style. */
+  .tm__caption {
+    position: absolute;
+    left: 2.72rem; /* 43.52px */
+    right: 2.72rem;
+    bottom: var(--space-7);
+    z-index: 2;
+    font-size: var(--text-caption-lg);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-heading);
+    text-align: center;
+    text-shadow: var(--shadow-cta);
+    pointer-events: none;
+    transition: translate var(--duration-base) var(--ease-out);
+  }
+  /* Subtitle cues are longer than the still caption: same style, smaller
+     and wider, keeping the cue's own line breaks (two lines of ~32 chars). */
+  .tm__video:is([data-state="playing"], [data-state="paused"]) .tm__caption {
+    left: var(--space-3);
+    right: var(--space-3);
+    font-size: var(--text-base);
+    white-space: pre-line;
+  }
+  .tm__caption:empty,
+  .tm__video[data-cc="off"][data-state="playing"] .tm__caption,
+  .tm__video[data-cc="off"][data-state="paused"] .tm__caption { display: none; }
+  /* Make room for the controls when they show. */
+  .tm__video:is(:hover, :focus-within, [data-ui="shown"], [data-state="paused"]):not([data-state="still"], [data-state="ended"]) .tm__caption {
+    translate: 0 calc(-1 * var(--space-8));
+  }
+
+  /* "Tap for sound": shown while the video plays muted. */
+  .tm__sound {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    z-index: 3;
+    display: none;
+    align-items: center;
+    gap: var(--space-1-5);
+    height: var(--space-8);
+    padding: 0 var(--space-3);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--color-ink) 70%, transparent);
+    color: inherit;
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+  }
+  .tm__video[data-state="playing"][data-muted="true"] .tm__sound { display: inline-flex; }
+
+  /* Play (when autoplay was blocked) and replay (after the end). */
+  .tm__big {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 3;
+    display: none;
+    place-items: center;
+    width: var(--space-16);
+    height: var(--space-16);
+    translate: -50% -50%;
+    border: 0;
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: var(--shadow-cta);
+    cursor: pointer;
+  }
+  .tm__video:is([data-state="ended"], [data-state="blocked"]) .tm__big { display: grid; }
+  .tm__big .tm__icon { width: var(--space-8); height: var(--space-8); }
+  .tm__video[data-state="ended"] .tm__icon--play,
+  .tm__video[data-state="blocked"] .tm__icon--replay { display: none; }
+
+  /* ---------- Controls: play/pause, sound, subtitles, progress ---------- */
+  .tm__controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-5) var(--space-2) var(--space-2);
+    background: linear-gradient(to top, color-mix(in srgb, var(--color-ink) 70%, transparent), transparent);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--duration-base) var(--ease-out), visibility var(--duration-base);
+  }
+  .tm__video:is(:hover, :focus-within, [data-ui="shown"], [data-state="paused"]):not([data-state="still"], [data-state="ended"], [data-state="blocked"]) .tm__controls {
+    opacity: 1;
+    visibility: visible;
+  }
+  .tm__btn {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: var(--space-8);
+    height: var(--space-8);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-full);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: var(--text-xs);
+    font-weight: var(--weight-bold);
+    cursor: pointer;
+  }
+  .tm__btn:hover { background: color-mix(in srgb, var(--color-on-accent) 18%, transparent); }
+  .tm__btn:focus-visible,
+  .tm__sound:focus-visible,
+  .tm__big:focus-visible { outline: 0.125rem solid var(--color-on-accent); outline-offset: 0.125rem; }
+  .tm__icon { width: var(--space-5); height: var(--space-5); fill: currentColor; }
+  .tm__icon--x { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+  /* Each two-state button holds both icons; the state picks one. */
+  .tm__video[data-state="playing"] [data-play] .tm__icon--play,
+  .tm__video:not([data-state="playing"]) [data-play] .tm__icon--pause,
+  .tm__video[data-muted="true"] [data-mute] .tm__icon--on,
+  .tm__video[data-muted="false"] [data-mute] .tm__icon--off { display: none; }
+
+  .tm__cc { border: 0.125rem solid currentColor; border-radius: var(--radius-sm); width: auto; height: auto; padding: 0 var(--space-1); margin-left: var(--space-1); }
+  .tm__video[data-cc="on"] .tm__cc { background: var(--color-on-accent); color: var(--color-ink); }
+
+  .tm__progress {
+    position: relative;
+    flex: 1;
+    height: var(--space-6);
+    margin: 0 var(--space-2);
+    cursor: pointer;
+    touch-action: none;
+  }
+  .tm__progress::before,
+  .tm__bar {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: var(--space-1);
+    translate: 0 -50%;
+    border-radius: var(--radius-full);
+  }
+  .tm__progress::before { background: color-mix(in srgb, var(--color-on-accent) 35%, transparent); }
+  .tm__bar {
+    background: var(--color-accent);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  .tm__progress:focus-visible { outline: 0.125rem solid var(--color-on-accent); border-radius: var(--radius-sm); }
+
+  /* ---------- Quote and byline ---------- */
+  .tm__details {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    justify-content: space-between;
+    width: 32.3125rem; /* 517px */
+    padding: var(--space-6) 0;
+  }
+  .tm__quote {
+    padding: 0 var(--space-12) 0 var(--space-6);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    text-align: center;
+  }
+  .tm__byline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-6);
+  }
+  .tm__who {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2-5);
+    text-align: center;
+  }
+  .tm__name {
+    font-size: var(--text-h4);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-heading);
+  }
+  .tm__role {
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+  }
+  .tm__logo {
+    position: relative;
+    width: 6.3766rem; /* 102.03px */
+    height: 4.25rem; /* 68px */
+    overflow: hidden;
+  }
+  .tm__logo-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: contain;
+  }
+  /* Figma crops the Ellington logo PNG inside its 102 x 68 box. */
+  .tm__logo-img--crop {
+    inset: auto;
+    top: -12.3%;
+    left: -19.2%;
+    width: 138.4%;
+    height: 124.59%;
+  }
+
+  /* ---------- Narrow screens: video above the quote ---------- */
+  @media (max-width: 64rem) {
+    .tm__title { font-size: var(--text-h3); }
+    .tm__track {
+      column-gap: var(--space-4);
+      padding-left: var(--space-4);
+    }
+    .tm__slide { width: min(20.8867rem, 100% - var(--space-12)); }
+    .tm__card {
+      flex-direction: column;
+      gap: 0;
+      background: linear-gradient(to bottom, var(--color-bg) 70%, var(--color-accent));
+    }
+    .tm__video { width: 100%; }
+    .tm__details { width: 100%; gap: var(--space-6); }
+    .tm__quote { padding: 0 var(--space-4); }
+    .tm__byline { padding: 0 var(--space-4); }
+  }
+}
