@@ -6,10 +6,14 @@
    Sizes in rem are the Figma px / 16. */
 
 [data-sandbox="05-hero-vanilla-anime"] {
+  /* Fills the screen (owner's call): the content sits in the middle. */
   .tm {
+    box-sizing: border-box;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: var(--space-12);
     padding: var(--space-16) 0 var(--space-20);
     overflow: hidden;
@@ -91,8 +95,8 @@
     pointer-events: none;
   }
 
-  /* The Figma caption line over the thumbnail; while the video plays it shows
-     the current subtitle in the same spot and style. */
+  /* Subtitle line: the spot and style of Figma's caption, shown only while
+     the video plays (the thumbnail cover has no text). */
   .tm__caption {
     position: absolute;
     left: 2.72rem; /* 43.52px */
@@ -107,7 +111,7 @@
     pointer-events: none;
     transition: translate var(--duration-base) var(--ease-out);
   }
-  /* Subtitle cues are longer than the still caption: same style, smaller
+  /* Subtitle cues are longer than Figma's caption line: same style, smaller
      and wider, keeping the cue's own line breaks (two lines of ~32 chars). */
   .tm__video:is([data-state="playing"], [data-state="paused"]) .tm__caption {
     left: var(--space-3);

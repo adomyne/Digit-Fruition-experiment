@@ -18,8 +18,6 @@ export interface Testimonial {
   videoFocus: string;
   thumb: string;
   thumbAlt: string;
-  /** The line over the thumbnail (Figma's caption). */
-  stillText: string;
   quote: string;
   name: string;
   role: string;
@@ -37,7 +35,6 @@ export const TESTIMONIALS: Testimonial[] = [
     videoFocus: '50% 72%',
     thumb: ellingtonThumb,
     thumbAlt: 'Jamal, founder of Ellington Pens',
-    stillText: "We've been working for the last 8 months",
     quote:
       '“We’ve been working with DigitFruition for 8 months, and they’ve transformed our entire PPC strategy. Our monthly revenue went from $70K to $195K, profit nearly tripled and our TACOS has come down. Nojus isn’t just clicking buttons — he’s a strategist, and that’s rare to find.”',
     name: 'Jamal',
@@ -53,7 +50,6 @@ export const TESTIMONIALS: Testimonial[] = [
     videoFocus: '50% 35%',
     thumb: elovateThumb,
     thumbAlt: 'Founder of Elovate',
-    stillText: 'Placeholder caption for the second video',
     quote:
       '“Placeholder quote for the second testimonial. The real copy will replace this text: what changed after working with DigitFruition, the numbers that moved, and what it was like to work together.”',
     name: 'Name Surname',

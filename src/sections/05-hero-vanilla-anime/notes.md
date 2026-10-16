@@ -244,8 +244,10 @@ Started from the `/6` reference part (copied, not imported).
   to switch; the old card leaves left and comes back as the peek.
   `data-lab-noswipe` on the track. The new card's video starts after the
   slide when the visitor has already watched one.
+- The section is at least one full screen tall (`min-height: 100dvh`, owner's
+  call, 2026-10-16), content centred in it.
 - Arrival: scrolling down, once per visit, when the section fills half the
-  screen the page glides 0.7 s to fit (centre) the section. 1.5 s later the
+  screen the page glides 0.7 s so the section fills the screen. 1.5 s later the
   active video plays muted; on `playing` the thumbnail fades out (0.6 s), so
   there is never a black frame. Scrolling up into it, a reload lower down or
   reduced motion: no glide, start 1.5 s after it fills half the screen.
@@ -253,9 +255,9 @@ Started from the `/6` reference part (copied, not imported).
   controls on hover, focus, tap or pause (play/pause, sound, thin seek bar,
   CC when subtitles exist); keeps playing when scrolled away; at the end the
   thumbnail returns with a replay button.
-- The Figma caption line shows over the thumbnail; while playing, the
-  current subtitle cue takes its spot and style (track mode `hidden`, cues
-  drawn by the script). Without a `.vtt` the caption hides while playing.
+- The thumbnail cover has no text (owner's call; Figma's caption line was
+  dropped). While playing, the current subtitle cue shows in that caption's
+  spot and style (track mode `hidden`, cues drawn by the script).
 - Videos: re-encoded H.264 + AAC mono, `+faststart`, CRF 26, max 900 kbps
   (Ellington 480 px wide, 4.9 MB; Elovate 360 px, 3.2 MB). `preload="none"`
   until the section is a screen away. Originals stay out of the repo.
