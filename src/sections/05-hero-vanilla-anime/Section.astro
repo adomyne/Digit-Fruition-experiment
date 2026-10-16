@@ -419,26 +419,9 @@ const acosTicks = ticks(axis.acosMax);
   const onLink = (e: MouseEvent) => {
     e.preventDefault();
     setOpen(false);
-    // A mouse or tap leaves no focus behind, so the menu can slide away.
-    if (e.detail > 0) (e.currentTarget as HTMLElement).blur();
     scrollToPart((e.currentTarget as HTMLElement).dataset.partLink ?? '');
   };
   const tabs = links.filter((a) => a.matches('.menu__tab, .menu__panel-link'));
-
-  // The menu stays at the top of the screen: scrolling down slides it
-  // away, scrolling up (or reaching the top) brings it back.
-  let lastY = page.scrollTop;
-  const pin = () => {
-    const y = page.scrollTop;
-    if (y <= menu.offsetHeight || y < lastY - 4) {
-      menu.removeAttribute('data-hidden');
-      lastY = y;
-    } else if (y > lastY + 4) {
-      if (!menu.hasAttribute('data-open') && !menu.contains(document.activeElement)) menu.setAttribute('data-hidden', '');
-      lastY = y;
-    }
-  };
-  const onMenuFocus = () => menu.removeAttribute('data-hidden');
 
   // The tab of the section under the menu is marked current.
   const spy = () => {
@@ -488,7 +471,6 @@ const acosTicks = ticks(axis.acosMax);
   let frame = 0;
   const onScroll = () => {
     if (storyState !== 'done' && offHero()) hideStory();
-    pin();
     if (!frame)
       frame = requestAnimationFrame(() => {
         frame = 0;
@@ -511,7 +493,6 @@ const acosTicks = ticks(axis.acosMax);
   plot.addEventListener('keydown', onPlotKey);
   plot.addEventListener('blur', onPlotLeave);
   burger.addEventListener('click', onBurger);
-  menu.addEventListener('focusin', onMenuFocus);
   links.forEach((a) => a.addEventListener('click', onLink));
   desktop.addEventListener('change', onDesktop);
   page.addEventListener('scroll', onScroll, { passive: true });
@@ -537,7 +518,6 @@ const acosTicks = ticks(axis.acosMax);
       plot.removeEventListener('keydown', onPlotKey);
       plot.removeEventListener('blur', onPlotLeave);
       burger.removeEventListener('click', onBurger);
-      menu.removeEventListener('focusin', onMenuFocus);
       links.forEach((a) => a.removeEventListener('click', onLink));
       desktop.removeEventListener('change', onDesktop);
       page.removeEventListener('scroll', onScroll);

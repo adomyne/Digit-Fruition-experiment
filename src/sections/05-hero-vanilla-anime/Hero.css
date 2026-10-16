@@ -19,19 +19,23 @@
     font-family: var(--font-sans);
   }
 
-  /* ---------- Menu (Figma: Menu 142:1074), pinned over the whole page ---------- */
+  /* ---------- Menu (Figma: Menu 142:1074), an overlay on the whole page ----------
+     Always on screen. The bar itself is see-through (Figma gives it no
+     fill) and lets presses through; only its controls float over the page.
+     Once the page scrolls they lift with a shadow. */
   .menu {
     position: sticky;
     top: 0;
     z-index: 20;
-    background: var(--color-bg);
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out);
+    pointer-events: none;
   }
-  .menu[data-scrolled] { border-bottom-color: var(--color-border); }
-  /* Scrolling down slides it away so it never covers the full-screen
-     sections (Ads, Results); any scroll up brings it back. */
-  .menu[data-hidden] { transform: translateY(-100%); }
+  .menu__tabs,
+  .menu__actions,
+  .menu__panel { pointer-events: auto; }
+  .menu__tabs,
+  .menu__actions > * { transition: box-shadow var(--duration-base) var(--ease-out); }
+  .menu[data-scrolled] .menu__tabs,
+  .menu[data-scrolled] .menu__actions > :not([hidden]) { box-shadow: var(--shadow-panel); }
 
   .menu__bar {
     max-width: var(--width-page);

@@ -36,9 +36,10 @@ What it does:
   highlights that line, dims the other line and card, and moves the dot onto
   the focused line. Pressing it again, or anywhere off the lines and cards,
   turns it off. A drag along the chart isn't a press.
-- **Menu:** sticky at the top of the page's scroll container. It slides away
-  when scrolling down (so it never covers the full-screen Ads and Results
-  parts) and comes back on any scroll up. Links scroll to the landing parts
+- **Menu:** an overlay that is always on screen (owner's call, 2026-10-16):
+  sticky at the top of the page's scroll container, with a see-through bar
+  that lets presses through, so only the tabs and buttons float over the
+  page (they lift with a shadow once it scrolls). Links scroll to the landing parts
   by `data-lab-part`: Home Hero, Services Ads, About Process, Resources
   Results, Contact Us the end of the page (no contact part yet). The tab of
   the part under the menu is marked current. A jump past the Ads wheel is
@@ -53,6 +54,7 @@ Not done / open:
 - The language button and Get a Free Audit go nowhere yet.
 - While Results holds the scroll for its icon drop (3.7s after arriving),
   menu clicks are ignored by Results' lock.
+- Over full-screen parts (Ads, Results) the menu covers their top corners.
 - `tokens.css` gained `--color-sales` and the chart, menu and popup sizes.
 
 ## Page structure
