@@ -1,4 +1,4 @@
-# 03 · Hero + Process · Svelte
+# 03 · Hero + Ads + Process · Svelte
 
 **Stack:** Svelte 5 islands + GSAP · **Status:** Hero done (learning-order step 3), Process in progress
 **Built by:** Claude Code (cloud), rebuilt from the baseline (02), not re-read from Figma.
@@ -66,3 +66,20 @@ Reduced motion: hover and live mode jump straight to their end values instead of
 - Hero: nothing.
 - Process: no review by a second agent yet; motion timings are the
   brief's, not a designer's.
+
+## Ads (Claude Code, 2026-10-16)
+Figma: Services Section `142:1216` (1440 x 700), keywords `301:15`, arrows
+`301:24`. Ported from page 5's behaviour (see 05's notes.md for the full
+spec): five spokes 72° apart on one wheel about (720, 899.35), 1 s
+in-out-quad turns counter-clockwise, spoke opacity = cos of its angle from
+the top, full-viewport section, keywords on the right (current one bold),
+arrows, autoplay 2 s hold / 1 s turn that the disc, an arrow or a keyword
+stops until a reload, a glow that drifts to a random spot each turn, and
+the one-time scroll hold (down past step 5 lets go for good). Files:
+`Ads.svelte`, `Ads.css` (copy of 05's, renamed sandbox), `adsCopy.ts` and
+`assets/ads/` (copies). Steps 1, 2, 4, 5 copy is placeholder.
+- Svelte 5 + GSAP: same GSAP code as 02 inside `onMount`; elements via
+  `bind:this`, the step is `$state`, everything GSAP writes every frame
+  stays in plain objects. `onclick` attributes, `style:--i`, keyed `{#each}`.
+- Cleanup: `onMount`'s return reverts the context (observer and
+  listeners) and kills the turn, the autoplay call and the tweens.

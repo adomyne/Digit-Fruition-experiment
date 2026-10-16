@@ -40,7 +40,7 @@ export const sections: Section[] = [
   },
   {
     id: '02-hero-react-gsap',
-    title: 'Hero + Process · React',
+    title: 'Hero + Ads + Process · React',
     stack: 'react',
     animation: 'gsap',
     figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
@@ -48,7 +48,7 @@ export const sections: Section[] = [
   },
   {
     id: '03-hero-svelte-gsap',
-    title: 'Hero + Process · Svelte',
+    title: 'Hero + Ads + Process · Svelte',
     stack: 'svelte',
     animation: 'gsap',
     figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
@@ -56,7 +56,7 @@ export const sections: Section[] = [
   },
   {
     id: '04-hero-vue-motion',
-    title: 'Hero + Process · Vue',
+    title: 'Hero + Ads + Process · Vue',
     stack: 'vue',
     animation: 'motion-v',
     figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',
@@ -64,7 +64,7 @@ export const sections: Section[] = [
   },
   {
     id: '05-hero-vanilla-anime',
-    title: 'Hero + Process · Vanilla',
+    title: 'Hero + Ads + Process · Vanilla',
     stack: 'vanilla',
     animation: 'animejs',
     figma: 'https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159',

@@ -132,3 +132,23 @@ keeping idle tweens off the elements the timeline animates.
 ## Unfinished
 - Process: no review by a second agent yet; no Figma frame for the
   animated version, so motion timings are the brief's, not a designer's.
+
+## Ads (Claude Code, 2026-10-16)
+Figma: Services Section `142:1216` (1440 x 700), keywords `301:15`, arrows
+`301:24`. Ported from page 5's behaviour (see 05's notes.md for the full
+spec): five spokes 72° apart on one wheel about (720, 899.35), 1 s
+in-out-quad turns counter-clockwise, spoke opacity = cos of its angle from
+the top, full-viewport section, keywords on the right (current one bold),
+arrows, autoplay 2 s hold / 1 s turn that the disc, an arrow or a keyword
+stops until a reload, a glow that drifts to a random spot each turn, and
+the one-time scroll hold (down past step 5 lets go for good). Files:
+`Ads.tsx`, `Ads.css` (copy of 05's, renamed sandbox), `adsCopy.ts` and
+`assets/ads/` (copies). Steps 1, 2, 4, 5 copy is placeholder.
+- React + GSAP: one `useEffect` with a `gsap.context`; GSAP tweens plain
+  objects (`{ angle }`, the glow) with `overwrite: true` and `onUpdate`
+  writes the wheel transform, spoke opacities and `gradientTransform` by
+  hand, so React re-renders only when the step changes (`useState`, for
+  `aria-current` and the bold keyword). Buttons reach the effect through an
+  `api` ref, as in Process. Ease `power1.inOut`; autoplay `delayedCall`.
+- Cleanup: `ctx.revert()` (observer and scroll/key listeners), the turn,
+  the autoplay call and `killTweensOf` on the plain objects.

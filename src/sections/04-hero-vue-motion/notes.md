@@ -1,4 +1,4 @@
-# 04 · Hero + Process · Vue
+# 04 · Hero + Ads + Process · Vue
 
 **Stack:** Vue 3 islands + Motion for Vue (`motion-v`) · **Status:** Hero done (learning-order step 3), Process in progress
 **Built by:** Claude Code (cloud), rebuilt from the baseline (02), not re-read from Figma.
@@ -91,3 +91,23 @@ with `[0.34, 1.56, 0.64, 1]` and `[0.3, 1.9, 0.55, 1]`.
 - Hero: nothing.
 - Process: no review by a second agent yet; motion timings are the
   brief's, not a designer's.
+
+## Ads (Claude Code, 2026-10-16)
+Figma: Services Section `142:1216` (1440 x 700), keywords `301:15`, arrows
+`301:24`. Ported from page 5's behaviour (see 05's notes.md for the full
+spec): five spokes 72° apart on one wheel about (720, 899.35), 1 s
+in-out-quad turns counter-clockwise, spoke opacity = cos of its angle from
+the top, full-viewport section, keywords on the right (current one bold),
+arrows, autoplay 2 s hold / 1 s turn that the disc, an arrow or a keyword
+stops until a reload, a glow that drifts to a random spot each turn, and
+the one-time scroll hold (down past step 5 lets go for good). Files:
+`Ads.vue`, `Ads.css` (copy of 05's, renamed sandbox), `adsCopy.ts` and
+`assets/ads/` (copies). Steps 1, 2, 4, 5 copy is placeholder.
+- Vue 3 + Motion for Vue: `animate(from, to, { onUpdate })` tweens the
+  angle `ref` and a `reactive` glow; the template derives the wheel
+  transform, each spoke's opacity and the gradient from them (no
+  `motion.*` components, so there is no hidden SSR state). Ease is the
+  cubic-bezier for in-out quad `[0.455, 0.03, 0.515, 0.955]`; autoplay is a
+  `setTimeout`. A `run` counter drops callbacks of superseded turns.
+- Cleanup: `onUnmounted` stops every `animate()` control, the timer, the
+  observer and the listeners.
