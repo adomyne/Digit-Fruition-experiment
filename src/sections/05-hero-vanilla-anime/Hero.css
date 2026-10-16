@@ -1,6 +1,7 @@
-/* Hero (no framework + Anime.js). Started as a copy of 02's Hero.css and
-   now belongs to this section only. Anime.js owns transforms and opacity on
-   every animated element; CSS only handles colors on hover.
+/* Page root, pinned menu, Hero and success story popup (no framework +
+   Anime.js). Figma: menu 142:1074, hero 142:1117, chart 142:1189, popup
+   329:84. Anime.js owns transforms and opacity on animated elements (line
+   drawing, the dot, the popup); CSS handles colors, focus mode and the menu.
 
    Sandboxed: every rule sits inside [data-sandbox="05-hero-vanilla-anime"], the
    section's root element, so nothing here can style another section and
@@ -11,14 +12,32 @@
 
   & {
     height: 100%;
-    overflow-y: auto; /* the stage is overflow: hidden; the hero scrolls itself */
+    overflow-y: auto; /* the stage is overflow: hidden; the page scrolls itself */
+    overflow-x: hidden; /* the Ads frame is wider than a phone; never scroll sideways */
     background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
   }
 
-  /* ---------- Header (Figma: Menu) ---------- */
-  .hero__header {
+  /* ---------- Menu (Figma: Menu 142:1074), an overlay on the whole page ----------
+     Always on screen. The bar itself is see-through (Figma gives it no
+     fill) and lets presses through; only its controls float over the page.
+     Once the page scrolls they lift with a shadow. */
+  .menu {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .menu__tabs,
+  .menu__actions,
+  .menu__panel { pointer-events: auto; }
+  .menu__tabs,
+  .menu__actions > * { transition: box-shadow var(--duration-base) var(--ease-out); }
+  .menu[data-scrolled] .menu__tabs,
+  .menu[data-scrolled] .menu__actions > :not([hidden]) { box-shadow: var(--shadow-panel); }
+
+  .menu__bar {
     max-width: var(--width-page);
     height: var(--header-height);
     margin: 0 auto;
@@ -28,137 +47,243 @@
     justify-content: space-between;
     gap: var(--space-5);
   }
-  .hero__brand {
-    display: flex;
-    align-items: center;
-    gap: var(--space-5);
-  }
 
-  /* Figma: a 158px logo frame with the 108x37 PNG inset 11.8px from the left. */
-  .hero__logo {
-    width: var(--logo-width);
-    padding-left: var(--space-3);
-    display: flex;
-  }
-
-  .hero__nav {
-    display: flex;
+  .menu__tabs {
     height: var(--control-height);
+    display: flex;
     border: 1px solid var(--color-divider);
+    border-radius: var(--radius-sm);
     background: var(--color-surface);
     overflow: hidden;
   }
-  .hero__nav-item {
-    min-width: var(--tab-width);
+  .menu__logo {
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-2);
+  }
+  /* Figma places the logo's three vector groups by percentage insets. */
+  .menu__logo-art {
+    position: relative;
+    width: var(--menu-logo-width);
+    height: var(--menu-logo-height);
+  }
+  .menu__logo-art img { position: absolute; }
+  .menu__logo-mark { top: 1.71%; left: 72.04%; width: 28.02%; height: 96.74%; }
+  .menu__logo-digit { top: 1.54%; left: 0.18%; width: 62.12%; height: 58.3%; }
+  .menu__logo-fruition { top: 77.38%; left: 0.18%; width: 58.47%; height: 20.52%; }
+
+  .menu__list {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .menu__tab {
+    width: var(--tab-width);
+    height: 100%;
     display: flex;
     align-items: center;
     padding: 0 var(--space-4);
+    border-left: 1px solid var(--color-divider);
     border-top: var(--bar-height) solid transparent;
     color: var(--color-ink);
-    font-size: var(--text-base);
-    line-height: var(--leading-h6);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    letter-spacing: var(--tracking-wide);
     text-decoration: none;
     white-space: nowrap;
-    transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+    transition: color var(--duration-fast) var(--ease-out), border-top-color var(--duration-base) var(--ease-out);
   }
-  .hero__nav-item + .hero__nav-item { border-left: 1px solid var(--color-divider); }
-  .hero__nav-item[aria-current='page'] { border-top-color: var(--color-accent-light); color: var(--color-text); }
-  .hero__nav-item:hover { color: var(--color-accent); }
+  .menu__list li { display: flex; }
+  .menu__tab--wide { width: var(--tab-width-wide); }
+  .menu__tab[aria-current] { border-top-color: var(--color-accent-light); color: var(--color-text); }
+  .menu__tab:hover { color: var(--color-accent); }
 
-  .hero__tools {
+  .menu__actions {
     display: flex;
     align-items: center;
     gap: var(--space-5);
   }
-  .hero__lang {
+  .menu__lang {
     height: var(--control-height);
     display: inline-flex;
     align-items: center;
     gap: var(--space-1-75);
     padding: 0 var(--space-3-5);
     border: 0;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-sm);
     background: var(--color-surface);
     color: var(--color-ink);
     font: inherit;
     font-size: var(--text-base);
-    line-height: var(--leading-h6);
+    line-height: var(--leading-body);
     cursor: pointer;
   }
-  .hero__audit {
+  .menu__audit {
     height: var(--control-height);
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-2);
     padding: 0 var(--space-5);
+    border: 1px solid var(--color-on-ink);
     border-radius: var(--radius-sm);
     background: var(--color-ink);
     color: var(--color-on-ink);
     font-size: var(--text-base);
-    line-height: var(--leading-h6);
+    line-height: var(--leading-body);
     text-decoration: none;
     white-space: nowrap;
     transition: background-color var(--duration-fast) var(--ease-out);
   }
-  .hero__audit:hover { background: var(--color-text); }
+  .menu__audit:hover { background: var(--color-text); }
 
-  /* ---------- Main (Figma: Hero Content) ---------- */
-  .hero__main {
-    max-width: var(--width-page);
-    margin: 0 auto;
-    padding: var(--space-16) var(--space-5) var(--space-16);
+  /* Burger and its panel: below 1081px only. */
+  .menu__burger {
+    width: var(--control-height);
+    height: var(--control-height);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    padding: 0;
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    cursor: pointer;
+  }
+  .menu__burger span {
+    width: var(--space-4);
+    height: calc(var(--space-1) / 2);
+    border-radius: var(--radius-full);
+    background: var(--color-ink);
+    transition: transform var(--duration-base) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
+  }
+  .menu[data-open] .menu__burger span:nth-child(1) { transform: translateY(calc(var(--space-1) * 1.5)) rotate(45deg); }
+  .menu[data-open] .menu__burger span:nth-child(2) { opacity: 0; }
+  .menu[data-open] .menu__burger span:nth-child(3) { transform: translateY(calc(var(--space-1) * -1.5)) rotate(-45deg); }
+
+  .menu__panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    padding: var(--space-2) var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg);
+    box-shadow: var(--shadow-elevation-3);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--space-2)));
+    transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out),
+      visibility 0s linear var(--duration-base);
+  }
+  .menu[data-open] .menu__panel {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s;
+  }
+  .menu__panel-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .menu__panel-link {
+    height: var(--control-height-lg);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-ink);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    text-decoration: none;
+  }
+  .menu__panel-link[aria-current] {
+    color: var(--color-text);
+    box-shadow: inset var(--bar-height) 0 0 var(--color-accent-light);
+  }
+  .menu__panel-link:hover { color: var(--color-accent); }
+  .menu__panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+  .menu__panel-actions .menu__lang { border: 1px solid var(--color-divider); }
+
+  /* ---------- Hero (Figma: Hero Section 142:1117) ---------- */
+  .hero {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: var(--space-5);
+    padding: 0 var(--space-5) var(--space-18);
     text-align: center;
   }
 
+  .hero__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+    padding: var(--space-11) 0;
+  }
   .hero__title {
-    min-height: var(--brand-height);
     margin: 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    column-gap: var(--space-7);
-    font-family: var(--font-display);
-    font-size: var(--text-display);
-    font-weight: var(--weight-medium);
-    line-height: var(--leading-h1);
+    column-gap: var(--space-3-5);
+    color: var(--color-ink);
+    font-size: var(--text-h2);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-h2);
+    letter-spacing: var(--tracking-wide);
   }
-  .hero__title-words { display: inline-flex; column-gap: 0.25em; }
-  .hero__title-word { display: inline-block; }
-
-  /* Figma sets the logo low in its 144px box so its wordmark shares the H1's
-     baseline; the drop reproduces that offset. */
-  .hero__amazon {
-    position: relative;
-    top: var(--brand-logo-drop);
-  }
-
+  .hero__title-accent { color: var(--color-accent); }
   .hero__sub {
     max-width: var(--width-copy);
-    margin: var(--space-21) 0 0;
+    margin: 0;
     color: var(--color-text-body);
-    font-family: var(--font-display);
     font-size: var(--text-md);
     font-weight: var(--weight-medium);
-    line-height: var(--leading-h5);
+    line-height: var(--leading-heading);
+  }
+
+  .hero__body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-10);
+  }
+
+  .hero__foot {
+    max-width: var(--width-copy);
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
   }
 
   .hero__cta {
-    margin-top: var(--space-11);
     height: var(--cta-height);
     display: inline-flex;
     align-items: center;
     gap: calc(var(--space-7) * 0.4); /* 11.2px */
     padding: 0 var(--space-7);
+    border: calc(var(--space-7) * 0.05) solid var(--color-on-accent); /* 1.4px */
     border-radius: var(--radius-md);
     background: var(--color-accent);
     color: var(--color-on-accent);
-    box-shadow: var(--shadow-cta);
+    box-shadow: var(--shadow-elevation-3);
     font-size: var(--text-lg);
-    line-height: var(--leading-h6);
+    line-height: var(--leading-button);
     text-decoration: none;
     white-space: nowrap;
     transition: background-color var(--duration-fast) var(--ease-out);
@@ -172,11 +297,13 @@
   }
   .hero__phone img { margin: calc(var(--icon-lg) * -0.1); flex: none; }
 
-  /* ---------- Chart (Figma: Performance Dashboard) ---------- */
+  /* ---------- Chart (Figma: Performance Dashboard 142:1135, Chart Data 142:1189) ---------- */
   .hero__chart {
     width: 100%;
-    max-width: var(--width-chart);
-    margin-top: var(--space-20);
+    max-width: var(--width-hero-chart);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
   }
 
   .hero__metrics {
@@ -187,70 +314,90 @@
   .hero__metric {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1-75);
-    padding: calc(var(--bar-height) + var(--space-1)) var(--space-3) var(--space-1);
+    gap: var(--space-2);
+    margin: 0;
+    padding: calc(var(--metric-bar) + var(--space-1-5)) var(--space-2) var(--space-1-5);
     border: 1px solid var(--color-border);
-    box-shadow: inset 0 var(--bar-height) 0 var(--bar, transparent);
-  }
-  .hero__metric--accent { --bar: var(--color-accent); }
-  .hero__metric--accent-light { --bar: var(--color-accent-light); }
-  .hero__metric-label {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2-5);
+    border-radius: 0;
+    background: var(--color-surface);
+    box-shadow: inset 0 var(--metric-bar) 0 var(--bar, transparent);
     color: var(--color-text);
-    font-size: var(--text-sm);
-    line-height: var(--leading-label);
+    font: inherit;
+    text-align: left;
+    transition: background-color var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
+  }
+  .hero__metric--sales { --bar: var(--color-sales); }
+  .hero__metric--acos { --bar: var(--color-accent-light); }
+  button.hero__metric { cursor: pointer; }
+  button.hero__metric:hover,
+  .hero__metric[aria-pressed='true'] { background: color-mix(in srgb, var(--bar) 10%, var(--color-surface)); }
+
+  .hero__metric-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    letter-spacing: var(--tracking-wide);
+    white-space: nowrap;
   }
   .hero__metric-value {
     font-size: var(--text-base);
     font-weight: var(--weight-bold);
-    line-height: var(--leading-h6);
-  }
-
-  .hero__graph {
-    margin-top: var(--space-6);
-    height: var(--chart-height);
-    display: grid;
-    grid-template-columns: var(--chart-axis-left) 1fr var(--chart-axis-right);
-    column-gap: var(--chart-gap);
-  }
-
-  /* Axis labels and gridlines share one box (the plot minus headroom and
-     foot) and the same tick positions, so each label sits centred on its line. */
-  .hero__axis,
-  .hero__plot-area {
-    position: absolute;
-    inset: var(--chart-headroom) 0 var(--chart-foot);
-  }
-  .hero__axis-col { position: relative; }
-  .hero__axis span,
-  .hero__grid i {
-    position: absolute;
-    top: calc((1 - var(--t) / 25) * 100%);
-    transform: translateY(-50%);
-  }
-  .hero__axis {
-    font-family: var(--font-display);
-    font-size: var(--text-md);
-    font-weight: var(--weight-medium);
-    line-height: var(--leading-h5);
+    line-height: var(--leading-body);
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
-  .hero__axis--left { color: var(--color-text-subtle); }
-  .hero__axis--left span { right: 0; }
+
+  /* Axis, plot and right axis in one row; the dates sit under the plot. */
+  .hero__graph {
+    display: grid;
+    grid-template-columns: auto 1fr var(--chart-axis-small);
+    grid-template-rows: var(--chart-plot-height) auto;
+    column-gap: var(--space-5);
+    row-gap: var(--space-4);
+    padding-top: var(--space-4);
+  }
+
+  /* Labels sit on their gridlines: both share the plot's inset box. */
+  .hero__axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--chart-plot-top) 0 var(--chart-plot-foot);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    letter-spacing: var(--tracking-wide);
+    white-space: nowrap;
+  }
+  .hero__axis span { height: 0; display: flex; align-items: center; }
+  .hero__axis--left { color: var(--color-text-subtle); text-align: right; }
+  .hero__axis--left span { justify-content: flex-end; }
   .hero__axis--right { color: var(--color-accent-soft); }
-  .hero__axis--right span { left: 0; }
 
   .hero__plot {
     position: relative;
-    overflow: hidden; /* the series start left of the plot, as in Figma */
+    overflow: hidden; /* lines above 25 run off the top, as in Figma */
     cursor: crosshair;
     touch-action: pan-y;
+    outline: none;
+  }
+  .hero__plot:focus-visible { box-shadow: 0 0 0 2px var(--color-accent); }
+  .hero__plot-area {
+    position: absolute;
+    inset: var(--chart-plot-top) 0 var(--chart-plot-foot);
   }
   .hero__grid { position: absolute; inset: 0; }
-  .hero__grid i { left: 0; right: 0; height: var(--chart-rule); background: var(--color-grid); }
-  .hero__grid i:first-child { background: var(--color-axis); }
+  .hero__grid i {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(var(--i) / var(--steps) * 100%);
+    height: var(--chart-grid-rule);
+    transform: translateY(-50%);
+    background: var(--color-grid);
+  }
+  .hero__grid i:last-child { background: var(--color-axis); }
 
   .hero__lines {
     position: absolute;
@@ -259,76 +406,173 @@
     height: 100%;
     overflow: visible;
   }
-  .hero__lines path {
+  .hero__line {
     fill: none;
-    stroke-width: 2;
-    stroke-linejoin: round;
+    stroke-width: var(--chart-line);
+    stroke-miterlimit: 16;
+    pointer-events: none;
+    transition: opacity var(--duration-base) var(--ease-out), stroke-width var(--duration-base) var(--ease-out);
   }
-  .hero__line--sales { stroke: var(--color-accent-light); }
+  .hero__line--sales { stroke: var(--color-sales); }
   .hero__line--acos { stroke: var(--color-accent); }
+  /* Wide invisible copies of the lines take the presses. */
+  .hero__hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: var(--space-4);
+    pointer-events: stroke;
+    cursor: pointer;
+  }
+
+  /* Focus mode: the pressed line stands out, the other one dims. */
+  .hero__chart[data-focus='sales'] .hero__line--sales,
+  .hero__chart[data-focus='acos'] .hero__line--acos { stroke-width: calc(var(--chart-line) * 1.75); }
+  .hero__chart[data-focus='sales'] .hero__line--acos,
+  .hero__chart[data-focus='acos'] .hero__line--sales { opacity: 0.2; }
+  .hero__chart[data-focus='sales'] .hero__metric--acos,
+  .hero__chart[data-focus='acos'] .hero__metric--sales { opacity: 0.45; }
 
   .hero__guide {
     position: absolute;
     top: 0;
-    bottom: var(--chart-foot);
-    width: var(--chart-guide);
-    margin-left: calc(var(--chart-guide) / -2);
+    bottom: 0;
+    left: calc(var(--x) * 100%);
+    width: var(--chart-line);
+    margin-left: calc(var(--chart-line) / -2);
     background: var(--color-guide);
     pointer-events: none;
   }
   .hero__dot {
     position: absolute;
-    width: var(--chart-dot);
-    height: var(--chart-dot);
-    margin: calc(var(--chart-dot) / -2) 0 0 calc(var(--chart-dot) / -2);
+    left: calc(var(--x) * 100%);
+    top: calc((1 - var(--y)) * 100%);
+    width: var(--chart-marker);
+    height: var(--chart-marker);
+    margin: calc(var(--chart-marker) / -2) 0 0 calc(var(--chart-marker) / -2);
     border-radius: var(--radius-full);
     background: var(--color-accent);
     pointer-events: none;
+    transition: background-color var(--duration-base) var(--ease-out);
   }
+  .hero__chart[data-focus='sales'] .hero__dot { background: var(--color-sales); }
 
   .hero__dates {
+    grid-column: 2;
     position: relative;
-    height: calc(var(--text-md) * var(--leading-label));
-    margin-top: var(--space-6);
+    height: calc(var(--text-base) * var(--leading-body));
     color: var(--color-text-faint);
-    font-size: var(--text-md);
-    line-height: var(--leading-label);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
   }
-  .hero__dates span { position: absolute; top: 0; white-space: nowrap; }
-  .hero__dates span:first-child { left: 0; }
-  .hero__dates span:nth-child(2) {
-    --plot-left: calc(var(--chart-axis-left) + var(--chart-gap));
-    --plot-width: calc(100% - var(--chart-axis-left) - var(--chart-axis-right) - 2 * var(--chart-gap));
-    left: calc(var(--plot-left) + var(--plot-width) * var(--at));
-    transform: translateX(-50%);
+  .hero__date {
+    position: absolute;
+    top: 0;
+    white-space: nowrap;
+    transition: opacity var(--duration-fast) var(--ease-out);
   }
-  .hero__dates span:last-child { right: 0; }
+  .hero__date--start { left: 0; }
+  .hero__date--end { right: 0; }
+  .hero__date--now { left: calc(var(--x) * 100%); transform: translateX(-50%); }
 
-  .hero__live {
-    margin-top: var(--space-6);
-    padding: 0;
-    background: none;
-    border: 0;
-    color: var(--color-accent);
-    font-family: var(--font-display);
+  /* ---------- Success story popup (Figma 329:84) ---------- */
+  .story {
+    position: fixed;
+    z-index: 30;
+    left: 0;
+    right: 0;
+    bottom: var(--space-16);
+    width: min(var(--width-popup), calc(100% - 2 * var(--space-5)));
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-4) var(--space-5) var(--space-4) var(--space-6);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-panel);
+    background: var(--color-ink);
+    box-shadow: var(--shadow-elevation-3);
+    color: var(--color-on-ink);
+    text-align: left;
+  }
+  .story[hidden] { display: none; }
+  .story p { margin: 0; }
+
+  .story__stat {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .story__numbers {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    font-size: var(--text-h4);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-heading);
+    white-space: nowrap;
+  }
+  .story__icons { display: flex; gap: var(--space-1); }
+  .story__arrow {
+    width: var(--icon-md);
+    height: var(--icon-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .story__label {
+    color: var(--color-accent-light);
+    opacity: 0.8;
     font-size: var(--text-md);
     font-weight: var(--weight-medium);
-    line-height: var(--leading-h5);
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
-    cursor: pointer;
+    line-height: var(--leading-heading);
   }
-
-  .hero__foot {
-    max-width: var(--width-copy);
-    /* Figma leads this text block with an empty line: one extra line height */
-    margin: calc(var(--space-6) * 2) 0 0;
-    color: var(--color-text-muted);
-    font-family: var(--font-display);
-    font-size: var(--text-md);
-    font-weight: var(--weight-regular);
-    line-height: var(--leading-h5);
+  .story__divider {
+    flex: none;
+    width: 0;
+    height: var(--space-16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+  .story__divider img { flex: none; transform: rotate(90deg); }
+  .story__text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .story__title {
+    opacity: 0.8;
+    font-size: var(--text-h4);
+    line-height: var(--leading-heading);
+  }
+  .story__brand {
+    color: var(--color-accent-light);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+  }
+  .story__cta {
+    flex: none;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: 0 var(--space-5);
+    border: 1px solid var(--color-on-accent);
+    border-radius: var(--radius-sm);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-size: var(--text-base);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-body);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .story__cta:hover { background: color-mix(in srgb, var(--color-accent) 88%, var(--color-text)); }
 
   & a:focus-visible,
   & button:focus-visible {
@@ -336,29 +580,66 @@
     outline-offset: 2px;
   }
 
-  /* ---------- Small screens ---------- */
-  @media (max-width: 1100px) {
-    .hero__nav { display: none; }
+  /* ---------- Smaller screens ---------- */
+  @media (max-width: 1080px) {
+    .menu__list,
+    .menu__bar .menu__lang { display: none; }
+    .menu__burger { display: flex; }
+    .menu__panel { display: block; }
   }
+
+  @media (max-width: 1000px) {
+    .story {
+      flex-wrap: wrap;
+      gap: var(--space-3) var(--space-5);
+      bottom: var(--space-12);
+    }
+    .story__divider { display: none; }
+    .story__text { flex-basis: 16rem; }
+    .story__title { font-size: var(--text-md); }
+    .story__cta { flex: 1 0 100%; height: var(--control-height); }
+  }
+
   @media (max-width: 640px) {
-    .hero__header { padding: 0 var(--space-4); }
-    .hero__lang { display: none; }
-    .hero__main { padding: var(--space-8) var(--space-4) var(--space-12); }
-    .hero__title { min-height: 0; flex-direction: column; row-gap: var(--space-2); }
-    .hero__amazon { top: 0; max-width: 60%; height: auto; }
-    .hero__sub { margin-top: var(--space-12); }
+    .menu__bar { padding: 0 var(--space-4); }
+    .menu__bar .menu__audit { display: none; }
+    .menu__panel { padding-inline: var(--space-4); }
+    .menu__panel-actions .menu__audit { flex: 1; }
+
+    .hero { padding: 0 var(--space-4) var(--space-12); }
+    .hero__intro { gap: var(--space-4); padding: var(--space-8) 0; }
+    .hero__title {
+      font-size: var(--text-h3);
+      line-height: var(--leading-heading);
+      column-gap: var(--space-2-5);
+    }
+    .hero__sub { font-size: var(--text-base); line-height: var(--leading-body); }
+    .hero__body { gap: var(--space-8); }
+
     .hero__metrics { grid-template-columns: repeat(2, 1fr); }
-    .hero__graph {
-      --chart-axis-left: var(--space-10);
-      --chart-axis-right: var(--space-8);
-      --chart-gap: var(--space-2);
-      height: 12rem;
+    .hero__graph { column-gap: var(--space-2); }
+    .hero__axis { font-size: var(--text-xs); }
+    .hero__dates { font-size: var(--text-small); }
+
+    .hero__cta {
+      height: var(--control-height-lg);
+      padding: 0 var(--space-5);
+      font-size: var(--text-base);
     }
-    .hero__dates {
-      --chart-axis-left: var(--space-10);
-      --chart-axis-right: var(--space-8);
-      --chart-gap: var(--space-2);
+    .hero__phone { width: var(--icon-md); height: var(--icon-md); }
+    .hero__phone img { width: calc(var(--icon-md) * 1.2); height: calc(var(--icon-md) * 1.2); margin: calc(var(--icon-md) * -0.1); }
+
+    .story {
+      bottom: var(--space-16);
+      padding: var(--space-3) var(--space-4);
     }
-    .hero__axis, .hero__dates { font-size: var(--text-sm); }
+    .story__numbers { font-size: var(--text-md); }
+    .story__label { font-size: var(--text-base); }
+    .story__title { font-size: var(--text-base); line-height: var(--leading-body); }
+    .story__brand { font-size: var(--text-small); }
+  }
+
+  @media (max-width: 380px) {
+    .hero__metric-label img:last-child { display: none; }
   }
 }
