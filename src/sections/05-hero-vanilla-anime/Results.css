@@ -53,10 +53,26 @@
   }
   .results__icon--light { color: var(--color-accent-light); }
   .results__icon.is-held { z-index: 2; cursor: grabbing; }
-  /* Impact glow: a soft halo in the icon's own orange, fading with --glow. */
-  .results__icon.is-glowing {
-    filter: drop-shadow(0 0 calc(var(--glow, 0) * 1.5rem) color-mix(in srgb, currentColor 80%, transparent));
+  /* Impact glow: a white-orange light over the icon, color-dodged so the
+     orange under it burns bright; it fades with --glow. */
+  .results__icon::after {
+    content: '';
+    position: absolute;
+    inset: -25%;
+    display: none;
+    border-radius: var(--radius-full);
+    background: radial-gradient(
+      closest-side,
+      var(--color-on-accent) 0%,
+      color-mix(in srgb, var(--color-on-accent) 45%, var(--color-accent-light)) 35%,
+      color-mix(in srgb, var(--color-accent-light) 60%, transparent) 65%,
+      transparent 100%
+    );
+    mix-blend-mode: color-dodge;
+    opacity: var(--glow, 0);
+    pointer-events: none;
   }
+  .results__icon.is-glowing::after { display: block; }
 
   /* The uploaded SVG is the mask; the token color fills it. */
   .results__shape {

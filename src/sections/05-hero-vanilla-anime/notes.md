@@ -111,8 +111,9 @@ Mounted after `<Process />`; both parts mark `data-lab-part="Results"`.
 - Drag, throw: pointer events on the icons (`touch-action: none`), the held
   icon follows the pointer and pushes the others, release keeps its speed.
   The pool has `data-lab-noswipe`.
-- Glow: every contact faster than 90 px/s makes the icon glow (a
-  `drop-shadow` in its own orange that fades over about 0.4 s); resting
+- Glow: every contact faster than 90 px/s makes the icon glow: a white-orange
+  radial light over it with `mix-blend-mode: color-dodge`, fading over
+  about 0.4 s; resting
   contacts don't.
 - Phase 2: the overlay (white, 4 metric rows, note, audit button) is in normal flow after the sticky pool, so it scrolls up over it.
 - Reduced motion: no glide or hold; the pile is settled off screen and
