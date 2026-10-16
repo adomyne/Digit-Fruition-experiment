@@ -94,21 +94,23 @@
 
   /* Phase 2: the overlay, one viewport or taller, slides up over the pool. */
   /* See-through: only the white card covers the pool, so icons stay
-     visible (and grabbable) around it. At rest the card's top sits so its
-     title slot lines up with the sticky title; it runs to the section's
-     bottom with no gap. */
+     visible (and grabbable) around it. The card's title slot sits as far
+     from the card's top as the title sits from the section's top, so the
+     card meets the title with its top edge at the top of the screen and
+     pushes it from there. It runs to the section's bottom with no gap. */
   .results__overlay {
     position: relative;
     z-index: 1;
     display: flex;
     justify-content: center;
     min-height: 100dvh;
-    padding: calc(var(--space-16) - var(--space-8)) var(--space-4) 0;
+    padding: 0 var(--space-4);
     box-sizing: border-box;
     pointer-events: none;
   }
 
-  /* Figma 142:1470: white, 32px / 60px padding, 10px gap. */
+  /* Figma 142:1470 (white, 60px sides, 10px gap), with the title's 64px
+     above and below the title slot by the owner's call. */
   .results__card {
     display: flex;
     flex-direction: column;
@@ -116,7 +118,7 @@
     gap: var(--space-2-5);
     width: 100%;
     max-width: calc(65.3326rem + 2 * 3.75rem); /* 1045.32px content + 60px sides */
-    padding: var(--space-8) 3.75rem;
+    padding: var(--space-16) 3.75rem var(--space-8);
     box-sizing: border-box;
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
     background: var(--color-bg);
@@ -125,7 +127,7 @@
 
   /* Same text and type as the title, hidden: it holds the title's place. */
   .results__slot {
-    margin: 0;
+    margin: 0 0 calc(var(--space-16) - var(--space-2-5)); /* 64px to the rows */
     font-size: var(--text-h3);
     line-height: var(--leading-heading);
     text-align: center;
