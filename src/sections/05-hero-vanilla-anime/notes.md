@@ -212,4 +212,9 @@ Started from the `/6` reference part (copied, not imported).
 - Narrow screens (≤ 64rem): video above the quote, small peek on the right.
 - Cleanup on `astro:before-swap`: animations, timers, observers, listeners,
   videos paused.
-- Not done: subtitles (`.vtt` per video, being transcribed); card 2 copy.
+- Subtitles: `videos/*.en.vtt`, transcribed by machine (Parakeet word timings,
+  checked against Whisper medium.en) and hand-corrected for names (Nojus,
+  Digit Fruition, TACoS, ACoS). Edit the text there to fix a word. Unsure:
+  "They dove into our artworks" (Elovate, 0:27). While playing the caption
+  drops to body size and widens so a two-line cue fits.
+- Not done: card 2 copy.

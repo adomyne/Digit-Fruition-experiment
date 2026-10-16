@@ -107,6 +107,14 @@
     pointer-events: none;
     transition: translate var(--duration-base) var(--ease-out);
   }
+  /* Subtitle cues are longer than the still caption: same style, smaller
+     and wider, keeping the cue's own line breaks (two lines of ~32 chars). */
+  .tm__video:is([data-state="playing"], [data-state="paused"]) .tm__caption {
+    left: var(--space-3);
+    right: var(--space-3);
+    font-size: var(--text-base);
+    white-space: pre-line;
+  }
   .tm__caption:empty,
   .tm__video[data-cc="off"][data-state="playing"] .tm__caption,
   .tm__video[data-cc="off"][data-state="paused"] .tm__caption { display: none; }

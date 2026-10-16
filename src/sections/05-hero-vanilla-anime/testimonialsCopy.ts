@@ -2,6 +2,8 @@
 // real thumbnail and logo but dummy text until the owner sends the copy.
 import ellingtonVideo from './videos/ellington-pens.mp4?url';
 import elovateVideo from './videos/elovate-testimonial.mp4?url';
+import ellingtonSubs from './videos/ellington-pens.en.vtt?url';
+import elovateSubs from './videos/elovate-testimonial.en.vtt?url';
 import ellingtonThumb from './assets/testimonials/thumb-ellington.webp?url';
 import elovateThumb from './assets/testimonials/thumb-elovate.webp?url';
 import ellingtonLogo from './assets/testimonials/logo-ellington.webp?url';
@@ -31,6 +33,7 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     id: 'ellington',
     video: ellingtonVideo,
+    subtitles: ellingtonSubs,
     videoFocus: '50% 72%',
     thumb: ellingtonThumb,
     thumbAlt: 'Jamal, founder of Ellington Pens',
@@ -46,6 +49,7 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     id: 'elovate',
     video: elovateVideo,
+    subtitles: elovateSubs,
     videoFocus: '50% 35%',
     thumb: elovateThumb,
     thumbAlt: 'Founder of Elovate',
