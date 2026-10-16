@@ -83,3 +83,31 @@ the one-time scroll hold (down past step 5 lets go for good). Files:
   stays in plain objects. `onclick` attributes, `style:--i`, keyed `{#each}`.
 - Cleanup: `onMount`'s return reverts the context (observer and
   listeners) and kills the turn, the autoplay call and the tweens.
+
+## Results (Claude Code, 2026-10-16)
+Figma: concept 142:1466 (icon pool), results card 142:1470. Same
+behaviour, numbers, layout and hand-written physics as page 5 (see
+05-hero-vanilla-anime/notes.md for the full spec); `resultsPhysics.ts`,
+`Results.css` and `assets/results-icons/` are copies, not imports.
+Mounted after Process with `client:visible={{ rootMargin: '100%' }}`, so
+the island loads only when the page is a screen away from it (well before
+the hold starts at the middle of the screen). Pool and overlay mark
+`data-lab-part="Results"`.
+- Svelte 5 + GSAP (`Results.svelte`): one `$state` for the icons, elements
+  via `bind:this`, keyed `{#each}`, `class:` and `style:--shape`. After
+  setting the icons it awaits Svelte's `tick()` before dropping. Same GSAP
+  clock (`gsap.ticker`), glide (`gsap.to` proxy in a `gsap.context`) and
+  release (`gsap.delayedCall`) as 02.
+- Cleanup: `onMount`'s return reverts the context, kills the delayed call,
+  removes the ticker callback, unlocks and removes observers and listeners.
+- Performance: the icon list is the only reactive state, set once when
+  the drop starts, so the framework renders the icons once (they wait above
+  the pool with `translate3d(0, -100%, 0)` until they fall). The physics and
+  every per-frame value live in plain objects and write `transform`,
+  `--glow` and `is-glowing` straight to the elements, skipping sleeping
+  icons. The clock runs only while the pool is on screen (an
+  IntersectionObserver) and stops once the pile has rested 45 frames.
+  Checked at 1440 x 900: 16.7 ms median frame during the drop, a settled
+  pile doesn't move, no errors; 390 x 844 too.
+- Hold: the scroller gets `overflow: hidden` + `scrollbar-gutter: stable`
+  for the 3 s, as the Ads hold does, plus wheel, touch and key blocking.

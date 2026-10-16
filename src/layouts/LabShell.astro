@@ -95,7 +95,9 @@ const next = `${base}/${index === total ? 1 : index + 1}`;
       const scrollerOf = (el) => {
         for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
           const { overflowY } = getComputedStyle(n);
-          if ((overflowY === 'auto' || overflowY === 'scroll') && n.scrollHeight > n.clientHeight) return n;
+          // 'hidden' too: a section can hold its scroll by hiding the overflow for
+          // a moment (the Ads and Results holds), and a rescan then must still find it.
+          if (['auto', 'scroll', 'hidden'].includes(overflowY) && n.scrollHeight > n.clientHeight) return n;
         }
         return null;
       };

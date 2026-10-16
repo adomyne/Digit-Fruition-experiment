@@ -152,3 +152,33 @@ the one-time scroll hold (down past step 5 lets go for good). Files:
   `api` ref, as in Process. Ease `power1.inOut`; autoplay `delayedCall`.
 - Cleanup: `ctx.revert()` (observer and scroll/key listeners), the turn,
   the autoplay call and `killTweensOf` on the plain objects.
+
+## Results (Claude Code, 2026-10-16)
+Figma: concept 142:1466 (icon pool), results card 142:1470. Same
+behaviour, numbers, layout and hand-written physics as page 5 (see
+05-hero-vanilla-anime/notes.md for the full spec); `resultsPhysics.ts`,
+`Results.css` and `assets/results-icons/` are copies, not imports.
+Mounted after Process with `client:visible={{ rootMargin: '100%' }}`, so
+the island loads only when the page is a screen away from it (well before
+the hold starts at the middle of the screen). Pool and overlay mark
+`data-lab-part="Results"`.
+- React + GSAP (`Results.tsx`): one `useState` for the icons; the engine
+  sits in one `useEffect` with refs (callback refs fill the icon array).
+  The physics clock is `gsap.ticker.add/remove`; the glide is a `gsap.to`
+  on a proxy (`power3.out`, 0.7 s) inside a `gsap.context`; the release
+  is `gsap.delayedCall(3)`. Pointer handlers reach the effect through an
+  `api` ref.
+- Cleanup: the effect's return reverts the context, kills the delayed
+  call, removes the ticker callback, unlocks the scroll and removes the
+  observers and listeners.
+- Performance: the icon list is the only reactive state, set once when
+  the drop starts, so the framework renders the icons once (they wait above
+  the pool with `translate3d(0, -100%, 0)` until they fall). The physics and
+  every per-frame value live in plain objects and write `transform`,
+  `--glow` and `is-glowing` straight to the elements, skipping sleeping
+  icons. The clock runs only while the pool is on screen (an
+  IntersectionObserver) and stops once the pile has rested 45 frames.
+  Checked at 1440 x 900: 16.7 ms median frame during the drop, a settled
+  pile doesn't move, no errors; 390 x 844 too.
+- Hold: the scroller gets `overflow: hidden` + `scrollbar-gutter: stable`
+  for the 3 s, as the Ads hold does, plus wheel, touch and key blocking.
