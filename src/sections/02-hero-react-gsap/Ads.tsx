@@ -166,8 +166,16 @@ export default function Ads() {
         const gap = Math.max(0, (scroller.clientHeight - el.offsetHeight) / 2);
         return el.getBoundingClientRect().top - scroller.getBoundingClientRect().top - gap;
       };
+      // While held, the scroller stops scrolling natively: an in-flight smooth
+      // wheel scroll or touch fling would otherwise keep moving the page past
+      // the section while the wheel turns. The gutter keeps the width steady.
+      const lock = (on: boolean) => {
+        scroller.style.overflow = on ? 'hidden' : '';
+        scroller.style.scrollbarGutter = on ? 'stable' : '';
+      };
       const hold = (o: number) => {
         held = true;
+        lock(true);
         pending = 0;
         scroller.scrollTop += o;
         heldAt = scroller.scrollTop;
@@ -176,6 +184,7 @@ export default function Ads() {
       };
       const release = (finished: boolean) => {
         held = false;
+        lock(false);
         done = finished;
         pending = 0;
         scheduleNext();
@@ -268,6 +277,7 @@ export default function Ads() {
 
       return () => {
         io.disconnect();
+        lock(false);
         scroller.removeEventListener('wheel', onWheel);
         scroller.removeEventListener('scroll', onScroll);
         scroller.removeEventListener('touchstart', onTouchStart);
