@@ -78,6 +78,9 @@ const METRICS = [
   const root = document.querySelector<HTMLElement>('[data-results]')!;
   const scroller = root.closest<HTMLElement>('[data-sandbox]')!;
   const layer = root.querySelector<HTMLElement>('.results__icons')!;
+  const titleBar = root.querySelector<HTMLElement>('.results__title')!;
+  const titleText = titleBar.querySelector<HTMLElement>('span')!;
+  const slot = root.querySelector<HTMLElement>('.results__slot')!;
   const shapes: string[] = JSON.parse(layer.dataset.shapes!);
 
   const world: World = { bodies: [], width: layer.clientWidth, height: layer.clientHeight };
@@ -216,6 +219,16 @@ const METRICS = [
     wake();
   };
 
+  // ---------- Title ----------
+  // The title is sticky; once the card's hidden copy (the slot) has risen
+  // to it, the title moves with the slot, so it rides on the card instead
+  // of covering the card's content.
+  const followCard = () => {
+    const pinned = titleBar.getBoundingClientRect().top + parseFloat(getComputedStyle(titleText).paddingTop);
+    const shift = Math.min(0, slot.getBoundingClientRect().top - pinned);
+    titleText.style.transform = shift ? `translateY(${shift}px)` : '';
+  };
+
   // ---------- Scroll hijack ----------
   // Coming down, when the section's top reaches the middle of the screen,
   // the scroll glides it to the top of the viewport and holds there for
@@ -266,6 +279,7 @@ const METRICS = [
   };
 
   const onScroll = () => {
+    followCard();
     const top = scroller.scrollTop;
     if (locked) {
       // Keys, scrollbar drags and touch momentum: put the scroll back.
@@ -310,6 +324,7 @@ const METRICS = [
     world.width = layer.clientWidth;
     world.height = layer.clientHeight;
     wakeAll(world);
+    followCard();
     wake();
   });
   ro.observe(layer);

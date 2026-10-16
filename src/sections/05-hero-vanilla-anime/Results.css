@@ -21,8 +21,9 @@
     background: var(--color-bg);
   }
 
-  /* The title sticks to the top for the whole section, above the pool and
-     the overlay card. It takes no height, so the pool starts at the top. */
+  /* The title sticks to the top above the pool, takes no height (the pool
+     starts at the top), and once the card's title slot reaches it, rides
+     on the card: the script moves the span with the slot. */
   .results__title {
     position: sticky;
     top: 0;
@@ -38,6 +39,7 @@
   .results__title > span {
     display: block;
     padding: var(--space-16) var(--space-4) 0;
+    will-change: transform;
   }
 
   .results__icons {
@@ -93,14 +95,15 @@
   /* Phase 2: the overlay, one viewport or taller, slides up over the pool. */
   /* See-through: only the white card covers the pool, so icons stay
      visible (and grabbable) around it. At rest the card's top sits so its
-     title slot lines up with the sticky title. */
+     title slot lines up with the sticky title; it runs to the section's
+     bottom with no gap. */
   .results__overlay {
     position: relative;
     z-index: 1;
     display: flex;
     justify-content: center;
     min-height: 100dvh;
-    padding: calc(var(--space-16) - var(--space-8)) var(--space-4) var(--space-8);
+    padding: calc(var(--space-16) - var(--space-8)) var(--space-4) 0;
     box-sizing: border-box;
     pointer-events: none;
   }
@@ -115,6 +118,7 @@
     max-width: calc(65.3326rem + 2 * 3.75rem); /* 1045.32px content + 60px sides */
     padding: var(--space-8) 3.75rem;
     box-sizing: border-box;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
     background: var(--color-bg);
     pointer-events: auto;
   }

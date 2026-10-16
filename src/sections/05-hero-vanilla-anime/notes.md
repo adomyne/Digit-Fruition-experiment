@@ -94,10 +94,12 @@ Figma: concept 142:1466 (icon pool), results card 142:1470. Files:
 four 90 x 90 icons, unedited). Mounted after `<Process />`; pool and
 overlay both mark `data-lab-part="Results"`.
 
-- Title: "Results That Speak For Themselves" is sticky for the whole
-  section (zero height, above pool and card), so it stays on screen while
-  the overlay comes up. The card holds its place with a hidden copy, as
-  Figma does, and at rest the two line up (checked at 1440 and 390 wide).
+- Title: "Results That Speak For Themselves" is sticky (zero height, above
+  pool and card), so it stays on screen while the card comes up. The card
+  holds its place with a hidden copy, as Figma does (0% opacity there).
+  Once that slot reaches the title, the script moves the title with it, so
+  the title rides on the card instead of covering its content (checked at
+  1440 and 390 wide).
 - Phase 1, icon pool: one viewport tall (`100dvh`), sticky. Scrolling down,
   when the section's top reaches the middle of the screen, Anime.js
   `animate()` glides the scroll so the section fills the screen, then the
@@ -126,8 +128,10 @@ overlay both mark `data-lab-part="Results"`.
   radial light over it with `mix-blend-mode: color-dodge`, fading over
   about 0.4 s; resting contacts don't.
 - Phase 2, overlay: see-through. Only the white card (142:1470: 32 / 60 px
-  padding, 4 metric rows, note, audit button) covers the pool, so icons stay
-  visible and grabbable around it; it scrolls up over the sticky pool. The
+  padding, 4 px radius on the top corners only, 4 metric rows, note, audit
+  button) covers the pool, so icons stay visible and grabbable around it;
+  it scrolls up over the sticky pool and runs to the section's bottom with
+  no gap. The
   faded coin from Figma is left out by the owner's call.
 - Reduced motion: no glide or hold; the pile is settled off screen and
   appears at rest, still draggable.
