@@ -116,6 +116,10 @@ and Process.
 - The section fills the viewport (`min-height: 100%` of the page's scroll
   container); the 1440 x 700 frame is centred in it and the disc runs on
   below the frame.
+- Under the pinned menu (owner, 2026-10-16): the heading and the keyword
+  column sit 57px lower than in Figma (`--ads-drop` = menu height + 20px -
+  48px), so the title starts 20px below the menu even on viewports 700px or
+  shorter. The wheel, disc and arrows keep Figma's places.
 - Five services are spokes 72° apart on one wheel that turns about
   (720, 899.35), the disc's centre line under the number. The disc stays
   still (Figma puts its centre at x 711.86, 8px off; the spokes use 720 so
