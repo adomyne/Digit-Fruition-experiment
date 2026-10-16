@@ -33,6 +33,11 @@
   }
 
   .ads__frame {
+    /* The pinned menu (85px) covers the top of the section while the wheel
+       holds it, so the heading and the keyword column sit lower than in
+       Figma: the title starts 20px under the menu even when the frame is at
+       the section's top (viewports 700px or shorter). */
+    --ads-drop: calc(var(--header-height) + var(--space-5) - var(--space-12));
     position: relative;
     flex: none;
     width: var(--width-page);
@@ -44,7 +49,7 @@
     flex-direction: column;
     align-items: center;
     gap: var(--space-4);
-    padding: var(--space-12) 0 var(--space-10);
+    padding: calc(var(--space-12) + var(--ads-drop)) 0 var(--space-10);
     text-align: center;
     white-space: nowrap;
   }
@@ -144,7 +149,7 @@
   .ads__keywords {
     position: absolute;
     left: 78.75rem; /* 1260px */
-    top: 3.4125rem; /* 54.6px */
+    top: calc(3.4125rem + var(--ads-drop)); /* Figma 54.6px, dropped below the menu */
     display: flex;
     flex-direction: column;
     align-items: center;
