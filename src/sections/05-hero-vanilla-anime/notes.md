@@ -1,32 +1,65 @@
 # 05 · Hero + Ads + Process · Vanilla
 
-**Stack:** no framework (Astro markup + bundled scripts) + Anime.js v4 · **Status:** Hero done (learning-order step 3), Process in progress
-**Built by:** Claude Code (cloud), rebuilt from the baseline (02), not re-read from Figma.
+**Stack:** no framework (Astro markup + bundled scripts) + Anime.js v4 · **Status:** Hero rebuilt from Figma 142:1117 with a live chart (2026-10-16), Process in progress
+**Built by:** Claude Code (cloud). The first hero was a port of the baseline (02); the 2026-10-16 hero is page 5's own, read from Figma.
 
 **Figma:** [Digit Fruition, node 60:159](https://www.figma.com/design/1mAbYyy2SEhAwcMuZqXBNL/Digit-Fruition?node-id=60-159)
 
-## What's built
-The baseline hero as static Astro markup with one `<script>` that Vite bundles.
-It has its own copies of 02's `Hero.css`, `chartData.ts` and `assets/`, so only the
-runtime differs. At 1440px the settled page matches 02's screenshot pixel for
-pixel apart from the corner label.
+## Hero and menu (Claude Code, 2026-10-16)
+Figma: Menu `142:1074`, Hero Section `142:1117`, Chart Data `142:1189`
+(inside Chart Marker `142:1188`), success story popup `329:84`. Files:
+`Section.astro` (markup + one `<script>`), `Hero.css`, `heroChart.json`
+(the data), `heroChart.ts` (reads the JSON, formats, paths),
+`assets/hero/`, `assets/popup/`.
 
-- Intro: one `createTimeline` inside a `createScope` (with a
-  reduced-motion media query that skips it). Start states are set up front with
-  `utils.set` so late elements stay hidden from the first frame, as GSAP's
-  `from()` does. Lines draw with `svg.createDrawable`.
-- Hover: `animate()` on a plain object with `composition: 'replace'`.
-- Live mode: `animate()` on a mix value per tick; the button toggles
-  `aria-pressed` and its label by hand.
-- Cleanup: navigation is full page loads, so the page unload tears it down; an
-  `astro:before-swap` listener reverts the scope, cancels live mode and
-  removes the listeners for when view transitions arrive.
+What it does:
+- **Data:** `heroChart.json` has one row per day (`date`, `spend`, `sales`,
+  `acos`, `impressions`), the resting day (`defaultDate`) and the axis tops
+  (`salesMax` 25000, `acosMax` 25, `steps` 5). The x axis runs from the
+  first row to the last. Replace the file with real rows to change the chart.
+- **Dummy data:** traced from the Figma vector. Its visible window is the
+  plot (690px) centred on the dot, at path x 288 to 978; gridlines at y
+  41.26 (25) to 199.26 (0), 6.32px per unit. Each vertex snaps to its
+  nearest day, days between are interpolated. ACOS is shifted up 4.2 units
+  (Figma's line dips below 0%); the Figma lines stop at 81% of the plot, so
+  Dec 15 to Dec 29 are hand-made. Sales above 25K runs off the top, as in
+  Figma (not rescaled, by the owner's call).
+- **Load:** the chart frame is there from the first frame; the two lines
+  draw in (`svg.createDrawable`, 1.6s), the four cards count up from 0 to
+  the resting day's values, and the dot pops onto the ACOS line.
+- **Timeline:** the guide snaps from day to day under the pointer (or a
+  finger dragged sideways; arrow keys when the plot has focus). The date
+  under it and all four cards change with the day. Leaving the plot slides
+  the guide back to Dec 02. The first and last dates step aside when the
+  moving date reaches them.
+- **Focus mode:** pressing a line (a 16px invisible hit path) or its card
+  highlights that line, dims the other line and card, and moves the dot onto
+  the focused line. Pressing it again, or anywhere off the lines and cards,
+  turns it off. A drag along the chart isn't a press.
+- **Menu:** sticky at the top of the page's scroll container. It slides away
+  when scrolling down (so it never covers the full-screen Ads and Results
+  parts) and comes back on any scroll up. Links scroll to the landing parts
+  by `data-lab-part`: Home Hero, Services Ads, About Process, Resources
+  Results, Contact Us the end of the page (no contact part yet). The tab of
+  the part under the menu is marked current. A jump past the Ads wheel is
+  instant, because the wheel holds a scroll that comes down onto it.
+  Below 1081px the tabs and language button move into a burger panel; below
+  641px the audit button does too.
+- **Success story popup:** slides up after 5s if the reader is still on the
+  hero. Leaving the hero first cancels it for good; leaving while it shows
+  slides it away for good (Escape too). Its button scrolls to Results.
+
+Not done / open:
+- The language button and Get a Free Audit go nowhere yet.
+- While Results holds the scroll for its icon drop (3.7s after arriving),
+  menu clicks are ignored by Results' lock.
+- `tokens.css` gained `--color-sales` and the chart, menu and popup sizes.
 
 ## Page structure
 `Section.astro` is the sandbox root (`data-sandbox`) and the page's scroll
-container; it holds the Hero markup and then `<Process />`, in landing page
-order. Each marks itself with `data-lab-part` (`Hero`, `Process`), so the
-registry has no `part`.
+container; it holds the menu, the Hero markup, then `<Ads />`,
+`<Process />` and `<Results />`, in landing page order, and the popup. Each
+part marks itself with `data-lab-part`, so the registry has no `part`.
 
 ## Process (Claude Code, 2026-10-15)
 Built from `docs/briefs/process/brief.md`, ported from 02's `Process.tsx`.

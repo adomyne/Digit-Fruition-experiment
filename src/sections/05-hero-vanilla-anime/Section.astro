@@ -1,7 +1,7 @@
 ---
-// Stack page 5: no framework + Anime.js v4. The Hero (learning-order step 3,
-// same markup, CSS, assets, chart data and motion spec as the baseline 02)
-// and the Process section (Process.astro), in landing page order. Astro
+// Stack page 5: no framework + Anime.js v4. The pinned menu, the Hero
+// (Figma 142:1117: an interactive Sales/ACOS chart fed by heroChart.json)
+// and the Ads, Process and Results sections, in landing page order. Astro
 // renders the markup at build time; bundled <script>s animate it. The
 // wrapper is the sandbox root and the page's scroll container; each landing
 // section marks itself with data-lab-part. See notes.md.
@@ -10,52 +10,210 @@ import './Hero.css';
 import Ads from './Ads.astro';
 import Process from './Process.astro';
 import Results from './Results.astro';
-import { AXIS_TICKS, HIGHLIGHT_X, acos, metrics, sales, toPath } from './chartData';
-import dfLogo from './assets/df-logo.png?url';
-import amazonLogo from './assets/amazon-logo.svg?url';
-import globe from './assets/globe.svg?url';
+import {
+  METRICS,
+  acosTick,
+  axis,
+  days,
+  defaultIndex,
+  formatDate,
+  level,
+  linePath,
+  salesTick,
+  ticks,
+  xOf,
+} from './heroChart';
+import logoMark from './assets/hero/logo-mark.svg?url';
+import logoDigit from './assets/hero/logo-digit.svg?url';
+import logoFruition from './assets/hero/logo-fruition.svg?url';
+import globe from './assets/hero/globe.svg?url';
 import chevronDown from './assets/chevron-down.svg?url';
+import chevronSmall from './assets/hero/chevron-small.svg?url';
+import infoCircle from './assets/hero/info-circle.svg?url';
 import download from './assets/download.svg?url';
-import infoCircle from './assets/info-circle.svg?url';
 import phoneCall from './assets/phone-call.svg?url';
+import grow from './assets/popup/grow.svg?url';
+import graphArrow from './assets/popup/graph-arrow.svg?url';
+import storyDivider from './assets/popup/divider.svg?url';
+import arrowRight from './assets/popup/arrow-right.svg?url';
 
-const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
+/** Menu links and the landing section each scrolls to (its data-lab-part).
+ *  Contact Us has no section on this page yet, so it goes to the end. */
+const NAV = [
+  { label: 'Home', part: 'Hero' },
+  { label: 'Services', part: 'Ads' },
+  { label: 'About', part: 'Process' },
+  { label: 'Resources', part: 'Results' },
+  { label: 'Contact Us', part: '' },
+];
+
+/** The success story popup (Figma 329:84). */
+const STORY = {
+  from: '$40K',
+  to: '$75K',
+  label: 'Latest success story',
+  title: 'Scaled monthly revenue while improving profit and TACOS.',
+  brand: 'US-Based Amazon CPG Brand',
+  cta: 'View Case Studies',
+  part: 'Results',
+};
+
+const rest = days[defaultIndex];
+const restX = xOf(defaultIndex);
+const salesTicks = ticks(axis.salesMax);
+const acosTicks = ticks(axis.acosMax);
 ---
 
 <div class="page" data-sandbox="05-hero-vanilla-anime">
-  <div class="hero" data-hero data-lab-part="Hero">
-    <header class="hero__header">
-      <div class="hero__brand">
-        <a class="hero__logo" href="#top" aria-label="Digit Fruition home">
-          <img src={dfLogo} width="108" height="37" alt="Digit Fruition" />
+  <header class="menu" data-menu>
+    <div class="menu__bar">
+      <nav class="menu__tabs" aria-label="Main">
+        <a class="menu__logo" href="#top" data-part-link="Hero" aria-label="Digit Fruition home">
+          <span class="menu__logo-art">
+            <img class="menu__logo-mark" src={logoMark} width="24.37" height="24.18" alt="" />
+            <img class="menu__logo-digit" src={logoDigit} width="54.05" height="14.57" alt="" />
+            <img class="menu__logo-fruition" src={logoFruition} width="50.87" height="5.13" alt="" />
+          </span>
         </a>
-        <nav class="hero__nav" aria-label="Main">
+        <ul class="menu__list" role="list">
           {NAV.map((item, i) => (
-            <a href="#top" class="hero__nav-item" aria-current={i === 0 ? 'page' : undefined}>{item}</a>
+            <li>
+              <a
+                class:list={['menu__tab', i > 2 && 'menu__tab--wide']}
+                href="#top"
+                data-part-link={item.part}
+                aria-current={i === 0 ? 'true' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
           ))}
-        </nav>
-      </div>
-      <div class="hero__tools">
-        <button type="button" class="hero__lang">
+        </ul>
+      </nav>
+      <div class="menu__actions">
+        <button type="button" class="menu__lang">
           <img src={globe} width="17" height="17" alt="" /> EN <img src={chevronDown} width="14" height="14" alt="" />
         </button>
-        <a href="#top" class="hero__audit">
+        <a href="#top" class="menu__audit">
+          <img src={download} width="17" height="17" alt="" /> Get a Free Audit
+        </a>
+        <button
+          type="button"
+          class="menu__burger"
+          aria-expanded="false"
+          aria-controls="menu-panel"
+          aria-label="Open menu"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="menu__panel" id="menu-panel" inert>
+      <ul class="menu__panel-list" role="list">
+        {NAV.map((item, i) => (
+          <li>
+            <a class="menu__panel-link" href="#top" data-part-link={item.part} aria-current={i === 0 ? 'true' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div class="menu__panel-actions">
+        <button type="button" class="menu__lang">
+          <img src={globe} width="17" height="17" alt="" /> EN <img src={chevronDown} width="14" height="14" alt="" />
+        </button>
+        <a href="#top" class="menu__audit">
           <img src={download} width="17" height="17" alt="" /> Get a Free Audit
         </a>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <section class="hero__main">
+  <section class="hero" id="top" data-hero data-lab-part="Hero">
+    <div class="hero__intro">
       <h1 class="hero__title">
-        <img class="hero__amazon" src={amazonLogo} width="246.19" height="83.28" alt="amazon" />
-        <span class="hero__title-words">
-          <span class="hero__title-word">PPC</span>
-          <span class="hero__title-word">Agency</span>
-        </span>
+        <span>Amazon</span> <span class="hero__title-accent">PPC</span> <span>Agency</span>
       </h1>
-
       <p class="hero__sub">
         We help Amazon brands scale to $1M in monthly revenue with a custom ad strategy at a sustainable TACOS.
+      </p>
+    </div>
+
+    <div class="hero__body">
+      <div class="hero__chart" data-chart style={{ '--x': restX, '--y': level('acos', rest.acos) }}>
+        <div class="hero__metrics">
+          {METRICS.map((m) => {
+            const content = (
+              <>
+                <span class="hero__metric-label">
+                  {m.label}
+                  <img src={chevronSmall} width="9.22" height="9.22" alt="" />
+                  <img src={infoCircle} width="11.85" height="11.85" alt="" />
+                </span>
+                <strong class="hero__metric-value" data-value>{m.format(rest[m.key])}</strong>
+              </>
+            );
+            return m.series ? (
+              <button
+                type="button"
+                class:list={['hero__metric', `hero__metric--${m.series}`]}
+                data-metric={m.key}
+                data-series-toggle={m.series}
+                aria-pressed="false"
+                aria-label={`${m.label}: highlight the ${m.label} line`}
+              >
+                {content}
+              </button>
+            ) : (
+              <div class="hero__metric" data-metric={m.key}>{content}</div>
+            );
+          })}
+        </div>
+
+        <div class="hero__graph">
+          <div class="hero__axis hero__axis--left" aria-hidden="true">
+            {salesTicks.map((t) => <span>{salesTick(t)}</span>)}
+          </div>
+
+          <div
+            class="hero__plot"
+            data-plot
+            data-lab-noswipe
+            tabindex="0"
+            role="group"
+            aria-label="Sales and ACOS by day. Use the left and right arrow keys to move along the timeline."
+          >
+            <div class="hero__plot-area">
+              <div class="hero__grid" aria-hidden="true" style={{ '--steps': axis.steps }}>
+                {salesTicks.map((_, i) => <i style={{ '--i': i }}></i>)}
+              </div>
+              <svg class="hero__lines" viewBox="0 0 1000 250" preserveAspectRatio="none" aria-hidden="true">
+                <path class="hero__line hero__line--sales" d={linePath('sales')} vector-effect="non-scaling-stroke"></path>
+                <path class="hero__line hero__line--acos" d={linePath('acos')} vector-effect="non-scaling-stroke"></path>
+                <path class="hero__hit" d={linePath('sales')} data-series-toggle="sales" vector-effect="non-scaling-stroke"></path>
+                <path class="hero__hit" d={linePath('acos')} data-series-toggle="acos" vector-effect="non-scaling-stroke"></path>
+              </svg>
+              <div class="hero__dot" aria-hidden="true"></div>
+            </div>
+            <div class="hero__guide" aria-hidden="true"></div>
+          </div>
+
+          <div class="hero__axis hero__axis--right" aria-hidden="true">
+            {acosTicks.map((t) => <span>{acosTick(t)}</span>)}
+          </div>
+
+          <div class="hero__dates">
+            <span class="hero__date hero__date--start" aria-hidden="true">{formatDate(days[0].date)}</span>
+            <span class="hero__date hero__date--now" data-date>{formatDate(rest.date)}</span>
+            <span class="hero__date hero__date--end" aria-hidden="true">{formatDate(days[days.length - 1].date)}</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="hero__foot">
+        Unlike the big guys, we only work with a select few brands, giving you the VIP treatment with laser-focused
+        attention to detail.
       </p>
 
       <a href="#top" class="hero__cta">
@@ -63,205 +221,329 @@ const NAV = ['Home', 'Services', 'About', 'Resources', 'Contact Us'];
         <span class="hero__phone"><img src={phoneCall} width="33.6" height="33.6" alt="" /></span>
         Book a Discovery Call
       </a>
-
-      <div class="hero__chart">
-        <div class="hero__metrics">
-          {metrics.map((m) => (
-            <div class:list={['hero__metric', m.bar && `hero__metric--${m.bar}`]}>
-              <span class="hero__metric-label">
-                {m.label} <img src={chevronDown} width="14" height="14" alt="" />
-                <img src={infoCircle} width="18" height="18" alt="" />
-              </span>
-              <strong class="hero__metric-value">{m.value}</strong>
-            </div>
-          ))}
-        </div>
-
-        <div class="hero__graph">
-          <div class="hero__axis-col" aria-hidden="true">
-            <div class="hero__axis hero__axis--left">
-              {AXIS_TICKS.map((t) => <span style={{ '--t': t }}>€{t ? `${t}K` : 0}</span>)}
-            </div>
-          </div>
-          <div class="hero__plot" data-plot>
-            <div class="hero__guide" aria-hidden="true"></div>
-            <div class="hero__plot-area">
-              <div class="hero__grid" aria-hidden="true">
-                {AXIS_TICKS.map((t) => <i style={{ '--t': t }}></i>)}
-              </div>
-              <svg
-                class="hero__lines"
-                viewBox="0 0 1000 250"
-                preserveAspectRatio="none"
-                role="img"
-                aria-label="Sales and ACOS from Oct 15 to Dec 29"
-              >
-                <path class="hero__line--sales" d={toPath(sales)} vector-effect="non-scaling-stroke"></path>
-                <path class="hero__line--acos" d={toPath(acos)} vector-effect="non-scaling-stroke"></path>
-              </svg>
-              <div class="hero__dot" aria-hidden="true"></div>
-            </div>
-          </div>
-          <div class="hero__axis-col" aria-hidden="true">
-            <div class="hero__axis hero__axis--right">
-              {AXIS_TICKS.map((t) => <span style={{ '--t': t }}>{t}%</span>)}
-            </div>
-          </div>
-        </div>
-
-        <div class="hero__dates" aria-hidden="true">
-          <span>Oct 15</span>
-          <span style={{ '--at': HIGHLIGHT_X }}>Dec 2</span>
-          <span>Dec 29</span>
-        </div>
-      </div>
-
-      <button type="button" class="hero__live" aria-pressed="false">Live mode</button>
-
-      <p class="hero__foot">
-        Unlike the big guys, we only work with a select few brands, giving you the VIP treatment with laser-focused
-        attention to detail.
-      </p>
-    </section>
-  </div>
+    </div>
+  </section>
 
   <Ads />
 
   <Process />
 
   <Results />
+
+  <aside class="story" data-story aria-label={STORY.label} hidden>
+    <div class="story__stat">
+      <p class="story__numbers">
+        <span>{STORY.from}</span>
+        <span class="story__icons" aria-label="grew to">
+          <img src={grow} width="24" height="24" alt="" />
+          <span class="story__arrow"><img src={graphArrow} width="24.29" height="14" alt="" /></span>
+        </span>
+        <span>{STORY.to}</span>
+      </p>
+      <p class="story__label">{STORY.label}</p>
+    </div>
+    <span class="story__divider" aria-hidden="true"><img src={storyDivider} width="63.97" height="2" alt="" /></span>
+    <div class="story__text">
+      <p class="story__title">{STORY.title}</p>
+      <p class="story__brand">{STORY.brand}</p>
+    </div>
+    <a class="story__cta" href="#top" data-part-link={STORY.part}>
+      {STORY.cta} <img src={arrowRight} width="17" height="17" alt="" />
+    </a>
+  </aside>
 </div>
 
 <script>
-  import { animate, createScope, createTimeline, stagger, svg, utils } from 'animejs';
-  import { AXIS_MAX, HIGHLIGHT_X, acos, sales, toPath, valueAt, type Point } from './chartData';
+  import { animate, createScope, stagger, svg, utils } from 'animejs';
+  import { LAST, METRICS, dayAt, days, defaultIndex, formatDate, level, valueAt, xOf, type Series } from './heroChart';
 
-  // GSAP's powerN is Anime's Quad/Cubic/Quart/Quint (power3 = Quart).
+  // GSAP's power3.out is Anime's outQuart.
   const EASE = 'outQuart';
-
-  const root = document.querySelector<HTMLElement>('[data-hero]')!;
-  const q = <T extends Element = HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
-  const plot = q('[data-plot]');
-  const guide = q('.hero__guide');
-  const dot = q('.hero__dot');
-  const salesPath = q<SVGPathElement>('.hero__line--sales');
-  const acosPath = q<SVGPathElement>('.hero__line--acos');
-  const liveButton = q<HTMLButtonElement>('.hero__live');
-
-  // Current series (live mode mutates these) and the highlight position.
-  let series: { sales: Point[]; acos: Point[] } = { sales: [...sales], acos: [...acos] };
-  const highlight = { x: HIGHLIGHT_X };
-
-  const placeHighlight = () => {
-    const x = highlight.x;
-    const y = valueAt(series.acos, x);
-    guide.style.left = `${x * 100}%`;
-    dot.style.left = `${x * 100}%`;
-    dot.style.top = `${(1 - y / AXIS_MAX) * 100}%`;
-  };
-
-  // Everything lives in one scope; scope.revert() kills the timeline, the
-  // hover and live-mode animations, and restores inline styles.
-  let stopLive = () => {};
-  const scope = createScope({ root, mediaQueries: { reduce: '(prefers-reduced-motion: reduce)' } }).add((self) => {
-    placeHighlight();
-    if (self?.matches.reduce) return;
-
-    const lines = svg.createDrawable([salesPath, acosPath]);
-    const rise = (y: number) => ({ y: [y, 0], opacity: [0, 1] });
-
-    // Every step's start state is set up front, so elements that start late
-    // in the timeline are hidden from the first frame, as with GSAP's from().
-    utils.set('.hero__logo, .hero__nav, .hero__tools > *, .hero__amazon, .hero__title-word, .hero__sub, .hero__cta, .hero__metric, .hero__axis span, .hero__dates span, .hero__live, .hero__foot', { opacity: 0 });
-    utils.set(lines, { draw: '0 0' });
-    guide.style.transformOrigin = 'bottom';
-    utils.set(guide, { scaleY: 0 });
-    utils.set(dot, { scale: 0 });
-
-    createTimeline({ defaults: { ease: EASE } })
-      .add('.hero__logo, .hero__nav, .hero__tools > *', { ...rise(-16), duration: 600, delay: stagger(80) }, 0)
-      .add('.hero__amazon', { ...rise(28), duration: 800 }, 150)
-      .add('.hero__title-word', { ...rise(28), duration: 800, delay: stagger(80) }, 300)
-      .add('.hero__sub', { ...rise(16), duration: 700 }, 600)
-      .add('.hero__cta', { ...rise(12), scale: [0.96, 1], duration: 600, ease: 'outBack(2)' }, 750)
-      .add('.hero__metric', { ...rise(16), duration: 500, delay: stagger(60) }, 900)
-      .add('.hero__axis span, .hero__dates span', { opacity: [0, 1], duration: 400, delay: stagger(20) }, 1000)
-      .add(lines, { draw: ['0 0', '0 1'], duration: 1600, ease: 'inOutCubic', delay: stagger(150) }, 1050)
-      .add('.hero__live, .hero__foot', { ...rise(12), duration: 600, delay: stagger(100) }, 2200)
-      .add(guide, { scaleY: [0, 1], duration: 500 }, 2300)
-      .add(dot, { scale: [0, 1], duration: 500, ease: 'outBack(3)' }, 2500);
-  });
-
-  // Reduced motion: hover and live mode jump straight to their end values
-  // instead of tweening. Checked at each call, so a changed setting applies at once.
   const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Hover: the guide and dot follow the pointer along the ACOS line, then
-  // settle back on Dec 2. `composition: 'replace'` lets each new animation
-  // take over the running one.
-  const follow = (x: number, duration: number) =>
-    animate(highlight, { x, duration: still() ? 0 : duration, ease: EASE, composition: 'replace', onUpdate: placeHighlight });
-  const onMove = (e: PointerEvent) => {
-    const r = plot.getBoundingClientRect();
-    follow(utils.clamp((e.clientX - r.left) / r.width, 0, 1), 350);
+  const page = document.querySelector<HTMLElement>('[data-sandbox="05-hero-vanilla-anime"]')!;
+  const hero = page.querySelector<HTMLElement>('[data-hero]')!;
+  const menu = page.querySelector<HTMLElement>('[data-menu]')!;
+  const burger = menu.querySelector<HTMLButtonElement>('.menu__burger')!;
+  const panel = menu.querySelector<HTMLElement>('.menu__panel')!;
+  const story = page.querySelector<HTMLElement>('[data-story]')!;
+  const chart = hero.querySelector<HTMLElement>('[data-chart]')!;
+  const q = <T extends Element = HTMLElement>(sel: string) => chart.querySelector<T>(sel)!;
+  const plot = q('[data-plot]');
+  const dot = q('.hero__dot');
+  const lines = [q<SVGPathElement>('.hero__line--sales'), q<SVGPathElement>('.hero__line--acos')];
+  const dateNow = q('[data-date]');
+  const dateStart = q('.hero__date--start');
+  const dateEnd = q('.hero__date--end');
+  const cards = [...chart.querySelectorAll<HTMLButtonElement>('button[data-series-toggle]')];
+  const values = METRICS.map((m) => ({ m, el: q(`[data-metric="${m.key}"] [data-value]`) }));
+  const parts = [...page.querySelectorAll<HTMLElement>('[data-lab-part]')];
+
+  // ---------- Chart ----------
+  // Animated values live in plain objects; place() and showValues() write them.
+  const pos = { x: xOf(defaultIndex) }; // the guide, 0..1 across the plot
+  const dotOn = { sales: 0 }; // 0: the dot rides the ACOS line, 1: the Sales line
+  const count = { t: 1 }; // the cards' numbers count up from 0 on load
+  let day = defaultIndex;
+  let focus: Series | null = null;
+
+  const showValues = () => {
+    const d = days[day];
+    for (const { m, el } of values) el.textContent = m.format(d[m.key] * count.t);
   };
-  const onLeave = () => follow(HIGHLIGHT_X, 600);
-  plot.addEventListener('pointermove', onMove);
-  plot.addEventListener('pointerleave', onLeave);
 
-  // Live mode: every tick the lines drift toward a new noisy version of the
-  // traced data. The interval and animation die on toggle-off and on leave.
-  const jitter = (base: Point[], amount: number): Point[] =>
-    base.map(([x, y]) => [x, Math.max(0, y + utils.random(-amount, amount, 2))]);
+  const place = () => {
+    const x = pos.x;
+    const y = level('acos', valueAt('acos', x)) * (1 - dotOn.sales) + level('sales', valueAt('sales', x)) * dotOn.sales;
+    chart.style.setProperty('--x', String(x));
+    chart.style.setProperty('--y', String(y));
+    // The date sits centred under the guide but stays inside the plot; the
+    // first and last dates step aside when it reaches them.
+    const w = plot.clientWidth;
+    const lw = dateNow.offsetWidth;
+    const left = utils.clamp(x * w - lw / 2, 0, w - lw);
+    const room = 8;
+    dateNow.style.left = `${left}px`;
+    dateNow.style.transform = 'none';
+    dateStart.style.opacity = left < dateStart.offsetWidth + room ? '0' : '';
+    dateEnd.style.opacity = left + lw > w - dateEnd.offsetWidth - room ? '0' : '';
+  };
 
-  const startLive = () => {
-    let anim: ReturnType<typeof animate> | undefined;
-    const tick = () => {
-      const from = series;
-      const to = { sales: jitter(sales, 2.5), acos: jitter(acos, 1.5) };
-      const mix = { t: 0 };
-      const lerp = (a: Point[], b: Point[]) => a.map(([x, y], i): Point => [x, y + (b[i][1] - y) * mix.t]);
-      anim = animate(mix, {
-        t: 1,
-        duration: still() ? 0 : 1100,
-        ease: 'inOutSine',
-        onUpdate: () => {
-          series = { sales: lerp(from.sales, to.sales), acos: lerp(from.acos, to.acos) };
-          salesPath.setAttribute('d', toPath(series.sales));
-          acosPath.setAttribute('d', toPath(series.acos));
-          placeHighlight();
+  /** Moves the guide to day i; the date and the cards change at once. */
+  const goToDay = (i: number, duration: number) => {
+    if (i !== day) {
+      day = i;
+      dateNow.textContent = formatDate(days[i].date);
+      showValues();
+    }
+    if (still()) {
+      utils.remove(pos);
+      pos.x = xOf(i);
+      place();
+    } else {
+      animate(pos, { x: xOf(i), duration, ease: EASE, composition: 'replace', onUpdate: place });
+    }
+  };
+
+  const setFocus = (s: Series | null) => {
+    focus = s;
+    if (s) chart.dataset.focus = s;
+    else delete chart.dataset.focus;
+    for (const c of cards) c.setAttribute('aria-pressed', String(c.dataset.seriesToggle === s));
+    const to = s === 'sales' ? 1 : 0;
+    if (still()) {
+      dotOn.sales = to;
+      place();
+    } else {
+      animate(dotOn, { sales: to, duration: 400, ease: EASE, composition: 'replace', onUpdate: place });
+    }
+  };
+
+  // Load: the chart is there from the first frame; the lines draw in, the
+  // cards count up and the dot pops onto the ACOS line once it is drawn.
+  // scope.revert() kills these and restores the inline styles.
+  const scope = createScope({ root: hero, mediaQueries: { reduce: '(prefers-reduced-motion: reduce)' } }).add((self) => {
+    place();
+    if (self?.matches.reduce) return;
+    const drawables = svg.createDrawable(lines);
+    utils.set(drawables, { draw: '0 0' });
+    utils.set(dot, { scale: 0 });
+    count.t = 0;
+    showValues();
+    animate(drawables, { draw: ['0 0', '0 1'], duration: 1600, ease: 'inOutCubic', delay: stagger(150) });
+    animate(count, { t: 1, duration: 1600, ease: 'inOutCubic', delay: 150, onUpdate: showValues });
+    animate(dot, { scale: [0, 1], duration: 500, ease: 'outBack(3)', delay: 1550 });
+  });
+
+  // Pointer: the guide follows the pointer from day to day and slides back
+  // to the resting day when the pointer leaves (a finger: when it lifts).
+  const dayFromEvent = (e: PointerEvent) => {
+    const r = plot.getBoundingClientRect();
+    return dayAt((e.clientX - r.left) / r.width);
+  };
+  const onPlotMove = (e: PointerEvent) => goToDay(dayFromEvent(e), 250);
+  const onPlotLeave = () => goToDay(defaultIndex, 600);
+
+  const onPlotKey = (e: KeyboardEvent) => {
+    const keys: Record<string, number> = { ArrowLeft: day - 1, ArrowRight: day + 1, Home: 0, End: LAST };
+    if (e.key === 'Escape') setFocus(null);
+    if (!(e.key in keys)) return;
+    e.preventDefault();
+    goToDay(utils.clamp(keys[e.key], 0, LAST), 250);
+  };
+
+  // Focus mode: a press on a line or its card highlights that line and dims
+  // the other; pressing it again, or anywhere off the lines, turns it off.
+  // A drag along the chart isn't a press.
+  let downAt = { x: 0, y: 0 };
+  const onDown = (e: PointerEvent) => {
+    downAt = { x: e.clientX, y: e.clientY };
+  };
+  const onClick = (e: MouseEvent) => {
+    const target = e.target as Element;
+    if (menu.hasAttribute('data-open') && !menu.contains(target)) setOpen(false);
+    if (e.detail > 0 && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) > 6) return;
+    const toggle = target.closest<HTMLElement | SVGElement>('[data-series-toggle]');
+    if (toggle && chart.contains(toggle)) {
+      const s = toggle.dataset.seriesToggle as Series;
+      setFocus(focus === s ? null : s);
+    } else if (focus) setFocus(null);
+  };
+
+  // ---------- Menu ----------
+  const setOpen = (open: boolean) => {
+    menu.toggleAttribute('data-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    panel.inert = !open;
+  };
+  const onBurger = () => setOpen(!menu.hasAttribute('data-open'));
+  const desktop = window.matchMedia('(min-width: 1081px)');
+  const onDesktop = () => desktop.matches && setOpen(false);
+
+  const topOf = (el: HTMLElement) => el.getBoundingClientRect().top - page.getBoundingClientRect().top + page.scrollTop;
+  const partEl = (name: string) => parts.find((p) => p.dataset.labPart === name);
+
+  /** Scrolls the page to a landing section ('' is the end of the page). */
+  const scrollToPart = (name: string) => {
+    const el = name ? partEl(name) : undefined;
+    const top = name === 'Hero' ? 0 : el ? topOf(el) : page.scrollHeight;
+    // The Ads wheel holds the scroll when a scroll comes down onto it, so a
+    // jump past it is instant; every other jump glides.
+    const ads = partEl('Ads');
+    const pastAds = !!ads && ads !== el && topOf(ads) > page.scrollTop + 1 && topOf(ads) < top;
+    page.scrollTo({ top, behavior: pastAds || still() ? 'instant' : 'smooth' });
+  };
+
+  const links = [...page.querySelectorAll<HTMLAnchorElement>('[data-part-link]')];
+  const onLink = (e: MouseEvent) => {
+    e.preventDefault();
+    setOpen(false);
+    // A mouse or tap leaves no focus behind, so the menu can slide away.
+    if (e.detail > 0) (e.currentTarget as HTMLElement).blur();
+    scrollToPart((e.currentTarget as HTMLElement).dataset.partLink ?? '');
+  };
+  const tabs = links.filter((a) => a.matches('.menu__tab, .menu__panel-link'));
+
+  // The menu stays at the top of the screen: scrolling down slides it
+  // away, scrolling up (or reaching the top) brings it back.
+  let lastY = page.scrollTop;
+  const pin = () => {
+    const y = page.scrollTop;
+    if (y <= menu.offsetHeight || y < lastY - 4) {
+      menu.removeAttribute('data-hidden');
+      lastY = y;
+    } else if (y > lastY + 4) {
+      if (!menu.hasAttribute('data-open') && !menu.contains(document.activeElement)) menu.setAttribute('data-hidden', '');
+      lastY = y;
+    }
+  };
+  const onMenuFocus = () => menu.removeAttribute('data-hidden');
+
+  // The tab of the section under the menu is marked current.
+  const spy = () => {
+    const line = page.scrollTop + menu.offsetHeight + 8; // just under the menu's slot
+    let current = 'Hero';
+    for (const p of parts) if (topOf(p) <= line) current = p.dataset.labPart!;
+    for (const a of tabs) {
+      if (a.dataset.partLink === current) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    }
+    menu.toggleAttribute('data-scrolled', page.scrollTop > 0);
+  };
+
+  // ---------- Success story popup ----------
+  // It slides in after five seconds on the hero. Leaving the hero first
+  // cancels it for good; leaving while it shows slides it away for good.
+  let storyState: 'waiting' | 'shown' | 'done' = 'waiting';
+  const offHero = () => hero.getBoundingClientRect().bottom - page.getBoundingClientRect().top < page.clientHeight / 2;
+  const showStory = () => {
+    if (storyState !== 'waiting') return;
+    if (offHero()) {
+      storyState = 'done';
+      return;
+    }
+    storyState = 'shown';
+    story.hidden = false;
+    animate(story, { y: [24, 0], opacity: [0, 1], duration: still() ? 0 : 600, ease: EASE });
+  };
+  const hideStory = () => {
+    if (storyState === 'shown') {
+      animate(story, {
+        y: 24,
+        opacity: 0,
+        duration: still() ? 0 : 300,
+        ease: 'inQuad',
+        onComplete: () => {
+          story.hidden = true;
         },
       });
-    };
-    tick();
-    const id = window.setInterval(tick, 1400);
-    stopLive = () => {
-      window.clearInterval(id);
-      anim?.cancel();
-      stopLive = () => {};
-    };
+    }
+    storyState = 'done';
+    window.clearTimeout(storyTimer);
   };
+  const storyTimer = window.setTimeout(showStory, 5000);
 
-  const onToggle = () => {
-    const on = liveButton.getAttribute('aria-pressed') !== 'true';
-    liveButton.setAttribute('aria-pressed', String(on));
-    liveButton.textContent = on ? 'Stop live mode' : 'Live mode';
-    if (on) startLive();
-    else stopLive();
+  // ---------- Page-wide listeners ----------
+  let frame = 0;
+  const onScroll = () => {
+    if (storyState !== 'done' && offHero()) hideStory();
+    pin();
+    if (!frame)
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        spy();
+      });
   };
-  liveButton.addEventListener('click', onToggle);
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key !== 'Escape') return;
+    if (menu.hasAttribute('data-open')) {
+      setOpen(false);
+      burger.focus();
+    }
+    if (storyState === 'shown') hideStory();
+  };
+  const resize = new ResizeObserver(() => place());
+
+  plot.addEventListener('pointermove', onPlotMove);
+  plot.addEventListener('pointerdown', onPlotMove);
+  plot.addEventListener('pointerleave', onPlotLeave);
+  plot.addEventListener('keydown', onPlotKey);
+  plot.addEventListener('blur', onPlotLeave);
+  burger.addEventListener('click', onBurger);
+  menu.addEventListener('focusin', onMenuFocus);
+  links.forEach((a) => a.addEventListener('click', onLink));
+  desktop.addEventListener('change', onDesktop);
+  page.addEventListener('scroll', onScroll, { passive: true });
+  document.addEventListener('pointerdown', onDown, true);
+  document.addEventListener('click', onClick);
+  document.addEventListener('keydown', onKey);
+  resize.observe(plot);
+  spy();
 
   // Navigation is full page loads today; once view transitions are added
-  // this tears the section down before the swap.
+  // this tears the hero and the menu down before the swap.
   document.addEventListener(
     'astro:before-swap',
     () => {
-      stopLive();
       scope.revert();
-      utils.remove(highlight);
-      plot.removeEventListener('pointermove', onMove);
-      plot.removeEventListener('pointerleave', onLeave);
-      liveButton.removeEventListener('click', onToggle);
+      utils.remove([pos, dotOn, count, story]);
+      window.clearTimeout(storyTimer);
+      cancelAnimationFrame(frame);
+      resize.disconnect();
+      plot.removeEventListener('pointermove', onPlotMove);
+      plot.removeEventListener('pointerdown', onPlotMove);
+      plot.removeEventListener('pointerleave', onPlotLeave);
+      plot.removeEventListener('keydown', onPlotKey);
+      plot.removeEventListener('blur', onPlotLeave);
+      burger.removeEventListener('click', onBurger);
+      menu.removeEventListener('focusin', onMenuFocus);
+      links.forEach((a) => a.removeEventListener('click', onLink));
+      desktop.removeEventListener('change', onDesktop);
+      page.removeEventListener('scroll', onScroll);
+      document.removeEventListener('pointerdown', onDown, true);
+      document.removeEventListener('click', onClick);
+      document.removeEventListener('keydown', onKey);
     },
     { once: true },
   );

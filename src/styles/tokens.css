@@ -35,6 +35,8 @@
   --color-accent-rule: rgb(255 98 1 / 0.72); /* orange darker @ 72%: impact dividers */
   --color-caption: #d1d5db;         /* founder caption on the photo */
   --color-shadow: #000000;          /* value card hard shadow */
+  /* Hero (05), frames 142:1117, 142:1074 and 329:84 */
+  --color-sales: #ffcc00;           /* accents/yellow: Sales line and card bar */
 
   /* Type
    * Display = Manrope (H1, H5). Figma sets H2-H4 and H6 in Neue Montreal;
@@ -135,6 +137,20 @@
   --control-height-lg: 3rem;    /* 48px form inputs */
   --icon-sm: 1.0625rem;         /* 17px button icons */
   --icon-md: 1.5rem;            /* 24px list and growth icons */
+  /* Hero (05), frames 142:1117 (hero), 142:1189 (chart), 142:1074 (menu), 329:84 (popup) */
+  --width-hero-chart: 49.75rem;  /* 796px: metrics, plot and axes */
+  --width-popup: 82.75rem;       /* 1324px success story popup */
+  --chart-plot-height: 11.5625rem; /* 185px plot, clipped */
+  --chart-plot-top: 0.39rem;     /* 6.24px from the plot top to the top gridline */
+  --chart-plot-foot: 1.2975rem;  /* 20.76px from the baseline to the plot bottom */
+  --chart-grid-rule: 0.1384rem;  /* 2.21px gridlines and baseline */
+  --chart-line: 0.0919rem;       /* 1.47px series lines and guide */
+  --chart-marker: 0.9206rem;     /* 14.73px highlight dot */
+  --chart-axis-small: 1.9662rem; /* 31.46px right axis column */
+  --metric-bar: 0.1235rem;       /* 1.98px metric card top bar */
+  --menu-logo-width: 5.4375rem;  /* 87px */
+  --menu-logo-height: 1.5625rem; /* 25px */
+  --tab-width-wide: 6.75rem;     /* 108px: Resources, Contact Us */
 
   /* Radius */
   --radius-sm: 4px;
