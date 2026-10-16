@@ -81,15 +81,6 @@
     background: var(--color-bg);
   }
 
-  .results__coin {
-    position: absolute;
-    top: -5.7694rem; /* -92.31px */
-    left: calc(50% + 5.5725rem); /* 809.16px at 1440 */
-    width: 66.586rem; /* 1065.38px */
-    height: auto;
-    opacity: 0.1;
-    pointer-events: none;
-  }
 
   .results__content {
     position: relative;

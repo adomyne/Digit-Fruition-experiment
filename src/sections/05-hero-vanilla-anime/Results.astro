@@ -14,7 +14,6 @@ import dollar from './assets/results-icons/dollar.svg?url';
 import euro from './assets/results-icons/euro.svg?url';
 import percent from './assets/results-icons/percent.svg?url';
 import plus from './assets/results-icons/plus.svg?url';
-import coin from './assets/results/coin.png?url';
 import download from './assets/download.svg?url';
 
 const SHAPES = [dollar, euro, percent, plus];
@@ -33,7 +32,6 @@ const METRICS = [
   </div>
 
   <div class="results__overlay" data-lab-part="Results">
-    <img class="results__coin" src={coin} width="1059" height="992" alt="" loading="lazy" decoding="async" />
     <div class="results__content">
       <ul class="results__metrics">
         {METRICS.map((m) => (

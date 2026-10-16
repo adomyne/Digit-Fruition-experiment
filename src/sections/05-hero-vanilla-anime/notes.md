@@ -90,8 +90,8 @@ Reduced motion: hover and live mode jump straight to their end values instead of
 ## Results (Claude Code, 2026-10-16)
 Figma: concept 142:1466 (icon pool), overlay 142:1469. Files: `Results.astro`
 (markup + its own `<script>`), `Results.css`, `resultsPhysics.ts` (the
-physics), `assets/results-icons/` (the owner's four 90 x 90 icons, unedited)
-and `assets/results/coin.png` (the overlay's faded coin, Figma export).
+physics), `assets/results-icons/` (the owner's four 90 x 90 icons, unedited).
+The Figma overlay's faded coin is left out by the owner's call.
 Mounted after `<Process />`; both parts mark `data-lab-part="Results"`.
 
 - Phase 1, icon pool: one viewport tall (`100dvh`), sticky. Scrolling down,
@@ -114,8 +114,7 @@ Mounted after `<Process />`; both parts mark `data-lab-part="Results"`.
 - Glow: every contact faster than 90 px/s makes the icon glow (a
   `drop-shadow` in its own orange that fades over about 0.4 s); resting
   contacts don't.
-- Phase 2: the overlay (white, 4 metric rows, note, audit button, coin at
-  10%) is in normal flow after the sticky pool, so it scrolls up over it.
+- Phase 2: the overlay (white, 4 metric rows, note, audit button) is in normal flow after the sticky pool, so it scrolls up over it.
 - Reduced motion: no glide or hold; the pile is settled off screen and
   appears at rest, still draggable.
 - Cleanup on `astro:before-swap`: timer, glide, hold timeout, observers,
