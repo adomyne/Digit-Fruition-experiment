@@ -5,7 +5,7 @@
 // 1. When the section's top reaches the middle of the screen (scrolling
 //    down, once per visit), the page glides so the whole section fits.
 // 2. 1.5 s later the video starts muted; once it plays, the thumbnail
-//    fades out. Subtitles (when the .vtt exists) take the caption's spot.
+//    fades out. Subtitles show only while it plays, never on the cover.
 // See notes.md for the full behaviour.
 import './Testimonials.css';
 import { TESTIMONIALS } from './testimonialsCopy';
@@ -22,7 +22,7 @@ import { TESTIMONIALS } from './testimonialsCopy';
               {t.subtitles && <track kind="subtitles" srclang="en" label="English" src={t.subtitles} default />}
             </video>
             <img class="tm__thumb" data-thumb src={t.thumb} alt={t.thumbAlt} loading="lazy" decoding="async" />
-            <p class="tm__caption" data-caption data-still={t.stillText}>{t.stillText}</p>
+            <p class="tm__caption" data-caption></p>
 
             <button class="tm__sound" type="button" data-sound>
               <svg class="tm__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3z" /><path class="tm__icon--x" d="M16 9.5l5 5M21 9.5l-5 5" /></svg>
@@ -169,8 +169,9 @@ import { TESTIMONIALS } from './testimonialsCopy';
     s.box.querySelector('[data-big]')!.setAttribute('aria-label', state === 'ended' ? 'Replay video' : 'Play video');
   };
 
-  const showStillText = (s: Slide) => {
-    s.caption.textContent = s.caption.dataset.still ?? '';
+  // The thumbnail cover carries no text; subtitles show only while playing.
+  const clearCaption = (s: Slide) => {
+    s.caption.textContent = '';
   };
 
   const showCue = (s: Slide) => {
@@ -199,7 +200,7 @@ import { TESTIMONIALS } from './testimonialsCopy';
     s.video.pause();
     s.video.currentTime = 0;
     setState(s, 'still');
-    showStillText(s);
+    clearCaption(s);
     fadeThumb(s, 1);
   };
 
@@ -231,7 +232,7 @@ import { TESTIMONIALS } from './testimonialsCopy';
     });
     v.addEventListener('ended', () => {
       setState(s, 'ended');
-      showStillText(s);
+      clearCaption(s);
       fadeThumb(s, 1);
     });
     v.addEventListener('timeupdate', () => {
