@@ -1,0 +1,477 @@
+---
+// Testimonials (no framework + Anime.js v4). Figma: 142:1589, second card
+// 203:219. Two video testimonial cards; the active one sits on the left and
+// the other peeks in faded on the right (click it or swipe to switch).
+// 1. When the section's top reaches the middle of the screen (scrolling
+//    down, once per visit), the page glides so the whole section fits.
+// 2. 1.5 s later the video starts muted; once it plays, the thumbnail
+//    fades out. Subtitles (when the .vtt exists) take the caption's spot.
+// See notes.md for the full behaviour.
+import './Testimonials.css';
+import { TESTIMONIALS } from './testimonialsCopy';
+---
+
+<section class="tm" data-testimonials data-lab-part="Testimonials" aria-roledescription="carousel" aria-label="Testimonials">
+  <h2 class="tm__title">Testimonials</h2>
+  <div class="tm__track" data-track data-lab-noswipe>
+    {TESTIMONIALS.map((t, i) => (
+      <article class="tm__slide" data-slide data-rank={i} aria-roledescription="slide" aria-label={`${i + 1} of ${TESTIMONIALS.length}: ${t.name}, ${t.role}`}>
+        <div class="tm__card" data-card>
+          <div class="tm__video" data-video-box data-state="still" data-muted="true" data-cc="on">
+            <video class="tm__media" data-video src={t.video} muted playsinline preload="none" style={{ objectPosition: t.videoFocus }} aria-label={`Video testimonial from ${t.name}, ${t.role}`}>
+              {t.subtitles && <track kind="subtitles" srclang="en" label="English" src={t.subtitles} default />}
+            </video>
+            <img class="tm__thumb" data-thumb src={t.thumb} alt={t.thumbAlt} loading="lazy" decoding="async" />
+            <p class="tm__caption" data-caption data-still={t.stillText}>{t.stillText}</p>
+
+            <button class="tm__sound" type="button" data-sound>
+              <svg class="tm__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3z" /><path class="tm__icon--x" d="M16 9.5l5 5M21 9.5l-5 5" /></svg>
+              Tap for sound
+            </button>
+
+            <button class="tm__big" type="button" data-big aria-label="Play video">
+              <svg class="tm__icon tm__icon--play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+              <svg class="tm__icon tm__icon--replay" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z" /></svg>
+            </button>
+
+            <div class="tm__controls" data-controls>
+              <button class="tm__btn" type="button" data-play aria-label="Pause">
+                <svg class="tm__icon tm__icon--play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+                <svg class="tm__icon tm__icon--pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+              </button>
+              <button class="tm__btn" type="button" data-mute aria-label="Turn sound on">
+                <svg class="tm__icon tm__icon--off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3z" /><path class="tm__icon--x" d="M16 9.5l5 5M21 9.5l-5 5" /></svg>
+                <svg class="tm__icon tm__icon--on" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z" /></svg>
+              </button>
+              <div class="tm__progress" data-progress role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0:00">
+                <span class="tm__bar" data-bar></span>
+              </div>
+              {t.subtitles && (
+                <button class="tm__btn tm__cc" type="button" data-cc aria-pressed="true" aria-label="Subtitles">CC</button>
+              )}
+            </div>
+          </div>
+
+          <div class="tm__details">
+            <blockquote class="tm__quote">{t.quote}</blockquote>
+            <div class="tm__byline">
+              <div class="tm__who">
+                <p class="tm__name">{t.name}</p>
+                <p class="tm__role">{t.role}</p>
+              </div>
+              <div class="tm__logo">
+                <img class:list={['tm__logo-img', { 'tm__logo-img--crop': t.logoCrop }]} src={t.logo} alt={t.logoAlt} loading="lazy" decoding="async" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="tm__peek" type="button" data-peek aria-label={`Show the testimonial from ${t.name}, ${t.role}`}></button>
+      </article>
+    ))}
+  </div>
+</section>
+
+<script>
+  import { animate, utils, type JSAnimation } from 'animejs';
+
+  /** Wait after the section is in place before the video starts (ms). */
+  const DELAY = 1500;
+  /** The glide that fits the section on screen (ms). */
+  const GLIDE = 700;
+  /** Card change (ms). */
+  const SLIDE = 650;
+  /** Thumbnail fade (ms). */
+  const FADE = 600;
+  /** Opacity of the card peeking in on the right (Figma: 20%). */
+  const PEEK = 0.2;
+  /** Controls stay up this long after a tap on touch screens (ms). */
+  const UI_HOLD = 2500;
+
+  const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const root = document.querySelector<HTMLElement>('[data-testimonials]')!;
+  const scroller = root.closest<HTMLElement>('[data-sandbox]')!;
+  const track = root.querySelector<HTMLElement>('[data-track]')!;
+
+  interface Slide {
+    el: HTMLElement;
+    card: HTMLElement;
+    box: HTMLElement;
+    video: HTMLVideoElement;
+    thumb: HTMLElement;
+    caption: HTMLElement;
+    bar: HTMLElement;
+    progress: HTMLElement;
+    cc: boolean;
+  }
+
+  const slides: Slide[] = [...root.querySelectorAll<HTMLElement>('[data-slide]')].map((el) => {
+    const box = el.querySelector<HTMLElement>('[data-video-box]')!;
+    return {
+      el,
+      card: el.querySelector<HTMLElement>('[data-card]')!,
+      box,
+      video: box.querySelector<HTMLVideoElement>('[data-video]')!,
+      thumb: box.querySelector<HTMLElement>('[data-thumb]')!,
+      caption: box.querySelector<HTMLElement>('[data-caption]')!,
+      bar: box.querySelector<HTMLElement>('[data-bar]')!,
+      progress: box.querySelector<HTMLElement>('[data-progress]')!,
+      cc: true,
+    };
+  });
+
+  let active = 0;
+  let muted = true;
+  let started = false; // the first autoplay happened (or the visitor pressed play)
+  let glided = false;
+  let gliding = false;
+  let switching = false;
+  let startTimer = 0;
+  let uiTimer = 0;
+  let lastTop = scroller.scrollTop;
+  let downX = 0;
+  let downY = 0;
+  let swiped = false; // a swipe just ended: its click must not toggle play
+  const anims = new Set<JSAnimation>();
+  const run = (a: JSAnimation) => {
+    anims.add(a);
+    return a;
+  };
+
+  // ---------- Layout: the active card at 0, the next one peeking ----------
+  const rankOf = (i: number) => (i - active + slides.length) % slides.length;
+  const step = () => slides[0].el.offsetWidth + parseFloat(getComputedStyle(track).columnGap);
+  const xFor = (rank: number) => (rank === 0 ? 0 : rank === 1 ? step() : step() * 2);
+  const opacityFor = (rank: number) => (rank === 0 ? 1 : rank === 1 ? PEEK : 0);
+
+  const mark = () => {
+    slides.forEach((s, i) => {
+      const r = rankOf(i);
+      s.el.dataset.rank = String(r);
+      s.card.inert = r !== 0;
+    });
+  };
+
+  const place = () => {
+    slides.forEach((s, i) => {
+      const r = rankOf(i);
+      utils.set(s.el, { x: xFor(r), opacity: opacityFor(r) });
+    });
+  };
+
+  // ---------- Video ----------
+  const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+
+  const setState = (s: Slide, state: 'still' | 'playing' | 'paused' | 'ended' | 'blocked') => {
+    s.box.dataset.state = state;
+    const btn = s.box.querySelector<HTMLElement>('[data-play]')!;
+    btn.setAttribute('aria-label', state === 'playing' ? 'Pause' : 'Play');
+    s.box.querySelector('[data-big]')!.setAttribute('aria-label', state === 'ended' ? 'Replay video' : 'Play video');
+  };
+
+  const showStillText = (s: Slide) => {
+    s.caption.textContent = s.caption.dataset.still ?? '';
+  };
+
+  const showCue = (s: Slide) => {
+    const t = s.video.textTracks[0];
+    const cues = t?.activeCues ? [...t.activeCues] : [];
+    s.caption.textContent = cues.map((c) => (c as VTTCue).text).join('\n');
+  };
+
+  const fadeThumb = (s: Slide, to: number) => {
+    run(animate(s.thumb, { opacity: to, duration: still() ? 0 : FADE, ease: 'outQuad' }));
+  };
+
+  const play = (s: Slide) => {
+    started = true;
+    window.clearTimeout(startTimer);
+    s.video.preload = 'auto';
+    s.video.muted = muted;
+    if (s.video.ended) s.video.currentTime = 0;
+    s.video.play().catch(() => {
+      // Autoplay refused (power saving, browser settings): ask for a tap.
+      if (s.box.dataset.state === 'still') setState(s, 'blocked');
+    });
+  };
+
+  const reset = (s: Slide) => {
+    s.video.pause();
+    s.video.currentTime = 0;
+    setState(s, 'still');
+    showStillText(s);
+    fadeThumb(s, 1);
+  };
+
+  const sync = () => {
+    slides.forEach((s) => {
+      s.box.dataset.muted = String(muted);
+      s.box.querySelector('[data-mute]')!.setAttribute('aria-label', muted ? 'Turn sound on' : 'Turn sound off');
+    });
+    slides[active].video.muted = muted;
+  };
+
+  slides.forEach((s) => {
+    const v = s.video;
+    const track0 = v.textTracks[0];
+    if (track0) {
+      track0.mode = 'hidden'; // we draw the cue ourselves, in the caption's spot
+      track0.addEventListener('cuechange', () => {
+        if (s.box.dataset.state === 'playing' || s.box.dataset.state === 'paused') showCue(s);
+      });
+    }
+    v.addEventListener('playing', () => {
+      setState(s, 'playing');
+      if (track0) showCue(s);
+      else s.caption.textContent = '';
+      fadeThumb(s, 0);
+    });
+    v.addEventListener('pause', () => {
+      if (!v.ended && s.box.dataset.state === 'playing') setState(s, 'paused');
+    });
+    v.addEventListener('ended', () => {
+      setState(s, 'ended');
+      showStillText(s);
+      fadeThumb(s, 1);
+    });
+    v.addEventListener('timeupdate', () => {
+      const p = v.duration ? v.currentTime / v.duration : 0;
+      s.bar.style.transform = `scaleX(${p})`;
+      s.progress.setAttribute('aria-valuenow', String(Math.round(p * 100)));
+      s.progress.setAttribute('aria-valuetext', `${fmt(v.currentTime)} of ${fmt(v.duration || 0)}`);
+    });
+
+    // Clicking the picture toggles play; the round button plays or replays.
+    v.addEventListener('click', () => {
+      if (swiped) return;
+      if (v.paused) play(s);
+      else v.pause();
+    });
+    s.box.querySelector('[data-big]')!.addEventListener('click', () => play(s));
+    s.box.querySelector('[data-play]')!.addEventListener('click', () => (v.paused ? play(s) : v.pause()));
+    const toggleMute = () => {
+      muted = !muted;
+      sync();
+    };
+    s.box.querySelector('[data-sound]')!.addEventListener('click', toggleMute);
+    s.box.querySelector('[data-mute]')!.addEventListener('click', toggleMute);
+    s.box.querySelector('[data-cc]')?.addEventListener('click', (e) => {
+      s.cc = !s.cc;
+      s.box.dataset.cc = s.cc ? 'on' : 'off';
+      (e.currentTarget as HTMLElement).setAttribute('aria-pressed', String(s.cc));
+    });
+
+    // Touch screens have no hover: a tap shows the controls for a moment.
+    s.box.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse') return;
+      s.box.dataset.ui = 'shown';
+      window.clearTimeout(uiTimer);
+      uiTimer = window.setTimeout(() => delete s.box.dataset.ui, UI_HOLD);
+    });
+
+    // Seeking: click or drag on the bar, arrow keys when focused.
+    const seekTo = (e: PointerEvent) => {
+      const r = s.progress.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      if (v.duration) v.currentTime = p * v.duration;
+    };
+    s.progress.addEventListener('pointerdown', (e) => {
+      s.progress.setPointerCapture(e.pointerId);
+      seekTo(e);
+    });
+    s.progress.addEventListener('pointermove', (e) => {
+      if (s.progress.hasPointerCapture(e.pointerId)) seekTo(e);
+    });
+    s.progress.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 5 : e.key === 'ArrowLeft' ? -5 : 0;
+      if (!d || !v.duration) return;
+      e.preventDefault();
+      v.currentTime = Math.min(v.duration, Math.max(0, v.currentTime + d));
+    });
+  });
+
+  // ---------- Switching cards ----------
+  const go = (next: number) => {
+    if (switching || next === active) return;
+    switching = true;
+    const from = slides[active];
+    reset(from);
+    const prevIndex = active;
+    active = (next + slides.length) % slides.length;
+    mark();
+    const d = still() ? 0 : SLIDE;
+    const left = -from.el.getBoundingClientRect().right - 1; // just off screen
+    // The old card leaves to the left, then comes back in from the right
+    // to its new place in the queue.
+    run(
+      animate(from.el, {
+        x: left,
+        opacity: 0,
+        duration: d,
+        ease: 'inOutQuart',
+        onComplete: () => {
+          const r = rankOf(prevIndex);
+          utils.set(from.el, { x: xFor(r) + step() });
+          run(animate(from.el, { x: xFor(r), opacity: opacityFor(r), duration: d, ease: 'outQuart' }));
+        },
+      }),
+    );
+    slides.forEach((s, i) => {
+      if (i === prevIndex) return;
+      const r = rankOf(i);
+      run(
+        animate(s.el, {
+          x: xFor(r),
+          opacity: opacityFor(r),
+          duration: d,
+          ease: 'inOutQuart',
+          onComplete: () => {
+            if (i !== active) return;
+            switching = false;
+            if (started) play(s);
+          },
+        }),
+      );
+    });
+  };
+
+  slides.forEach((s, i) => s.el.querySelector('[data-peek]')!.addEventListener('click', () => go(i)));
+
+  // Swipe (touch or mouse drag) on the cards.
+  const onDown = (e: PointerEvent) => {
+    if ((e.target as Element).closest('[data-controls]')) return;
+    downX = e.clientX;
+    downY = e.clientY;
+    swiped = false;
+  };
+  const onUp = (e: PointerEvent) => {
+    const dx = e.clientX - downX;
+    const dy = e.clientY - downY;
+    if (!downX || Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) {
+      downX = 0;
+      return;
+    }
+    swiped = true;
+    downX = 0;
+    go(active + (dx < 0 ? 1 : -1));
+    window.setTimeout(() => (swiped = false), 0);
+  };
+  track.addEventListener('pointerdown', onDown);
+  track.addEventListener('pointerup', onUp);
+
+  // ---------- Fit the section on screen, then start the video ----------
+  const offset = () => root.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+
+  /** Half the screen (or most of a short section) shows the section. */
+  const inView = () => {
+    const r = root.getBoundingClientRect();
+    const v = scroller.getBoundingClientRect();
+    const shown = Math.min(r.bottom, v.bottom) - Math.max(r.top, v.top);
+    return shown >= Math.min(scroller.clientHeight / 2, root.offsetHeight * 0.9);
+  };
+
+  const schedule = () => {
+    if (started || startTimer) return;
+    startTimer = window.setTimeout(() => {
+      startTimer = 0;
+      if (!started) play(slides[active]);
+    }, DELAY);
+  };
+  const cancel = () => {
+    window.clearTimeout(startTimer);
+    startTimer = 0;
+  };
+
+  const glide = () => {
+    glided = true;
+    cancel();
+    const gap = Math.max(0, (scroller.clientHeight - root.offsetHeight) / 2);
+    const to = scroller.scrollTop + offset() - gap;
+    if (to <= scroller.scrollTop + 1) {
+      schedule();
+      return;
+    }
+    gliding = true;
+    const pos = { y: scroller.scrollTop };
+    run(
+      animate(pos, {
+        y: to,
+        duration: GLIDE,
+        ease: 'outQuart',
+        onUpdate: () => {
+          scroller.scrollTop = pos.y;
+        },
+        onComplete: () => {
+          gliding = false;
+          lastTop = scroller.scrollTop;
+          schedule();
+        },
+      }),
+    );
+  };
+
+  // Scrolling down into it (first time, motion allowed): glide, then start.
+  // Any other arrival (scrolling up, reduced motion, a reload lower down):
+  // start 1.5 s after it is in view; leaving before that cancels.
+  const onScroll = () => {
+    if (gliding) return;
+    const top = scroller.scrollTop;
+    const down = top > lastTop;
+    lastTop = top;
+    if (started) return;
+    const ok = inView();
+    if (ok && down && !glided && !still() && offset() > 0) glide();
+    else if (ok) schedule();
+    else if (!glided) cancel();
+  };
+  // During the short glide the visitor's own scrolling would fight it.
+  const onWheel = (e: WheelEvent) => {
+    if (gliding) e.preventDefault();
+  };
+  const onTouchMove = (e: TouchEvent) => {
+    if (gliding) e.preventDefault();
+  };
+  scroller.addEventListener('scroll', onScroll, { passive: true });
+  scroller.addEventListener('wheel', onWheel, { passive: false });
+  scroller.addEventListener('touchmove', onTouchMove, { passive: false });
+
+  // Start downloading the active video a screen before it is needed.
+  const near = new IntersectionObserver(
+    ([entry]) => {
+      if (!entry.isIntersecting) return;
+      slides[active].video.preload = 'auto';
+      near.disconnect();
+    },
+    { root: scroller, rootMargin: '100% 0px' },
+  );
+  near.observe(root);
+
+  const ro = new ResizeObserver(() => {
+    if (!switching) place();
+  });
+  ro.observe(track);
+
+  mark();
+  place();
+  sync();
+  if (inView()) schedule();
+
+  // Navigation is full page loads today; this is for view transitions.
+  document.addEventListener(
+    'astro:before-swap',
+    () => {
+      anims.forEach((a) => a.revert());
+      window.clearTimeout(startTimer);
+      window.clearTimeout(uiTimer);
+      near.disconnect();
+      ro.disconnect();
+      slides.forEach((s) => s.video.pause());
+      track.removeEventListener('pointerdown', onDown);
+      track.removeEventListener('pointerup', onUp);
+      scroller.removeEventListener('scroll', onScroll);
+      scroller.removeEventListener('wheel', onWheel);
+      scroller.removeEventListener('touchmove', onTouchMove);
+    },
+    { once: true },
+  );
+</script>
