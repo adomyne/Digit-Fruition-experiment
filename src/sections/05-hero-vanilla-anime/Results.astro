@@ -1,0 +1,352 @@
+---
+// Results (no framework + Anime.js v4), in two phases. Figma: concept
+// 142:1466 (icon pool), overlay 142:1469 ("Field-tested impact poster").
+// 1. Icon pool: when the section's top reaches the middle of the screen,
+//    the page glides it into place and holds the scroll for 3 s while
+//    orange icons fall from the top and pile up to 60% of the height. The
+//    icons stay playable: drag, throw, bounce; they glow on impact. The
+//    physics is hand-written (resultsPhysics.ts); Anime.js's timer drives
+//    its clock and its animate() glides the scroll.
+// 2. The pool stays fixed (sticky) while the results overlay scrolls up
+//    over it. See notes.md.
+import './Results.css';
+import dollar from './assets/results-icons/dollar.svg?url';
+import euro from './assets/results-icons/euro.svg?url';
+import percent from './assets/results-icons/percent.svg?url';
+import plus from './assets/results-icons/plus.svg?url';
+import download from './assets/download.svg?url';
+
+const SHAPES = [dollar, euro, percent, plus];
+const METRICS = [
+  { value: '56%', label: 'Growth in Monthly Sales' },
+  { value: '$30K', label: 'New Monthly Revenue' },
+  { value: '2X', label: 'Growth in Monthly Revenue' },
+  { value: '43%', label: 'Improvement in CTR' },
+];
+---
+
+<section class="results" data-results>
+  <h2 class="results__title"><span>Results That Speak For Themselves</span></h2>
+
+  <div class="results__pool" data-lab-part="Results">
+    <div class="results__icons" data-shapes={JSON.stringify(SHAPES)} data-lab-noswipe aria-hidden="true"></div>
+  </div>
+
+  <div class="results__overlay" data-lab-part="Results">
+    <div class="results__card">
+      <!-- Keeps the sticky title's place in the card, as Figma's hidden copy does. -->
+      <p class="results__slot" aria-hidden="true">Results That Speak For Themselves</p>
+      <div class="results__content">
+        <ul class="results__metrics">
+          {METRICS.map((m) => (
+            <li class="results__metric">
+              <strong class="results__value">{m.value}</strong>
+              <span class="results__label">{m.label}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="results__foot">
+          <p class="results__note">For 5-6 Figure US/EU brands</p>
+          <a href="#top" class="results__audit">
+            <img src={download} width="17" height="17" alt="" /> Get a Free Audit
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { animate, createTimer, type JSAnimation } from 'animejs';
+  import { ICON, countFor, createBody, step, wake as wakeBody, wakeAll, type Body, type World } from './resultsPhysics';
+
+  /** Share of the section's height the pile fills. */
+  const FILL = 0.6;
+  /** The scroll is held this long (ms) while the icons fall. */
+  const DROP = 3000;
+  /** Icons start falling over this long (ms), so the last lands by DROP. */
+  const SPAWN = 2200;
+  /** The glide that brings the section into place (ms). */
+  const SNAP = 700;
+  /** Glow lost per second after an impact. */
+  const GLOW_FADE = 2.5;
+  /** Frames with everything at rest before the clock pauses. */
+  const REST_FRAMES = 45;
+
+  const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const root = document.querySelector<HTMLElement>('[data-results]')!;
+  const scroller = root.closest<HTMLElement>('[data-sandbox]')!;
+  const layer = root.querySelector<HTMLElement>('.results__icons')!;
+  const titleBar = root.querySelector<HTMLElement>('.results__title')!;
+  const titleText = titleBar.querySelector<HTMLElement>('span')!;
+  const slot = root.querySelector<HTMLElement>('.results__slot')!;
+  const shapes: string[] = JSON.parse(layer.dataset.shapes!);
+
+  const world: World = { bodies: [], width: layer.clientWidth, height: layer.clientHeight };
+  const els: HTMLElement[] = [];
+  /** Spawn times (ms after the drop starts), soonest first. */
+  let queue: number[] = [];
+  let elapsed = 0;
+  let resting = 0;
+  let running = false;
+  let visible = false;
+
+  // ---------- Icons ----------
+  const randomShape = () => Math.floor(Math.random() * shapes.length);
+
+  const addIcon = (b: Body) => {
+    const el = document.createElement('span');
+    // Two oranges at random; the shape is the uploaded SVG as a mask, so
+    // the token color shows through it.
+    el.className = Math.random() < 0.5 ? 'results__icon' : 'results__icon results__icon--light';
+    el.style.setProperty('--shape', `url("${shapes[b.shape]}")`);
+    el.append(document.createElement('span'));
+    el.firstElementChild!.className = 'results__shape';
+    layer.append(el);
+    world.bodies.push(b);
+    els.push(el);
+  };
+
+  const render = (dt: number) => {
+    world.bodies.forEach((b, i) => {
+      const el = els[i];
+      el.style.transform = `translate3d(${b.x - ICON / 2}px, ${b.y - ICON / 2}px, 0) rotate(${b.a}rad)`;
+      if (b.glow > 0) {
+        b.glow = Math.max(0, b.glow - dt * GLOW_FADE);
+        el.style.setProperty('--glow', b.glow.toFixed(3));
+      }
+      el.classList.toggle('is-glowing', b.glow > 0.01);
+    });
+  };
+
+  const isResting = () =>
+    queue.length === 0 &&
+    world.bodies.every((b) => b.asleep && b.glow === 0);
+
+  const tick = (dt: number) => {
+    elapsed += dt * 1000;
+    while (queue.length && queue[0] <= elapsed) {
+      queue.shift();
+      const x = ICON / 2 + Math.random() * Math.max(0, world.width - ICON);
+      addIcon(createBody(x, -ICON / 2 - Math.random() * ICON, randomShape(), 300 + Math.random() * 400, (Math.random() - 0.5) * 6));
+    }
+    step(world, dt);
+    render(dt);
+    // Nothing moving: pause the clock until a pointer or a resize wakes it.
+    resting = isResting() ? resting + 1 : 0;
+    if (resting > REST_FRAMES) sleep();
+  };
+
+  // Anime.js's timer is the physics clock: one tick per frame, paused
+  // while the pool is off screen or at rest.
+  const clock = createTimer({
+    autoplay: false,
+    onUpdate: (t) => tick(Math.min(t.deltaTime, 50) / 1000),
+  });
+  const wake = () => {
+    resting = 0;
+    if (!running && visible) {
+      running = true;
+      clock.resume();
+    }
+  };
+  const sleep = () => {
+    if (!running) return;
+    running = false;
+    clock.pause();
+  };
+
+  /** Starts the fall: spawn times spread over SPAWN with a little jitter. */
+  const drop = () => {
+    const n = countFor(world.width, world.height, FILL);
+    queue = Array.from({ length: n }, (_, i) => (i / n) * SPAWN + Math.random() * 60).sort((a, b) => a - b);
+    elapsed = 0;
+    wake();
+  };
+
+  /** Reduced motion: the pile is settled off screen and appears at rest. */
+  const settle = () => {
+    const n = countFor(world.width, world.height, FILL);
+    const perRow = Math.max(1, Math.floor(world.width / ICON));
+    for (let i = 0; i < n; i++) {
+      const row = Math.floor(i / perRow);
+      const x = ICON / 2 + (i % perRow) * ICON + (row % 2) * (ICON / 2);
+      addIcon(createBody(Math.min(x, world.width - ICON / 2), world.height - ICON / 2 - row * ICON, randomShape()));
+    }
+    world.bodies.forEach((b) => (b.inside = true));
+    for (let i = 0; i < 180; i++) step(world, 1 / 60);
+    world.bodies.forEach((b) => (b.glow = 0));
+    render(0);
+  };
+
+  // ---------- Drag and throw ----------
+  let grab: { b: Body; el: HTMLElement; id: number; dx: number; dy: number } | null = null;
+
+  const local = (e: PointerEvent) => {
+    const r = layer.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+  const clampToWorld = (x: number, y: number) => ({
+    x: Math.min(Math.max(x, ICON / 2), world.width - ICON / 2),
+    y: Math.min(Math.max(y, ICON / 2), world.height - ICON / 2),
+  });
+
+  const onDown = (e: PointerEvent) => {
+    const el = (e.target as Element).closest<HTMLElement>('.results__icon');
+    if (!el || grab) return;
+    const b = world.bodies[els.indexOf(el)];
+    const p = local(e);
+    grab = { b, el, id: e.pointerId, dx: b.x - p.x, dy: b.y - p.y };
+    b.hold = { x: b.x, y: b.y };
+    wakeBody(b);
+    b.inside = true;
+    el.classList.add('is-held');
+    el.setPointerCapture(e.pointerId);
+    e.preventDefault();
+    wake();
+  };
+  const onMove = (e: PointerEvent) => {
+    if (!grab || e.pointerId !== grab.id) return;
+    const p = local(e);
+    grab.b.hold = clampToWorld(p.x + grab.dx, p.y + grab.dy);
+  };
+  const onUp = (e: PointerEvent) => {
+    if (!grab || e.pointerId !== grab.id) return;
+    grab.b.hold = null; // keeps its speed: a throw
+    grab.el.classList.remove('is-held');
+    grab = null;
+    wake();
+  };
+
+  // ---------- Title ----------
+  // The title is sticky; once the card's hidden copy (the slot) has risen
+  // to it, the title moves with the slot, so it rides on the card instead
+  // of covering the card's content.
+  const followCard = () => {
+    const pinned = titleBar.getBoundingClientRect().top + parseFloat(getComputedStyle(titleText).paddingTop);
+    const shift = Math.min(0, slot.getBoundingClientRect().top - pinned);
+    titleText.style.transform = shift ? `translateY(${shift}px)` : '';
+  };
+
+  // ---------- Scroll hijack ----------
+  // Coming down, when the section's top reaches the middle of the screen,
+  // the scroll glides it to the top of the viewport and holds there for
+  // DROP ms while the icons fall. Once per page load.
+  let started = false;
+  let locked = false;
+  let snapping = false;
+  let lockAt = 0;
+  let lastTop = scroller.scrollTop;
+  let glide: JSAnimation | undefined;
+  let unlockTimer = 0;
+
+  const offset = () => root.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+
+  const unlock = () => {
+    locked = false;
+  };
+
+  const begin = () => {
+    started = true;
+    if (still()) {
+      settle();
+      return;
+    }
+    const o = offset();
+    if (o < -1) {
+      // Already past the section's top (a reload lower down): no glide.
+      drop();
+      return;
+    }
+    locked = true;
+    snapping = true;
+    const pos = { y: scroller.scrollTop };
+    glide = animate(pos, {
+      y: scroller.scrollTop + o,
+      duration: SNAP,
+      ease: 'outQuart',
+      onUpdate: () => {
+        scroller.scrollTop = pos.y;
+      },
+      onComplete: () => {
+        snapping = false;
+        lockAt = scroller.scrollTop;
+        drop();
+        unlockTimer = window.setTimeout(unlock, DROP);
+      },
+    });
+  };
+
+  const onScroll = () => {
+    followCard();
+    const top = scroller.scrollTop;
+    if (locked) {
+      // Keys, scrollbar drags and touch momentum: put the scroll back.
+      if (!snapping && top !== lockAt) scroller.scrollTop = lockAt;
+      return;
+    }
+    const down = top > lastTop;
+    lastTop = top;
+    if (started || !down) return;
+    if (offset() <= scroller.clientHeight / 2) begin();
+  };
+
+  const onWheel = (e: WheelEvent) => {
+    if (locked) e.preventDefault();
+  };
+  const onTouchMove = (e: TouchEvent) => {
+    // Dragging an icon never scrolls; while held, nothing does.
+    if (locked || grab) e.preventDefault();
+  };
+  const onKey = (e: KeyboardEvent) => {
+    if (locked && ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(e.key)) e.preventDefault();
+  };
+
+  layer.addEventListener('pointerdown', onDown);
+  layer.addEventListener('pointermove', onMove);
+  layer.addEventListener('pointerup', onUp);
+  layer.addEventListener('pointercancel', onUp);
+  scroller.addEventListener('scroll', onScroll, { passive: true });
+  scroller.addEventListener('wheel', onWheel, { passive: false });
+  scroller.addEventListener('touchmove', onTouchMove, { passive: false });
+  document.addEventListener('keydown', onKey);
+
+  // The clock runs only while the pool is on screen.
+  const io = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    if (visible) wake();
+    else sleep();
+  });
+  io.observe(layer);
+
+  const ro = new ResizeObserver(() => {
+    world.width = layer.clientWidth;
+    world.height = layer.clientHeight;
+    wakeAll(world);
+    followCard();
+    wake();
+  });
+  ro.observe(layer);
+
+  // Navigation is full page loads today; this is for view transitions.
+  document.addEventListener(
+    'astro:before-swap',
+    () => {
+      clock.revert();
+      glide?.revert();
+      window.clearTimeout(unlockTimer);
+      io.disconnect();
+      ro.disconnect();
+      layer.removeEventListener('pointerdown', onDown);
+      layer.removeEventListener('pointermove', onMove);
+      layer.removeEventListener('pointerup', onUp);
+      layer.removeEventListener('pointercancel', onUp);
+      scroller.removeEventListener('scroll', onScroll);
+      scroller.removeEventListener('wheel', onWheel);
+      scroller.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('keydown', onKey);
+    },
+    { once: true },
+  );
+</script>
