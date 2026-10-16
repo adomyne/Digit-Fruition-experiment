@@ -88,37 +88,49 @@ Reduced motion: hover and live mode jump straight to their end values instead of
   brief's, not a designer's.
 
 ## Results (Claude Code, 2026-10-16)
-Figma: concept 142:1466 (icon pool), overlay 142:1469. Files: `Results.astro`
-(markup + its own `<script>`), `Results.css`, `resultsPhysics.ts` (the
-physics), `assets/results-icons/` (the owner's four 90 x 90 icons, unedited).
-The Figma overlay's faded coin is left out by the owner's call.
-Mounted after `<Process />`; both parts mark `data-lab-part="Results"`.
+Figma: concept 142:1466 (icon pool), results card 142:1470. Files:
+`Results.astro` (markup + its own `<script>`), `Results.css`,
+`resultsPhysics.ts` (the physics) and `assets/results-icons/` (the owner's
+four 90 x 90 icons, unedited). Mounted after `<Process />`; pool and
+overlay both mark `data-lab-part="Results"`.
 
+- Title: "Results That Speak For Themselves" is sticky for the whole
+  section (zero height, above pool and card), so it stays on screen while
+  the overlay comes up. The card holds its place with a hidden copy, as
+  Figma does, and at rest the two line up (checked at 1440 and 390 wide).
 - Phase 1, icon pool: one viewport tall (`100dvh`), sticky. Scrolling down,
   when the section's top reaches the middle of the screen, Anime.js
   `animate()` glides the scroll so the section fills the screen, then the
   scroll is held for 3 s (wheel, touch, keys and scrollbar put back) while
   icons fall from the top. Once per page load; coming back, the pile stays.
-- Icon count fills 60% of the height (about 94 at 1440 x 900, 24 on a
+- Icon count fills about 60% of the height (94 at 1440 x 900, 24 on a
   phone). Each icon is a random one of the four shapes in a random one of
   the two orange tokens (`--color-accent`, `--color-accent-light`): the SVG
   is a CSS mask and the token color fills it, so the files stay as uploaded.
 - Physics is hand-written, no physics library (the stacks are compared on
-  their own tools): discs (radius 46) with gravity, bounce 0.5, friction and
-  spin, walls, and a ceiling once an icon is in. Grid broad phase, 4
-  substeps x 3 passes per frame. Anime.js `createTimer` is the clock; it
-  pauses off screen and when everything is at rest.
+  their own tools). Each icon is a rigid body whose hitbox is 1 to 9
+  circles fitted inside its real shape (clover, leaf, scalloped disc,
+  diamond), so icons touch where they look like they touch (deepest
+  overlap in a settled pile about 2.5 px) and flat sides rest flat. Contacts
+  apply bounce and friction at the contact point, so off-centre hits turn
+  an icon. Grid broad phase, 4 substeps x 4 passes per frame.
+- Rest: spin is damped hard once an icon is nearly still, and an icon slow
+  for 0.25 s falls asleep: it holds still like the floor until a moving or
+  held icon touches it. A settled pile doesn't move at all (checked: 0 px
+  and 0 rad over 1.5 s), and Anime.js `createTimer`, the physics clock,
+  pauses until a pointer or a resize wakes it.
 - Drag, throw: pointer events on the icons (`touch-action: none`), the held
   icon follows the pointer and pushes the others, release keeps its speed.
   The pool has `data-lab-noswipe`.
 - Glow: every contact faster than 90 px/s makes the icon glow: a white-orange
   radial light over it with `mix-blend-mode: color-dodge`, fading over
-  about 0.4 s; resting
-  contacts don't.
-- Phase 2: the overlay (white, 4 metric rows, note, audit button) is in normal flow after the sticky pool, so it scrolls up over it.
+  about 0.4 s; resting contacts don't.
+- Phase 2, overlay: see-through. Only the white card (142:1470: 32 / 60 px
+  padding, 4 metric rows, note, audit button) covers the pool, so icons stay
+  visible and grabbable around it; it scrolls up over the sticky pool. The
+  faded coin from Figma is left out by the owner's call.
 - Reduced motion: no glide or hold; the pile is settled off screen and
   appears at rest, still draggable.
 - Cleanup on `astro:before-swap`: timer, glide, hold timeout, observers,
   listeners.
-- Not done: other stacks (02-04) once this is approved; collider is a disc,
-  so the square Plus icon's corners can touch a neighbour slightly.
+- Not done: other stacks (02-04) once this is approved.

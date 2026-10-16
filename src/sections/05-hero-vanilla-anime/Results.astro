@@ -26,26 +26,31 @@ const METRICS = [
 ---
 
 <section class="results" data-results>
+  <h2 class="results__title"><span>Results That Speak For Themselves</span></h2>
+
   <div class="results__pool" data-lab-part="Results">
-    <h2 class="results__title">Results That Speak For Themselves</h2>
     <div class="results__icons" data-shapes={JSON.stringify(SHAPES)} data-lab-noswipe aria-hidden="true"></div>
   </div>
 
   <div class="results__overlay" data-lab-part="Results">
-    <div class="results__content">
-      <ul class="results__metrics">
-        {METRICS.map((m) => (
-          <li class="results__metric">
-            <strong class="results__value">{m.value}</strong>
-            <span class="results__label">{m.label}</span>
-          </li>
-        ))}
-      </ul>
-      <div class="results__foot">
-        <p class="results__note">For 5-6 Figure US/EU brands</p>
-        <a href="#top" class="results__audit">
-          <img src={download} width="17" height="17" alt="" /> Get a Free Audit
-        </a>
+    <div class="results__card">
+      <!-- Keeps the sticky title's place in the card, as Figma's hidden copy does. -->
+      <p class="results__slot" aria-hidden="true">Results That Speak For Themselves</p>
+      <div class="results__content">
+        <ul class="results__metrics">
+          {METRICS.map((m) => (
+            <li class="results__metric">
+              <strong class="results__value">{m.value}</strong>
+              <span class="results__label">{m.label}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="results__foot">
+          <p class="results__note">For 5-6 Figure US/EU brands</p>
+          <a href="#top" class="results__audit">
+            <img src={download} width="17" height="17" alt="" /> Get a Free Audit
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -53,7 +58,7 @@ const METRICS = [
 
 <script>
   import { animate, createTimer, type JSAnimation } from 'animejs';
-  import { ICON, countFor, createBody, step, type Body, type World } from './resultsPhysics';
+  import { ICON, countFor, createBody, step, wake as wakeBody, wakeAll, type Body, type World } from './resultsPhysics';
 
   /** Share of the section's height the pile fills. */
   const FILL = 0.6;
@@ -85,14 +90,14 @@ const METRICS = [
   let visible = false;
 
   // ---------- Icons ----------
-  const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)];
+  const randomShape = () => Math.floor(Math.random() * shapes.length);
 
   const addIcon = (b: Body) => {
     const el = document.createElement('span');
     // Two oranges at random; the shape is the uploaded SVG as a mask, so
     // the token color shows through it.
     el.className = Math.random() < 0.5 ? 'results__icon' : 'results__icon results__icon--light';
-    el.style.setProperty('--shape', `url("${pick(shapes)}")`);
+    el.style.setProperty('--shape', `url("${shapes[b.shape]}")`);
     el.append(document.createElement('span'));
     el.firstElementChild!.className = 'results__shape';
     layer.append(el);
@@ -114,14 +119,14 @@ const METRICS = [
 
   const isResting = () =>
     queue.length === 0 &&
-    world.bodies.every((b) => !b.hold && b.glow === 0 && Math.abs(b.vx) + Math.abs(b.vy) < 8 && Math.abs(b.w) < 0.1);
+    world.bodies.every((b) => b.asleep && b.glow === 0);
 
   const tick = (dt: number) => {
     elapsed += dt * 1000;
     while (queue.length && queue[0] <= elapsed) {
       queue.shift();
       const x = ICON / 2 + Math.random() * Math.max(0, world.width - ICON);
-      addIcon(createBody(x, -ICON / 2 - Math.random() * ICON, 300 + Math.random() * 400, (Math.random() - 0.5) * 6));
+      addIcon(createBody(x, -ICON / 2 - Math.random() * ICON, randomShape(), 300 + Math.random() * 400, (Math.random() - 0.5) * 6));
     }
     step(world, dt);
     render(dt);
@@ -164,7 +169,7 @@ const METRICS = [
     for (let i = 0; i < n; i++) {
       const row = Math.floor(i / perRow);
       const x = ICON / 2 + (i % perRow) * ICON + (row % 2) * (ICON / 2);
-      addIcon(createBody(Math.min(x, world.width - ICON / 2), world.height - ICON / 2 - row * ICON * 0.87));
+      addIcon(createBody(Math.min(x, world.width - ICON / 2), world.height - ICON / 2 - row * ICON, randomShape()));
     }
     world.bodies.forEach((b) => (b.inside = true));
     for (let i = 0; i < 180; i++) step(world, 1 / 60);
@@ -191,6 +196,7 @@ const METRICS = [
     const p = local(e);
     grab = { b, el, id: e.pointerId, dx: b.x - p.x, dy: b.y - p.y };
     b.hold = { x: b.x, y: b.y };
+    wakeBody(b);
     b.inside = true;
     el.classList.add('is-held');
     el.setPointerCapture(e.pointerId);
@@ -303,6 +309,7 @@ const METRICS = [
   const ro = new ResizeObserver(() => {
     world.width = layer.clientWidth;
     world.height = layer.clientHeight;
+    wakeAll(world);
     wake();
   });
   ro.observe(layer);
