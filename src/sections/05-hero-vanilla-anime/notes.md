@@ -180,4 +180,10 @@ overlay both mark `data-lab-part="Results"`.
   appears at rest, still draggable.
 - Cleanup on `astro:before-swap`: timer, glide, hold timeout, observers,
   listeners.
-- Not done: other stacks (02-04) once this is approved.
+- Performance pass (with the 02-04 ports): a frame writes only icons that
+  moved or changed glow (sleeping icons are skipped), and the hold now
+  sets `overflow: hidden` + `scrollbar-gutter: stable` on the scroller, as
+  the Ads hold does. The shell's section tag now finds a scroller that is
+  `overflow: hidden` too, so it no longer sticks on "Hero" after the hold.
+- Other stacks: 02 (React + GSAP), 03 (Svelte + GSAP) and 04 (Vue + Motion
+  for Vue) have the same section, each written with its own tools.

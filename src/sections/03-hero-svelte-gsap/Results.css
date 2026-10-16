@@ -1,0 +1,221 @@
+/* Results: icon pool (Figma 142:1466) and the results overlay (142:1469).
+   Sandboxed: every rule sits inside [data-sandbox="03-hero-svelte-gsap"].
+   Sizes in rem are the Figma px / 16. */
+
+[data-sandbox="03-hero-svelte-gsap"] {
+  .results {
+    position: relative;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+    color: var(--color-text);
+    background: var(--color-bg);
+  }
+
+  /* Phase 1: one full viewport (the stage is the viewport). It sticks to
+     the top while the overlay scrolls up over it. */
+  .results__pool {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--color-bg);
+  }
+
+  /* The title sticks to the top above the pool, takes no height (the pool
+     starts at the top), and once the card's title slot reaches it, rides
+     on the card: the script moves the span with the slot. */
+  .results__title {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    height: 0;
+    margin: 0;
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-heading);
+    text-align: center;
+    pointer-events: none; /* icons stay grabbable behind the text */
+  }
+  .results__title > span {
+    display: block;
+    padding: var(--space-16) var(--space-4) 0;
+    will-change: transform;
+  }
+
+  .results__icons {
+    position: absolute;
+    inset: 0;
+    touch-action: pan-y; /* the page still scrolls over empty space */
+    user-select: none;
+  }
+
+  .results__icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5.625rem; /* 90px, every icon */
+    height: 5.625rem;
+    color: var(--color-accent);
+    cursor: grab;
+    touch-action: none;
+    will-change: transform;
+    transform: translate3d(0, -100%, 0); /* waiting above the pool until it falls */
+  }
+  .results__icon--light { color: var(--color-accent-light); }
+  .results__icon.is-held { z-index: 2; cursor: grabbing; }
+  /* Impact glow: a white-orange light over the icon, color-dodged so the
+     orange under it burns bright; it fades with --glow. */
+  .results__icon::after {
+    content: '';
+    position: absolute;
+    inset: -25%;
+    display: none;
+    border-radius: var(--radius-full);
+    background: radial-gradient(
+      closest-side,
+      var(--color-on-accent) 0%,
+      color-mix(in srgb, var(--color-on-accent) 45%, var(--color-accent-light)) 35%,
+      color-mix(in srgb, var(--color-accent-light) 60%, transparent) 65%,
+      transparent 100%
+    );
+    mix-blend-mode: color-dodge;
+    opacity: var(--glow, 0);
+    pointer-events: none;
+  }
+  .results__icon.is-glowing::after { display: block; }
+
+  /* The uploaded SVG is the mask; the token color fills it. */
+  .results__shape {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: currentColor;
+    mask: var(--shape) center / contain no-repeat;
+  }
+
+  /* Phase 2: the overlay, one viewport or taller, slides up over the pool. */
+  /* See-through: only the white card covers the pool, so icons stay
+     visible (and grabbable) around it. The card's title slot sits as far
+     from the card's top as the title sits from the section's top, so the
+     card meets the title with its top edge at the top of the screen and
+     pushes it from there. It runs to the section's bottom with no gap. */
+  .results__overlay {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: 0 var(--space-4);
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+
+  /* Figma 142:1470 (white, 60px sides, 10px gap), with the title's 64px
+     above and below the title slot by the owner's call. */
+  .results__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2-5);
+    width: 100%;
+    max-width: calc(65.3326rem + 2 * 3.75rem); /* 1045.32px content + 60px sides */
+    padding: var(--space-16) 3.75rem var(--space-8);
+    box-sizing: border-box;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    background: var(--color-bg);
+    pointer-events: auto;
+  }
+
+  /* Same text and type as the title, hidden: it holds the title's place. */
+  .results__slot {
+    margin: 0 0 calc(var(--space-16) - var(--space-2-5)); /* 64px to the rows */
+    font-size: var(--text-h3);
+    line-height: var(--leading-heading);
+    text-align: center;
+    visibility: hidden;
+  }
+
+
+  .results__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5625rem; /* 41px */
+    width: 100%;
+    max-width: 65.3326rem; /* 1045.32px */
+  }
+
+  .results__metrics {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .results__metric {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    height: 11.875rem; /* 190px row: 189 + the 1px divider */
+    padding-bottom: 1.625rem; /* 26px */
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--color-accent-rule);
+  }
+  .results__metric:first-child { height: 7.9375rem; } /* 127px */
+
+  .results__value {
+    font-size: var(--text-h2);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-h2);
+    letter-spacing: var(--tracking-half);
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .results__label {
+    width: 15.75rem; /* 252px */
+    font-size: var(--text-h4);
+    line-height: var(--leading-heading);
+  }
+
+  .results__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .results__note {
+    max-width: var(--width-main);
+    margin: 0;
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    color: var(--color-accent);
+  }
+
+  .results__audit {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--control-height);
+    padding: 0 var(--space-5);
+    border-radius: var(--radius-sm);
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 40rem) {
+    .results__title,
+    .results__slot { font-size: var(--text-xl); }
+    .results__card { padding-left: var(--space-4); padding-right: var(--space-4); }
+    .results__metric,
+    .results__metric:first-child { height: auto; padding-top: var(--space-8); }
+    .results__value { font-size: var(--text-h4); }
+    .results__label { width: 50%; font-size: var(--text-md); }
+  }
+}
