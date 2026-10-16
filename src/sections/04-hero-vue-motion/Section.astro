@@ -7,10 +7,12 @@ import '@fontsource-variable/manrope';
 import Hero from './Hero.vue';
 import Ads from './Ads.vue';
 import Process from './Process.vue';
+import Results from './Results.vue';
 ---
 
 <div class="page" data-sandbox="04-hero-vue-motion">
   <Hero client:load />
   <Ads client:load />
   <Process client:load />
+  <Results client:visible={{ rootMargin: '100%' }} />
 </div>

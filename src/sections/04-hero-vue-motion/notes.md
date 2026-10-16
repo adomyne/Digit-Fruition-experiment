@@ -111,3 +111,33 @@ the one-time scroll hold (down past step 5 lets go for good). Files:
   `setTimeout`. A `run` counter drops callbacks of superseded turns.
 - Cleanup: `onUnmounted` stops every `animate()` control, the timer, the
   observer and the listeners.
+
+## Results (Claude Code, 2026-10-16)
+Figma: concept 142:1466 (icon pool), results card 142:1470. Same
+behaviour, numbers, layout and hand-written physics as page 5 (see
+05-hero-vanilla-anime/notes.md for the full spec); `resultsPhysics.ts`,
+`Results.css` and `assets/results-icons/` are copies, not imports.
+Mounted after Process with `client:visible={{ rootMargin: '100%' }}`, so
+the island loads only when the page is a screen away from it (well before
+the hold starts at the middle of the screen). Pool and overlay mark
+`data-lab-part="Results"`.
+- Vue 3 + Motion for Vue (`Results.vue`): one `shallowRef` for the icons
+  (no deep reactivity), `useTemplateRef` for the fixed elements and a
+  function `:ref` filling a plain array for the icons; `await nextTick()`
+  before dropping. The physics clock is Motion's frame loop
+  (`frame.update(cb, true)` / `cancelFrame`); the glide is Motion's
+  `animate(from, to)` with `onUpdate` (outQuart `[0.25, 1, 0.5, 1]`,
+  0.7 s); the release is a `setTimeout`.
+- Cleanup: `onUnmounted` stops the glide, clears the timer, cancels the
+  frame callback, unlocks and removes observers and listeners.
+- Performance: the icon list is the only reactive state, set once when
+  the drop starts, so the framework renders the icons once (they wait above
+  the pool with `translate3d(0, -100%, 0)` until they fall). The physics and
+  every per-frame value live in plain objects and write `transform`,
+  `--glow` and `is-glowing` straight to the elements, skipping sleeping
+  icons. The clock runs only while the pool is on screen (an
+  IntersectionObserver) and stops once the pile has rested 45 frames.
+  Checked at 1440 x 900: 16.7 ms median frame during the drop, a settled
+  pile doesn't move, no errors; 390 x 844 too.
+- Hold: the scroller gets `overflow: hidden` + `scrollbar-gutter: stable`
+  for the 3 s, as the Ads hold does, plus wheel, touch and key blocking.

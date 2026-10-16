@@ -85,6 +85,10 @@ const METRICS = [
 
   const world: World = { bodies: [], width: layer.clientWidth, height: layer.clientHeight };
   const els: HTMLElement[] = [];
+  // What each icon's element shows now, so a frame writes only changes:
+  // a sleeping icon is drawn once and then left alone.
+  const drawn: boolean[] = [];
+  const glowing: boolean[] = [];
   /** Spawn times (ms after the drop starts), soonest first. */
   let queue: number[] = [];
   let elapsed = 0;
@@ -111,12 +115,19 @@ const METRICS = [
   const render = (dt: number) => {
     world.bodies.forEach((b, i) => {
       const el = els[i];
-      el.style.transform = `translate3d(${b.x - ICON / 2}px, ${b.y - ICON / 2}px, 0) rotate(${b.a}rad)`;
+      if (!b.asleep || !drawn[i]) {
+        el.style.transform = `translate3d(${b.x - ICON / 2}px, ${b.y - ICON / 2}px, 0) rotate(${b.a}rad)`;
+        drawn[i] = b.asleep;
+      }
       if (b.glow > 0) {
         b.glow = Math.max(0, b.glow - dt * GLOW_FADE);
         el.style.setProperty('--glow', b.glow.toFixed(3));
       }
-      el.classList.toggle('is-glowing', b.glow > 0.01);
+      const on = b.glow > 0.01;
+      if (on !== !!glowing[i]) {
+        glowing[i] = on;
+        el.classList.toggle('is-glowing', on);
+      }
     });
   };
 
@@ -223,8 +234,9 @@ const METRICS = [
   // The title is sticky; once the card's hidden copy (the slot) has risen
   // to it, the title moves with the slot, so it rides on the card instead
   // of covering the card's content.
+  let titlePad = parseFloat(getComputedStyle(titleText).paddingTop);
   const followCard = () => {
-    const pinned = titleBar.getBoundingClientRect().top + parseFloat(getComputedStyle(titleText).paddingTop);
+    const pinned = titleBar.getBoundingClientRect().top + titlePad;
     const shift = Math.min(0, slot.getBoundingClientRect().top - pinned);
     titleText.style.transform = shift ? `translateY(${shift}px)` : '';
   };
@@ -243,9 +255,15 @@ const METRICS = [
 
   const offset = () => root.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
 
-  const unlock = () => {
-    locked = false;
+  // While held, the scroller stops scrolling natively (as the Ads wheel's
+  // hold does): an in-flight wheel scroll or touch fling can't move the
+  // page. The gutter keeps the width steady.
+  const lock = (on: boolean) => {
+    locked = on;
+    scroller.style.overflow = on ? 'hidden' : '';
+    scroller.style.scrollbarGutter = on ? 'stable' : '';
   };
+  const unlock = () => lock(false);
 
   const begin = () => {
     started = true;
@@ -259,7 +277,7 @@ const METRICS = [
       drop();
       return;
     }
-    locked = true;
+    lock(true);
     snapping = true;
     const pos = { y: scroller.scrollTop };
     glide = animate(pos, {
@@ -324,6 +342,7 @@ const METRICS = [
     world.width = layer.clientWidth;
     world.height = layer.clientHeight;
     wakeAll(world);
+    titlePad = parseFloat(getComputedStyle(titleText).paddingTop);
     followCard();
     wake();
   });
@@ -336,6 +355,7 @@ const METRICS = [
       clock.revert();
       glide?.revert();
       window.clearTimeout(unlockTimer);
+      unlock();
       io.disconnect();
       ro.disconnect();
       layer.removeEventListener('pointerdown', onDown);
