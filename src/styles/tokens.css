@@ -139,7 +139,7 @@
   --icon-md: 1.5rem;            /* 24px list and growth icons */
   /* Hero (05), frames 142:1117 (hero), 142:1189 (chart), 142:1074 (menu), 329:84 (popup) */
   --width-hero-chart: 49.75rem;  /* 796px: metrics, plot and axes */
-  --width-popup: 82.75rem;       /* 1324px success story popup */
+  --width-popup: 85rem;          /* 1360px success story popup */
   --chart-plot-height: 11.5625rem; /* 185px plot, clipped */
   --chart-plot-top: 0.39rem;     /* 6.24px from the plot top to the top gridline */
   --chart-plot-foot: 1.2975rem;  /* 20.76px from the baseline to the plot bottom */

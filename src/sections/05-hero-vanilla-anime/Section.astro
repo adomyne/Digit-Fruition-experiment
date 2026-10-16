@@ -257,7 +257,7 @@ const acosTicks = ticks(axis.acosMax);
 </div>
 
 <script>
-  import { animate, createScope, stagger, svg, utils } from 'animejs';
+  import { animate, createScope, spring, stagger, svg, utils } from 'animejs';
   import { LAST, METRICS, dayAt, days, defaultIndex, formatDate, level, valueAt, xOf, type Series } from './heroChart';
 
   // GSAP's power3.out is Anime's outQuart.
@@ -439,10 +439,13 @@ const acosTicks = ticks(axis.acosMax);
   };
 
   // ---------- Success story popup ----------
-  // It slides in after five seconds on the hero. Leaving the hero first
-  // cancels it for good; leaving while it shows slides it away for good.
+  // It slides up from below the screen after five seconds on the hero and
+  // settles with a slow, soft bounce. Leaving the hero first cancels it for
+  // good; leaving while it shows slides it back down for good.
   let storyState: 'waiting' | 'shown' | 'done' = 'waiting';
   const offHero = () => hero.getBoundingClientRect().bottom - page.getBoundingClientRect().top < page.clientHeight / 2;
+  /** How far the popup moves to sit just below the screen's bottom edge. */
+  const belowScreen = () => story.offsetHeight + parseFloat(getComputedStyle(story).bottom);
   const showStory = () => {
     if (storyState !== 'waiting') return;
     if (offHero()) {
@@ -451,14 +454,13 @@ const acosTicks = ticks(axis.acosMax);
     }
     storyState = 'shown';
     story.hidden = false;
-    animate(story, { y: [24, 0], opacity: [0, 1], duration: still() ? 0 : 600, ease: EASE });
+    if (!still()) animate(story, { y: [belowScreen(), 0], ease: spring({ bounce: 0.45, duration: 2000 }) });
   };
   const hideStory = () => {
     if (storyState === 'shown') {
       animate(story, {
-        y: 24,
-        opacity: 0,
-        duration: still() ? 0 : 300,
+        y: belowScreen(),
+        duration: still() ? 0 : 400,
         ease: 'inQuad',
         onComplete: () => {
           story.hidden = true;
