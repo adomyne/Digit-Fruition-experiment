@@ -190,8 +190,9 @@ four icons, unedited). Mounted after `<Process />`; pool, rows and foot mark
   card behind them, starting 195px down as in Figma. "For 5-6 Figure US/EU
   brands" and "Get a Free Audit" sit in a full-width foot (40px padding)
   under the piles.
-- Count: when a row's top reaches the title's text line (once per page
-  load), its number counts from 0 with Anime.js `animate()` (1.8 s,
+- Count: when a row's top reaches a line 160px below the stuck title's
+  text (`TRIGGER_DROP`, owner: "a bit lower"; once per page load), its
+  number counts from 0 with Anime.js `animate()` (1.8 s,
   outQuart). Gray (`--color-axis`, Figma Secondary Gray) before, green with
   a green glow (`--color-success`, new token, #22c55e, owner's call) while
   counting, orange (`--color-accent`) with a soft glow once it lands, with a
@@ -206,6 +207,12 @@ four icons, unedited). Mounted after `<Process />`; pool, rows and foot mark
   its offset in one layer. The pool is one viewport, sticky, under the rows;
   the clock (Anime.js `createTimer`) runs only while the pool is on screen
   and something moves.
+- Overview (owner, 2026-10-17): once the last number lands, the list turns
+  sticky, centred under the title band, and drops in from where it was
+  (FLIP: Anime.js `translateY` from the old spot to 0, 0.9 s, outBounce),
+  so all four results show together between the piles. A tail of a screen
+  plus 160px below the rows keeps it there for a while before the section
+  scrolls on.
 - No scroll hold any more (the old 3 s hijack is gone).
 - Phones (40rem and under): no icons (the sides are too thin, owner's
   call); the numbers still count.

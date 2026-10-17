@@ -103,25 +103,33 @@
   .results__overlay {
     position: relative;
     z-index: 1;
-    display: flex;
-    justify-content: center;
     margin-top: -100dvh;
-    /* 195px down to the first row (Figma); below the last row, the rest of
-       a screen less the title (108px) and the row (190 + 32px). */
-    padding: 12.1875rem var(--space-4) max(var(--space-8), calc(100dvh - 20.625rem));
+    padding: 12.1875rem var(--space-4) 0; /* 195px down to the first row (Figma) */
     box-sizing: border-box;
     pointer-events: none;
+  }
+  /* Room below the rows: about a screen, so the last row reaches the
+     trigger line and the gathered rows then stay in view. */
+  .results__tail {
+    height: calc(100dvh + 10rem);
   }
 
   /* Figma 380:141: 710px wide with 60px sides; no card behind the rows. */
   .results__metrics {
     width: 100%;
     max-width: 44.375rem;
-    margin: 0;
+    margin: 0 auto;
     padding: 0 3.75rem;
     box-sizing: border-box;
     list-style: none;
     pointer-events: auto;
+  }
+
+  /* After the last count: the rows stick in the middle of the screen,
+     just under the title band (the script drops them in). */
+  .results__metrics.is-gathered {
+    position: sticky;
+    top: max(8.25rem, calc((100dvh - 43.5625rem) / 2)); /* 132px band; 697px of rows */
   }
 
   .results__metric {
@@ -209,8 +217,8 @@
     .results__overlay {
       margin-top: 0;
       padding-top: 11rem; /* under the two-line title */
-      padding-bottom: max(var(--space-8), calc(100dvh - 16rem));
     }
+    .results__metrics.is-gathered { top: 10.5rem; } /* under the two-line title */
     .results__metrics { padding: 0; }
     .results__metric,
     .results__metric:first-child { height: auto; padding-top: var(--space-8); }

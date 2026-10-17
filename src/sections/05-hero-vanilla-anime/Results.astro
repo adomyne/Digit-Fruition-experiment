@@ -1,10 +1,13 @@
 ---
 // Results (no framework + Anime.js v4). Figma: Results Section 380:171.
-// The rows scroll up under a sticky title. When a row reaches the title,
-// its number counts up from 0 (gray, glowing green while it counts), then
-// flickers orange with a bump. While it counts, that row's icon (%, $, x,
-// euro) rains into the empty space left and right of the rows and piles
-// up there; the icons stay playable (drag, throw, bounce, glow on impact).
+// The rows scroll up under a sticky title. When a row is a little below
+// the title, its number counts up from 0 (gray, glowing green while it
+// counts), then flickers orange with a bump. While it counts, that row's
+// icon (%, $, x, euro) rains into the empty space left and right of the
+// rows and piles up there; the icons stay playable (drag, throw, bounce,
+// glow on impact).
+// Once the last number lands, the four rows drop together into the middle
+// of the screen and stay there as an overview while the piles stay put.
 // The physics is hand-written (resultsPhysics.ts); Anime.js's timer drives
 // its clock and its animate() runs the counts. See notes.md.
 import './Results.css';
@@ -43,6 +46,9 @@ const METRICS = [
           </li>
         ))}
       </ul>
+      <!-- Scroll room: the last row reaches the trigger line, then the
+           gathered rows stay in view for about a screen. -->
+      <div class="results__tail"></div>
     </div>
   </div>
 
@@ -64,6 +70,10 @@ const METRICS = [
   const FILL = 0.5;
   /** Gap (px) between a pile and the rows. */
   const GAP = 12;
+  /** A row starts counting this far (px) below the title's text line. */
+  const TRIGGER_DROP = 160;
+  /** The gathered rows' drop into the middle (ms). */
+  const GATHER = 900;
   /** Glow lost per second after an impact. */
   const GLOW_FADE = 2.5;
   /** Frames with everything at rest before the clock pauses. */
@@ -236,6 +246,7 @@ const METRICS = [
     if (still()) {
       value.classList.add('is-done');
       if (perSideAny()) settle(shape);
+      if (++landed === rows.length) gather();
       return;
     }
     const n = { v: 0 };
@@ -253,6 +264,7 @@ const METRICS = [
         onComplete: () => {
           out.textContent = String(to);
           value.classList.replace('is-counting', 'is-done');
+          if (++landed === rows.length) gather();
           counts.push(
             animate(value, {
               opacity: [1, 0.25, 1, 0.45, 1, 0.7, 1],
@@ -269,18 +281,35 @@ const METRICS = [
       }),
     );
   };
+  // ---------- Overview: all four rows drop into the middle ----------
+  // The list turns sticky (centred under the title, see Results.css), which
+  // moves it down at once; a FLIP animation starts it where it was and lets
+  // it fall into place with a bounce.
+  let landed = 0;
+  const gather = () => {
+    const before = list.getBoundingClientRect().top;
+    list.classList.add('is-gathered');
+    const fall = before - list.getBoundingClientRect().top;
+    if (still() || Math.abs(fall) < 1) return;
+    counts.push(animate(list, { translateY: [fall, 0], duration: GATHER, ease: 'outBounce' }));
+  };
+
   const perSideAny = () => {
     measure();
     return sides.some((s) => perSide(s) > 0);
   };
 
   // ---------- Trigger: a row reaches the title ----------
-  // Once per page load each. The line is the title's bottom edge.
+  // Once per page load each. The line is TRIGGER_DROP below the stuck
+  // title's text, so a number counts in clear view before it slides under.
   const waiting = new Set(rows);
+  // Measured from the top of the screen (where the title sticks), so a row
+  // that comes in already near the title waits until it is in place.
   const check = () => {
     if (!waiting.size) return;
-    const r = titleText.getBoundingClientRect();
-    const line = r.top + titleText.clientHeight - parseFloat(getComputedStyle(titleText).paddingBottom);
+    const pad = getComputedStyle(titleText);
+    const text = titleText.clientHeight - parseFloat(pad.paddingBottom);
+    const line = scroller.getBoundingClientRect().top + text + TRIGGER_DROP;
     for (const row of waiting) {
       if (row.getBoundingClientRect().top <= line) {
         waiting.delete(row);
