@@ -38,6 +38,8 @@
   /* Hero (05), frames 142:1117, 142:1074 and 329:84 */
   --color-sales: #ffcc00;           /* accents/yellow: Sales line and card bar */
   --color-popup-fade: #d8d7d7;      /* success story popup gradient end */
+  /* Results (05): count-up glow; not a Figma variable yet (owner's call) */
+  --color-success: #22c55e;
   /* Logo Gem Smoke shader (Paper); colour 1 is --color-accent */
   --color-gem-yellow: #f7ff61;
   --color-gem-white: #ffffff;

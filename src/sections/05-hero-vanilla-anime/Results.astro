@@ -1,14 +1,12 @@
 ---
-// Results (no framework + Anime.js v4), in two phases. Figma: concept
-// 142:1466 (icon pool), overlay 142:1469 ("Field-tested impact poster").
-// 1. Icon pool: when the section's top reaches the middle of the screen,
-//    the page glides it into place and holds the scroll for 3 s while
-//    orange icons fall from the top and pile up to 60% of the height. The
-//    icons stay playable: drag, throw, bounce; they glow on impact. The
-//    physics is hand-written (resultsPhysics.ts); Anime.js's timer drives
-//    its clock and its animate() glides the scroll.
-// 2. The pool stays fixed (sticky) while the results overlay scrolls up
-//    over it. See notes.md.
+// Results (no framework + Anime.js v4). Figma: Results Section 380:171.
+// The rows scroll up under a sticky title. When a row reaches the title,
+// its number counts up from 0 (gray, glowing green while it counts), then
+// flickers orange with a bump. While it counts, that row's icon (%, $, x,
+// euro) rains into the empty space left and right of the rows and piles
+// up there; the icons stay playable (drag, throw, bounce, glow on impact).
+// The physics is hand-written (resultsPhysics.ts); Anime.js's timer drives
+// its clock and its animate() runs the counts. See notes.md.
 import './Results.css';
 import dollar from './assets/results-icons/dollar.svg?url';
 import euro from './assets/results-icons/euro.svg?url';
@@ -17,42 +15,42 @@ import plus from './assets/results-icons/plus.svg?url';
 import download from './assets/download.svg?url';
 
 const SHAPES = [dollar, euro, percent, plus];
+/** Each result counts from 0 to `to`; `shape` is its icon in SHAPES. */
 const METRICS = [
-  { value: '56%', label: 'Growth in Monthly Sales' },
-  { value: '$30K', label: 'New Monthly Revenue' },
-  { value: '2X', label: 'Growth in Monthly Revenue' },
-  { value: '43%', label: 'Improvement in CTR' },
+  { prefix: '', to: 56, suffix: '%', label: 'Growth in Monthly Sales', shape: 2 },
+  { prefix: '$', to: 30, suffix: 'K', label: 'New Monthly Revenue', shape: 0 },
+  { prefix: '', to: 2, suffix: 'X', label: 'Growth in Monthly Revenue', shape: 3 },
+  { prefix: '', to: 43, suffix: '%', label: 'Improvement in CTR', shape: 1 },
 ];
 ---
 
 <section class="results" data-results>
   <h2 class="results__title"><span>Results That Speak For Themselves</span></h2>
 
-  <div class="results__pool" data-lab-part="Results">
-    <div class="results__icons" data-shapes={JSON.stringify(SHAPES)} data-lab-noswipe aria-hidden="true"></div>
+  <div class="results__stage">
+    <div class="results__pool" data-lab-part="Results">
+      <div class="results__icons" data-shapes={JSON.stringify(SHAPES)} data-lab-noswipe aria-hidden="true"></div>
+    </div>
+
+    <div class="results__overlay" data-lab-part="Results">
+      <ul class="results__metrics">
+        {METRICS.map((m) => (
+          <li class="results__metric" data-to={m.to} data-shape={m.shape}>
+            <strong class="results__value" aria-label={`${m.prefix}${m.to}${m.suffix}`}>
+              <span aria-hidden="true">{m.prefix}<span class="results__count">{m.to}</span>{m.suffix}</span>
+            </strong>
+            <span class="results__label">{m.label}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 
-  <div class="results__overlay" data-lab-part="Results">
-    <div class="results__card">
-      <!-- Keeps the sticky title's place in the card, as Figma's hidden copy does. -->
-      <p class="results__slot" aria-hidden="true">Results That Speak For Themselves</p>
-      <div class="results__content">
-        <ul class="results__metrics">
-          {METRICS.map((m) => (
-            <li class="results__metric">
-              <strong class="results__value">{m.value}</strong>
-              <span class="results__label">{m.label}</span>
-            </li>
-          ))}
-        </ul>
-        <div class="results__foot">
-          <p class="results__note">For 5-6 Figure US/EU brands</p>
-          <a href="#top" class="results__audit">
-            <img src={download} width="17" height="17" alt="" /> Get a Free Audit
-          </a>
-        </div>
-      </div>
-    </div>
+  <div class="results__foot" data-lab-part="Results">
+    <p class="results__note">For 5-6 Figure US/EU brands</p>
+    <a href="#top" class="results__audit">
+      <img src={download} width="17" height="17" alt="" /> Get a Free Audit
+    </a>
   </div>
 </section>
 
@@ -60,14 +58,12 @@ const METRICS = [
   import { animate, createTimer, type JSAnimation } from 'animejs';
   import { ICON, countFor, createBody, step, wake as wakeBody, wakeAll, type Body, type World } from './resultsPhysics';
 
-  /** Share of the section's height the pile fills. */
-  const FILL = 0.6;
-  /** The scroll is held this long (ms) while the icons fall. */
-  const DROP = 3000;
-  /** Icons start falling over this long (ms), so the last lands by DROP. */
-  const SPAWN = 2200;
-  /** The glide that brings the section into place (ms). */
-  const SNAP = 700;
+  /** How long a number counts up (ms); its icons fall over this time. */
+  const COUNT = 1800;
+  /** Share of each side's height the finished pile fills. */
+  const FILL = 0.5;
+  /** Gap (px) between a pile and the rows. */
+  const GAP = 12;
   /** Glow lost per second after an impact. */
   const GLOW_FADE = 2.5;
   /** Frames with everything at rest before the clock pauses. */
@@ -78,28 +74,48 @@ const METRICS = [
   const root = document.querySelector<HTMLElement>('[data-results]')!;
   const scroller = root.closest<HTMLElement>('[data-sandbox]')!;
   const layer = root.querySelector<HTMLElement>('.results__icons')!;
-  const titleBar = root.querySelector<HTMLElement>('.results__title')!;
-  const titleText = titleBar.querySelector<HTMLElement>('span')!;
-  const slot = root.querySelector<HTMLElement>('.results__slot')!;
+  const titleText = root.querySelector<HTMLElement>('.results__title > span')!;
+  const list = root.querySelector<HTMLElement>('.results__metrics')!;
+  const rows = [...root.querySelectorAll<HTMLElement>('.results__metric')];
   const shapes: string[] = JSON.parse(layer.dataset.shapes!);
 
-  const world: World = { bodies: [], width: layer.clientWidth, height: layer.clientHeight };
-  const els: HTMLElement[] = [];
-  // What each icon's element shows now, so a frame writes only changes:
-  // a sleeping icon is drawn once and then left alone.
-  const drawn: boolean[] = [];
-  const glowing: boolean[] = [];
-  /** Spawn times (ms after the drop starts), soonest first. */
-  let queue: number[] = [];
+  // ---------- Two piles, left and right of the rows ----------
+  // Each side is its own physics world (walls at its edges), drawn at its
+  // offset in the layer, so icons never fall behind the rows.
+  interface Side {
+    world: World;
+    x: number;
+    els: HTMLElement[];
+    /** What each element shows now, so a frame writes only changes. */
+    drawn: boolean[];
+    glowing: boolean[];
+  }
+  const sides: Side[] = [0, 1].map(() => ({ world: { bodies: [], width: 0, height: 0 }, x: 0, els: [], drawn: [], glowing: [] }));
+
+  const measure = () => {
+    const l = layer.getBoundingClientRect();
+    const c = list.getBoundingClientRect();
+    const h = layer.clientHeight;
+    const left = Math.max(0, c.left - l.left - GAP);
+    const right = Math.max(0, l.right - c.right - GAP);
+    sides[0].x = 0;
+    sides[1].x = l.width - right;
+    sides[0].world.width = left;
+    sides[1].world.width = right;
+    sides.forEach((s) => (s.world.height = h));
+  };
+
+  /** Icons a row drops on each side: together the four rows fill FILL. */
+  const perSide = (s: Side) => (s.world.width < ICON * 1.5 ? 0 : Math.max(1, Math.round(countFor(s.world.width, s.world.height, FILL) / rows.length)));
+
+  /** Spawns waiting to fall: when (ms on the clock), where and what. */
+  let queue: { at: number; side: Side; shape: number }[] = [];
   let elapsed = 0;
   let resting = 0;
   let running = false;
   let visible = false;
 
-  // ---------- Icons ----------
-  const randomShape = () => Math.floor(Math.random() * shapes.length);
-
-  const addIcon = (b: Body) => {
+  const addIcon = (s: Side, b: Body) => {
     const el = document.createElement('span');
     // Two oranges at random; the shape is the uploaded SVG as a mask, so
     // the token color shows through it.
@@ -108,43 +124,51 @@ const METRICS = [
     el.append(document.createElement('span'));
     el.firstElementChild!.className = 'results__shape';
     layer.append(el);
-    world.bodies.push(b);
-    els.push(el);
+    s.world.bodies.push(b);
+    s.els.push(el);
+  };
+
+  /** A new falling icon above a random spot of the side. The plus starts
+   *  turned 45 degrees, so it reads as an x. */
+  const spawn = (s: Side, shape: number) => {
+    const x = ICON / 2 + Math.random() * Math.max(0, s.world.width - ICON);
+    const a = shape === 3 ? Math.PI / 4 : Math.random() * Math.PI * 2;
+    addIcon(s, createBody(x, -ICON / 2 - Math.random() * ICON, shape, 300 + Math.random() * 400, (Math.random() - 0.5) * 4, a));
   };
 
   const render = (dt: number) => {
-    world.bodies.forEach((b, i) => {
-      const el = els[i];
-      if (!b.asleep || !drawn[i]) {
-        el.style.transform = `translate3d(${b.x - ICON / 2}px, ${b.y - ICON / 2}px, 0) rotate(${b.a}rad)`;
-        drawn[i] = b.asleep;
-      }
-      if (b.glow > 0) {
-        b.glow = Math.max(0, b.glow - dt * GLOW_FADE);
-        el.style.setProperty('--glow', b.glow.toFixed(3));
-      }
-      const on = b.glow > 0.01;
-      if (on !== !!glowing[i]) {
-        glowing[i] = on;
-        el.classList.toggle('is-glowing', on);
-      }
-    });
+    for (const s of sides) {
+      s.world.bodies.forEach((b, i) => {
+        const el = s.els[i];
+        if (!b.asleep || !s.drawn[i]) {
+          el.style.transform = `translate3d(${s.x + b.x - ICON / 2}px, ${b.y - ICON / 2}px, 0) rotate(${b.a}rad)`;
+          s.drawn[i] = b.asleep;
+        }
+        if (b.glow > 0) {
+          b.glow = Math.max(0, b.glow - dt * GLOW_FADE);
+          el.style.setProperty('--glow', b.glow.toFixed(3));
+        }
+        const on = b.glow > 0.01;
+        if (on !== !!s.glowing[i]) {
+          s.glowing[i] = on;
+          el.classList.toggle('is-glowing', on);
+        }
+      });
+    }
   };
 
   const isResting = () =>
-    queue.length === 0 &&
-    world.bodies.every((b) => b.asleep && b.glow === 0);
+    queue.length === 0 && sides.every((s) => s.world.bodies.every((b) => b.asleep && b.glow === 0));
 
   const tick = (dt: number) => {
     elapsed += dt * 1000;
-    while (queue.length && queue[0] <= elapsed) {
-      queue.shift();
-      const x = ICON / 2 + Math.random() * Math.max(0, world.width - ICON);
-      addIcon(createBody(x, -ICON / 2 - Math.random() * ICON, randomShape(), 300 + Math.random() * 400, (Math.random() - 0.5) * 6));
+    while (queue.length && queue[0].at <= elapsed) {
+      const q = queue.shift()!;
+      spawn(q.side, q.shape);
     }
-    step(world, dt);
+    for (const s of sides) if (s.world.bodies.length) step(s.world, dt);
     render(dt);
-    // Nothing moving: pause the clock until a pointer or a resize wakes it.
+    // Nothing moving: pause the clock until a count, a pointer or a resize wakes it.
     resting = isResting() ? resting + 1 : 0;
     if (resting > REST_FRAMES) sleep();
   };
@@ -168,47 +192,134 @@ const METRICS = [
     clock.pause();
   };
 
-  /** Starts the fall: spawn times spread over SPAWN with a little jitter. */
-  const drop = () => {
-    const n = countFor(world.width, world.height, FILL);
-    queue = Array.from({ length: n }, (_, i) => (i / n) * SPAWN + Math.random() * 60).sort((a, b) => a - b);
-    elapsed = 0;
+  /** A row's icons, spread over the count on both sides. */
+  const rain = (shape: number) => {
+    measure();
+    for (const s of sides) {
+      const n = perSide(s);
+      for (let i = 0; i < n; i++) queue.push({ at: elapsed + (i / n) * COUNT * 0.9 + Math.random() * 60, side: s, shape });
+    }
+    queue.sort((a, b) => a.at - b.at);
     wake();
   };
 
-  /** Reduced motion: the pile is settled off screen and appears at rest. */
-  const settle = () => {
-    const n = countFor(world.width, world.height, FILL);
-    const perRow = Math.max(1, Math.floor(world.width / ICON));
-    for (let i = 0; i < n; i++) {
-      const row = Math.floor(i / perRow);
-      const x = ICON / 2 + (i % perRow) * ICON + (row % 2) * (ICON / 2);
-      addIcon(createBody(Math.min(x, world.width - ICON / 2), world.height - ICON / 2 - row * ICON, randomShape()));
+  /** Reduced motion: a row's icons are settled off screen and appear at rest. */
+  const settle = (shape: number) => {
+    measure();
+    for (const s of sides) {
+      const n = perSide(s);
+      const perRow = Math.max(1, Math.floor(s.world.width / ICON));
+      const base = s.world.bodies.length;
+      for (let i = 0; i < n; i++) {
+        const k = base + i;
+        const row = Math.floor(k / perRow);
+        const x = ICON / 2 + (k % perRow) * ICON + (row % 2) * (ICON / 2);
+        const b = createBody(Math.min(x, s.world.width - ICON / 2), s.world.height - ICON / 2 - row * ICON, shape);
+        b.inside = true;
+        addIcon(s, b);
+      }
+      for (let i = 0; i < 120; i++) step(s.world, 1 / 60);
+      s.world.bodies.forEach((b) => (b.glow = 0));
     }
-    world.bodies.forEach((b) => (b.inside = true));
-    for (let i = 0; i < 180; i++) step(world, 1 / 60);
-    world.bodies.forEach((b) => (b.glow = 0));
     render(0);
   };
 
-  // ---------- Drag and throw ----------
-  let grab: { b: Body; el: HTMLElement; id: number; dx: number; dy: number } | null = null;
+  // ---------- Counting ----------
+  const counts: JSAnimation[] = [];
 
-  const local = (e: PointerEvent) => {
-    const r = layer.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  /** Gray, green glow while counting, then an orange flicker and a bump. */
+  const play = (row: HTMLElement) => {
+    const value = row.querySelector<HTMLElement>('.results__value')!;
+    const out = row.querySelector<HTMLElement>('.results__count')!;
+    const to = Number(row.dataset.to);
+    const shape = Number(row.dataset.shape);
+    if (still()) {
+      value.classList.add('is-done');
+      if (perSideAny()) settle(shape);
+      return;
+    }
+    const n = { v: 0 };
+    out.textContent = '0';
+    value.classList.add('is-counting');
+    rain(shape);
+    counts.push(
+      animate(n, {
+        v: to,
+        duration: COUNT,
+        ease: 'outQuart',
+        onUpdate: () => {
+          out.textContent = String(Math.round(n.v));
+        },
+        onComplete: () => {
+          out.textContent = String(to);
+          value.classList.replace('is-counting', 'is-done');
+          counts.push(
+            animate(value, {
+              opacity: [1, 0.25, 1, 0.45, 1, 0.7, 1],
+              duration: 520,
+              ease: 'linear',
+            }),
+            animate(value, {
+              scale: [1, 1.14, 1],
+              duration: 520,
+              ease: 'outBack(2)',
+            }),
+          );
+        },
+      }),
+    );
   };
-  const clampToWorld = (x: number, y: number) => ({
-    x: Math.min(Math.max(x, ICON / 2), world.width - ICON / 2),
-    y: Math.min(Math.max(y, ICON / 2), world.height - ICON / 2),
+  const perSideAny = () => {
+    measure();
+    return sides.some((s) => perSide(s) > 0);
+  };
+
+  // ---------- Trigger: a row reaches the title ----------
+  // Once per page load each. The line is the title's bottom edge.
+  const waiting = new Set(rows);
+  const check = () => {
+    if (!waiting.size) return;
+    const r = titleText.getBoundingClientRect();
+    const line = r.top + titleText.clientHeight - parseFloat(getComputedStyle(titleText).paddingBottom);
+    for (const row of waiting) {
+      if (row.getBoundingClientRect().top <= line) {
+        waiting.delete(row);
+        play(row);
+      }
+    }
+  };
+  let frame = 0;
+  const onScroll = () => {
+    frame ||= requestAnimationFrame(() => {
+      frame = 0;
+      check();
+    });
+  };
+
+  // Rows start at 0, waiting to count (the markup has the final values for
+  // no-JS and screen readers).
+  if (!still()) rows.forEach((row) => (row.querySelector<HTMLElement>('.results__count')!.textContent = '0'));
+
+  // ---------- Drag and throw ----------
+  let grab: { s: Side; b: Body; el: HTMLElement; id: number; dx: number; dy: number } | null = null;
+
+  const local = (e: PointerEvent, s: Side) => {
+    const r = layer.getBoundingClientRect();
+    return { x: e.clientX - r.left - s.x, y: e.clientY - r.top };
+  };
+  const clampTo = (s: Side, x: number, y: number) => ({
+    x: Math.min(Math.max(x, ICON / 2), s.world.width - ICON / 2),
+    y: Math.min(Math.max(y, ICON / 2), s.world.height - ICON / 2),
   });
 
   const onDown = (e: PointerEvent) => {
     const el = (e.target as Element).closest<HTMLElement>('.results__icon');
     if (!el || grab) return;
-    const b = world.bodies[els.indexOf(el)];
-    const p = local(e);
-    grab = { b, el, id: e.pointerId, dx: b.x - p.x, dy: b.y - p.y };
+    const s = sides.find((side) => side.els.includes(el));
+    if (!s) return;
+    const b = s.world.bodies[s.els.indexOf(el)];
+    const p = local(e, s);
+    grab = { s, b, el, id: e.pointerId, dx: b.x - p.x, dy: b.y - p.y };
     b.hold = { x: b.x, y: b.y };
     wakeBody(b);
     b.inside = true;
@@ -219,8 +330,8 @@ const METRICS = [
   };
   const onMove = (e: PointerEvent) => {
     if (!grab || e.pointerId !== grab.id) return;
-    const p = local(e);
-    grab.b.hold = clampToWorld(p.x + grab.dx, p.y + grab.dy);
+    const p = local(e, grab.s);
+    grab.b.hold = clampTo(grab.s, p.x + grab.dx, p.y + grab.dy);
   };
   const onUp = (e: PointerEvent) => {
     if (!grab || e.pointerId !== grab.id) return;
@@ -229,96 +340,9 @@ const METRICS = [
     grab = null;
     wake();
   };
-
-  // ---------- Title ----------
-  // The title is sticky; once the card's hidden copy (the slot) has risen
-  // to it, the title moves with the slot, so it rides on the card instead
-  // of covering the card's content.
-  let titlePad = parseFloat(getComputedStyle(titleText).paddingTop);
-  const followCard = () => {
-    const pinned = titleBar.getBoundingClientRect().top + titlePad;
-    const shift = Math.min(0, slot.getBoundingClientRect().top - pinned);
-    titleText.style.transform = shift ? `translateY(${shift}px)` : '';
-  };
-
-  // ---------- Scroll hijack ----------
-  // Coming down, when the section's top reaches the middle of the screen,
-  // the scroll glides it to the top of the viewport and holds there for
-  // DROP ms while the icons fall. Once per page load.
-  let started = false;
-  let locked = false;
-  let snapping = false;
-  let lockAt = 0;
-  let lastTop = scroller.scrollTop;
-  let glide: JSAnimation | undefined;
-  let unlockTimer = 0;
-
-  const offset = () => root.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
-
-  // While held, the scroller stops scrolling natively (as the Ads wheel's
-  // hold does): an in-flight wheel scroll or touch fling can't move the
-  // page. The gutter keeps the width steady.
-  const lock = (on: boolean) => {
-    locked = on;
-    scroller.style.overflow = on ? 'hidden' : '';
-    scroller.style.scrollbarGutter = on ? 'stable' : '';
-  };
-  const unlock = () => lock(false);
-
-  const begin = () => {
-    started = true;
-    if (still()) {
-      settle();
-      return;
-    }
-    const o = offset();
-    if (o < -1) {
-      // Already past the section's top (a reload lower down): no glide.
-      drop();
-      return;
-    }
-    lock(true);
-    snapping = true;
-    const pos = { y: scroller.scrollTop };
-    glide = animate(pos, {
-      y: scroller.scrollTop + o,
-      duration: SNAP,
-      ease: 'outQuart',
-      onUpdate: () => {
-        scroller.scrollTop = pos.y;
-      },
-      onComplete: () => {
-        snapping = false;
-        lockAt = scroller.scrollTop;
-        drop();
-        unlockTimer = window.setTimeout(unlock, DROP);
-      },
-    });
-  };
-
-  const onScroll = () => {
-    followCard();
-    const top = scroller.scrollTop;
-    if (locked) {
-      // Keys, scrollbar drags and touch momentum: put the scroll back.
-      if (!snapping && top !== lockAt) scroller.scrollTop = lockAt;
-      return;
-    }
-    const down = top > lastTop;
-    lastTop = top;
-    if (started || !down) return;
-    if (offset() <= scroller.clientHeight / 2) begin();
-  };
-
-  const onWheel = (e: WheelEvent) => {
-    if (locked) e.preventDefault();
-  };
   const onTouchMove = (e: TouchEvent) => {
-    // Dragging an icon never scrolls; while held, nothing does.
-    if (locked || grab) e.preventDefault();
-  };
-  const onKey = (e: KeyboardEvent) => {
-    if (locked && ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(e.key)) e.preventDefault();
+    // Dragging an icon never scrolls the page.
+    if (grab) e.preventDefault();
   };
 
   layer.addEventListener('pointerdown', onDown);
@@ -326,9 +350,7 @@ const METRICS = [
   layer.addEventListener('pointerup', onUp);
   layer.addEventListener('pointercancel', onUp);
   scroller.addEventListener('scroll', onScroll, { passive: true });
-  scroller.addEventListener('wheel', onWheel, { passive: false });
   scroller.addEventListener('touchmove', onTouchMove, { passive: false });
-  document.addEventListener('keydown', onKey);
 
   // The clock runs only while the pool is on screen.
   const io = new IntersectionObserver(([entry]) => {
@@ -339,23 +361,22 @@ const METRICS = [
   io.observe(layer);
 
   const ro = new ResizeObserver(() => {
-    world.width = layer.clientWidth;
-    world.height = layer.clientHeight;
-    wakeAll(world);
-    titlePad = parseFloat(getComputedStyle(titleText).paddingTop);
-    followCard();
+    measure();
+    // A pile wider than its new side is pushed back in by the walls.
+    sides.forEach((s) => wakeAll(s.world));
     wake();
+    check();
   });
   ro.observe(layer);
+  check();
 
   // Navigation is full page loads today; this is for view transitions.
   document.addEventListener(
     'astro:before-swap',
     () => {
       clock.revert();
-      glide?.revert();
-      window.clearTimeout(unlockTimer);
-      unlock();
+      counts.forEach((a) => a.revert());
+      cancelAnimationFrame(frame);
       io.disconnect();
       ro.disconnect();
       layer.removeEventListener('pointerdown', onDown);
@@ -363,9 +384,7 @@ const METRICS = [
       layer.removeEventListener('pointerup', onUp);
       layer.removeEventListener('pointercancel', onUp);
       scroller.removeEventListener('scroll', onScroll);
-      scroller.removeEventListener('wheel', onWheel);
       scroller.removeEventListener('touchmove', onTouchMove);
-      document.removeEventListener('keydown', onKey);
     },
     { once: true },
   );

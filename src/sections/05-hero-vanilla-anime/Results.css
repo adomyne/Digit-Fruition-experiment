@@ -1,4 +1,4 @@
-/* Results: icon pool (Figma 142:1466) and the results overlay (142:1469).
+/* Results: counting rows and the side icon piles (Figma 380:171).
    Sandboxed: every rule sits inside [data-sandbox="05-hero-vanilla-anime"].
    Sizes in rem are the Figma px / 16. */
 
@@ -11,19 +11,10 @@
     background: var(--color-bg);
   }
 
-  /* Phase 1: one full viewport (the stage is the viewport). It sticks to
-     the top while the overlay scrolls up over it. */
-  .results__pool {
-    position: sticky;
-    top: 0;
-    height: 100dvh;
-    overflow: hidden;
-    background: var(--color-bg);
-  }
-
-  /* The title sticks to the top above the pool, takes no height (the pool
-     starts at the top), and once the card's title slot reaches it, rides
-     on the card: the script moves the span with the slot. */
+  /* The title sticks to the top for the whole section and takes no
+     height. Its band is as wide as the rows and white, fading out at the
+     bottom, so the rows slide up under it; a row that reaches the band's
+     text line starts counting. */
   .results__title {
     position: sticky;
     top: 0;
@@ -34,12 +25,29 @@
     font-weight: var(--weight-regular);
     line-height: var(--leading-heading);
     text-align: center;
-    pointer-events: none; /* icons stay grabbable behind the text */
+    pointer-events: none; /* icons stay grabbable around the text */
   }
   .results__title > span {
     display: block;
-    padding: var(--space-16) var(--space-4) 0;
-    will-change: transform;
+    width: min(100%, 44.375rem); /* 710px, the rows' width */
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-4) var(--space-6);
+    box-sizing: border-box;
+    background: linear-gradient(var(--color-bg) calc(100% - var(--space-6)), transparent);
+  }
+
+  /* The pool (one viewport, sticky) and the rows over it. The rows start
+     just under the title, as in Figma, and leave room below the last one
+     so it too can scroll up to the title while the pool stays put. */
+  .results__stage {
+    position: relative;
+  }
+  .results__pool {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--color-bg);
   }
 
   .results__icons {
@@ -53,8 +61,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 5.625rem; /* 90px, every icon */
-    height: 5.625rem;
+    width: 3.75rem; /* 60px, every icon */
+    height: 3.75rem;
     color: var(--color-accent);
     cursor: grab;
     touch-action: none;
@@ -92,62 +100,28 @@
     mask: var(--shape) center / contain no-repeat;
   }
 
-  /* Phase 2: the overlay, one viewport or taller, slides up over the pool. */
-  /* See-through: only the white card covers the pool, so icons stay
-     visible (and grabbable) around it. The card's title slot sits as far
-     from the card's top as the title sits from the section's top, so the
-     card meets the title with its top edge at the top of the screen and
-     pushes it from there. It runs to the section's bottom with no gap. */
   .results__overlay {
     position: relative;
     z-index: 1;
     display: flex;
     justify-content: center;
-    min-height: 100dvh;
-    padding: 0 var(--space-4);
+    margin-top: -100dvh;
+    /* 195px down to the first row (Figma); below the last row, the rest of
+       a screen less the title (108px) and the row (190 + 32px). */
+    padding: 12.1875rem var(--space-4) max(var(--space-8), calc(100dvh - 20.625rem));
     box-sizing: border-box;
     pointer-events: none;
   }
 
-  /* Figma 142:1470 (white, 60px sides, 10px gap), with the title's 64px
-     above and below the title slot by the owner's call. */
-  .results__card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-2-5);
-    width: 100%;
-    max-width: calc(65.3326rem + 2 * 3.75rem); /* 1045.32px content + 60px sides */
-    padding: var(--space-16) 3.75rem var(--space-8);
-    box-sizing: border-box;
-    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    background: var(--color-bg);
-    pointer-events: auto;
-  }
-
-  /* Same text and type as the title, hidden: it holds the title's place. */
-  .results__slot {
-    margin: 0 0 calc(var(--space-16) - var(--space-2-5)); /* 64px to the rows */
-    font-size: var(--text-h3);
-    line-height: var(--leading-heading);
-    text-align: center;
-    visibility: hidden;
-  }
-
-
-  .results__content {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 2.5625rem; /* 41px */
-    width: 100%;
-    max-width: 65.3326rem; /* 1045.32px */
-  }
-
+  /* Figma 380:141: 710px wide with 60px sides; no card behind the rows. */
   .results__metrics {
+    width: 100%;
+    max-width: 44.375rem;
     margin: 0;
-    padding: 0;
+    padding: 0 3.75rem;
+    box-sizing: border-box;
     list-style: none;
+    pointer-events: auto;
   }
 
   .results__metric {
@@ -162,13 +136,27 @@
   }
   .results__metric:first-child { height: 7.9375rem; } /* 127px */
 
+  /* Gray until its row reaches the title, green and glowing while it
+     counts, orange once it lands (the script flickers and bumps it). */
   .results__value {
+    display: inline-block;
     font-size: var(--text-h2);
     font-weight: var(--weight-bold);
     line-height: var(--leading-h2);
     letter-spacing: var(--tracking-half);
-    color: var(--color-accent);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-axis);
     white-space: nowrap;
+    transform-origin: left bottom;
+    transition: color 0.25s, text-shadow 0.25s;
+  }
+  .results__value.is-counting {
+    color: var(--color-success);
+    text-shadow: 0 0 0.45em color-mix(in srgb, var(--color-success) 55%, transparent);
+  }
+  .results__value.is-done {
+    color: var(--color-accent);
+    text-shadow: 0 0 0.35em color-mix(in srgb, var(--color-accent) 35%, transparent);
   }
 
   .results__label {
@@ -177,12 +165,17 @@
     line-height: var(--leading-heading);
   }
 
+  /* Figma 380:165: under the piles, full width, 40px padding. */
   .results__foot {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
     gap: var(--space-4);
+    padding: var(--space-10);
+    background: var(--color-bg);
   }
 
   .results__note {
@@ -208,13 +201,21 @@
     white-space: nowrap;
   }
 
+  /* Phones: the sides are too thin for icons, so there is no pool (the
+     script sees no room and drops none); the numbers still count. */
   @media (max-width: 40rem) {
-    .results__title,
-    .results__slot { font-size: var(--text-xl); }
-    .results__card { padding-left: var(--space-4); padding-right: var(--space-4); }
+    .results__title { font-size: var(--text-xl); }
+    .results__pool { display: none; }
+    .results__overlay {
+      margin-top: 0;
+      padding-top: 11rem; /* under the two-line title */
+      padding-bottom: max(var(--space-8), calc(100dvh - 16rem));
+    }
+    .results__metrics { padding: 0; }
     .results__metric,
     .results__metric:first-child { height: auto; padding-top: var(--space-8); }
     .results__value { font-size: var(--text-h4); }
     .results__label { width: 50%; font-size: var(--text-md); }
+    .results__foot { padding: var(--space-8) var(--space-4); }
   }
 }

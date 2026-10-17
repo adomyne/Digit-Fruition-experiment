@@ -65,9 +65,7 @@ What it does:
 
 Not done / open:
 - The language button and Get a Free Audit go nowhere yet.
-- While Results holds the scroll for its icon drop (3.7s after arriving),
-  menu clicks are ignored by Results' lock.
-- Over full-screen parts (Ads, Results) the menu covers their top corners.
+- Over full-screen parts (Ads, the Results piles) the menu covers their top corners.
 - `tokens.css` gained `--color-sales` and the chart, menu and popup sizes.
 
 ## Page structure
@@ -179,66 +177,43 @@ Reduced motion: hover and live mode jump straight to their end values instead of
 - Process: no review by a second agent yet; motion timings are the
   brief's, not a designer's.
 
-## Results (Claude Code, 2026-10-16)
-Figma: concept 142:1466 (icon pool), results card 142:1470. Files:
+## Results (Claude Code, 2026-10-17: counting remake)
+Figma: Results Section 380:171 (replaces the 142:1466 icon pool). Files:
 `Results.astro` (markup + its own `<script>`), `Results.css`,
 `resultsPhysics.ts` (the physics) and `assets/results-icons/` (the owner's
-four 90 x 90 icons, unedited). Mounted after `<Process />`; pool and
-overlay both mark `data-lab-part="Results"`.
+four icons, unedited). Mounted after `<Process />`; pool, rows and foot mark
+`data-lab-part="Results"`.
 
-- Title: "Results That Speak For Themselves" is sticky (zero height, above
-  pool and card), so it stays on screen while the card comes up. The card
-  holds its place with a hidden copy, as Figma does (0% opacity there).
-  Once that slot reaches the title, the script moves the title with it, so
-  the title rides on the card instead of covering its content (checked at
-  1440 and 390 wide). The slot sits 64 px below the card's top, as the
-  title does below the section's top, with 64 px under it too, so the card
-  reaches the title as its top edge reaches the top of the screen and
-  pushes it on from there.
-- Phase 1, icon pool: one viewport tall (`100dvh`), sticky. Scrolling down,
-  when the section's top reaches the middle of the screen, Anime.js
-  `animate()` glides the scroll so the section fills the screen, then the
-  scroll is held for 3 s (wheel, touch, keys and scrollbar put back) while
-  icons fall from the top. Once per page load; coming back, the pile stays.
-- Icon count fills about 60% of the height (94 at 1440 x 900, 24 on a
-  phone). Each icon is a random one of the four shapes in a random one of
-  the two orange tokens (`--color-accent`, `--color-accent-light`): the SVG
-  is a CSS mask and the token color fills it, so the files stay as uploaded.
-- Physics is hand-written, no physics library (the stacks are compared on
-  their own tools). Each icon is a rigid body whose hitbox is 1 to 9
-  circles fitted inside its real shape (clover, leaf, scalloped disc,
-  diamond), so icons touch where they look like they touch (deepest
-  overlap in a settled pile about 2.5 px) and flat sides rest flat. Contacts
-  apply bounce and friction at the contact point, so off-centre hits turn
-  an icon. Grid broad phase, 4 substeps x 4 passes per frame.
-- Rest: spin is damped hard once an icon is nearly still, and an icon slow
-  for 0.25 s falls asleep: it holds still like the floor until a moving or
-  held icon touches it. A settled pile doesn't move at all (checked: 0 px
-  and 0 rad over 1.5 s), and Anime.js `createTimer`, the physics clock,
-  pauses until a pointer or a resize wakes it.
-- Drag, throw: pointer events on the icons (`touch-action: none`), the held
-  icon follows the pointer and pushes the others, release keeps its speed.
-  The pool has `data-lab-noswipe`.
-- Glow: every contact faster than 90 px/s makes the icon glow: a white-orange
-  radial light over it with `mix-blend-mode: color-dodge`, fading over
-  about 0.4 s; resting contacts don't.
-- Phase 2, overlay: see-through. Only the white card (142:1470: 60 px
-  sides, 64 px above and below the title slot, 4 px radius on the top corners only, 4 metric rows, note, audit
-  button) covers the pool, so icons stay visible and grabbable around it;
-  it scrolls up over the sticky pool and runs to the section's bottom with
-  no gap. The
-  faded coin from Figma is left out by the owner's call.
-- Reduced motion: no glide or hold; the pile is settled off screen and
-  appears at rest, still draggable.
-- Cleanup on `astro:before-swap`: timer, glide, hold timeout, observers,
+- Layout: "Results That Speak For Themselves" is sticky for the whole
+  section on a white band as wide as the rows (710px), fading at its bottom,
+  so the rows slide up under it. Rows are 710px wide with 60px sides, no
+  card behind them, starting 195px down as in Figma. "For 5-6 Figure US/EU
+  brands" and "Get a Free Audit" sit in a full-width foot (40px padding)
+  under the piles.
+- Count: when a row's top reaches the title's text line (once per page
+  load), its number counts from 0 with Anime.js `animate()` (1.8 s,
+  outQuart). Gray (`--color-axis`, Figma Secondary Gray) before, green with
+  a green glow (`--color-success`, new token, #22c55e, owner's call) while
+  counting, orange (`--color-accent`) with a soft glow once it lands, with a
+  flicker (opacity keyframes, 0.52 s) and a bump (scale 1.14, outBack).
+- Icons: each row has its own icon: 56% %, $30K $, 2X plus turned 45
+  degrees (an x), 43% euro. While a row counts, its icons rain into the
+  space left and right of the rows (never behind them) and pile up; the
+  four rows together fill about half the height of each side. Icons are
+  60px now (hitboxes scaled from the 90px fit). Same physics as before:
+  drag, throw, bounce, glow on impact, sleep at rest.
+- Each side is its own physics world (walls at the side's edges), drawn at
+  its offset in one layer. The pool is one viewport, sticky, under the rows;
+  the clock (Anime.js `createTimer`) runs only while the pool is on screen
+  and something moves.
+- No scroll hold any more (the old 3 s hijack is gone).
+- Phones (40rem and under): no icons (the sides are too thin, owner's
+  call); the numbers still count.
+- Reduced motion: numbers show their final value in orange, no count; the
+  icons appear already piled.
+- Cleanup on `astro:before-swap`: timer, counts, frame, observers,
   listeners.
-- Performance pass (with the 02-04 ports): a frame writes only icons that
-  moved or changed glow (sleeping icons are skipped), and the hold now
-  sets `overflow: hidden` + `scrollbar-gutter: stable` on the scroller, as
-  the Ads hold does. The shell's section tag now finds a scroller that is
-  `overflow: hidden` too, so it no longer sticks on "Hero" after the hold.
-- Other stacks: 02 (React + GSAP), 03 (Svelte + GSAP) and 04 (Vue + Motion
-  for Vue) have the same section, each written with its own tools.
+- Not done: pages 2-4 still have the old pool; port once this is approved.
 
 ## Testimonials (Claude Code, 2026-10-16)
 
@@ -301,8 +276,8 @@ includes the one static Astro component at
 `parts/FormFaq.astro` with its own copies of the icons. No animation and no
 island. Its root has `id="forms"` and `data-lab-part="Form & FAQ"`. Below
 about 1056px wide the form and the FAQ stack. The form does not send
-anything yet and the FAQ rows don't open.
-
+anything yet and the FAQ rows don't open.
+
 On page 5 the menu's Contact Us link scrolls to it.
 
 ## Footer (shared, 2026-10-16, Claude Code)

@@ -11,13 +11,15 @@
  * thrown. Units are CSS pixels and seconds.
  */
 
-/** Icon box (px): every icon is 90 x 90. */
-export const ICON = 90;
+/** Icon box (px): every icon is 60 x 60. */
+export const ICON = 60;
+/** The hitboxes below were fitted on the 90 px icons; this scales them. */
+const FIT = ICON / 90;
 
 /** Hitboxes, one list per shape: circles [x, y, r] in the icon's own box
- *  (centre 0, 0; y down), fitted inside the uploaded SVGs. Same order as
- *  the shapes in Results.astro: dollar, euro, percent, plus. */
-const HITBOXES: [number, number, number][][] = [
+ *  (centre 0, 0; y down), fitted inside the uploaded SVGs at 90 px. Same
+ *  order as the shapes in Results.astro: dollar, euro, percent, plus. */
+const HITBOXES: [number, number, number][][] = ([
   // Dollar: a four-lobed clover.
   [[0, 0, 33.5], [21, 21, 24], [-21, 21, 24], [21, -21, 24], [-21, -21, 24]],
   // Euro: a leaf, pointed top right and bottom left.
@@ -27,7 +29,7 @@ const HITBOXES: [number, number, number][][] = [
   // Plus: a diamond.
   [[0, 0, 33.6], [29, 0, 13.5], [-29, 0, 13.5], [0, 29, 13.5], [0, -29, 13.5],
     [38, 0, 6], [-38, 0, 6], [0, 38, 6], [0, -38, 6]],
-];
+] as [number, number, number][][]).map((h) => h.map(([x, y, r]) => [x * FIT, y * FIT, r * FIT] as [number, number, number]));
 /** Each shape's reach: the farthest hitbox edge from its centre. */
 const REACH = HITBOXES.map((h) => Math.max(...h.map(([x, y, r]) => Math.hypot(x, y) + r)));
 const MAX_REACH = Math.max(...REACH);
@@ -60,7 +62,7 @@ const WAKE_SPEED = 60;
 /** A contact this fast (px/s) or faster makes the icon glow. */
 export const GLOW_SPEED = 90;
 
-// One mass for every icon; the moment of inertia of a 90 x 90 plate.
+// One mass for every icon; the moment of inertia of a square plate.
 const IM = 1;
 const II = 12 / (ICON * ICON * 2);
 
@@ -96,8 +98,8 @@ export interface World {
   height: number;
 }
 
-export const createBody = (x: number, y: number, shape: number, vy = 0, w = 0): Body => ({
-  x, y, vx: 0, vy, a: Math.random() * Math.PI * 2, w, shape, glow: 0, inside: false, hold: null, i: 0,
+export const createBody = (x: number, y: number, shape: number, vy = 0, w = 0, a = Math.random() * Math.PI * 2): Body => ({
+  x, y, vx: 0, vy, a, w, shape, glow: 0, inside: false, hold: null, i: 0,
   still: 0, asleep: false, cx: [], cy: [],
 });
 
