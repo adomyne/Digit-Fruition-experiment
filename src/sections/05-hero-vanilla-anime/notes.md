@@ -213,6 +213,11 @@ four icons, unedited). Mounted after `<Process />`; pool, rows and foot mark
   so all four results show together between the piles. A tail of a screen
   plus 160px below the rows keeps it there for a while before the section
   scrolls on.
+- Skip (Figma 385:7, owner 2026-10-17): orange "SKIP" in a 156px box
+  280px left of the title, on its line, sticky with it. Pressing it scrolls
+  smoothly (the menu links' `scrollTo`) to the next landing part after
+  Results (Case studies). Under 60rem it moves to the right edge; under
+  48rem it sits above the title, between the menu's logo and burger.
 - No scroll hold any more (the old 3 s hijack is gone).
 - Phones (40rem and under): no icons (the sides are too thin, owner's
   call); the numbers still count.
@@ -283,7 +288,11 @@ includes the one static Astro component at
 `parts/FormFaq.astro` with its own copies of the icons. No animation and no
 island. Its root has `id="forms"` and `data-lab-part="Form & FAQ"`. Below
 about 1056px wide the form and the FAQ stack. The form does not send
-anything yet and the FAQ rows don't open.
+anything yet. The FAQ is an accordion (2026-10-17): opening a question folds
+the others away so it rises to the top and its answer opens downward;
+closing plays it back. A small script in the component animates it with
+the Web Animations API (no library), 660ms on `--ease-in-out`. The answers
+are placeholder copy.
 
 On page 5 the menu's Contact Us link scrolls to it.
 

@@ -29,6 +29,10 @@ const METRICS = [
 
 <section class="results" data-results>
   <h2 class="results__title"><span>Results That Speak For Themselves</span></h2>
+  <!-- Figma 385:7: SKIP, 280px left of the title, on the same line. -->
+  <div class="results__skipbar">
+    <button type="button" class="results__skip" aria-label="Skip to the next section">Skip</button>
+  </div>
 
   <div class="results__stage">
     <div class="results__pool" data-lab-part="Results">
@@ -369,6 +373,19 @@ const METRICS = [
     grab = null;
     wake();
   };
+  // ---------- Skip: scroll on to the next landing section ----------
+  const skip = root.querySelector<HTMLButtonElement>('.results__skip')!;
+  const onSkip = () => {
+    const next = [...scroller.querySelectorAll<HTMLElement>('[data-lab-part]')].find(
+      (p) => !root.contains(p) && root.compareDocumentPosition(p) & Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    const top = next
+      ? next.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop
+      : root.getBoundingClientRect().bottom - scroller.getBoundingClientRect().top + scroller.scrollTop;
+    // The same smooth scroll the menu links use.
+    scroller.scrollTo({ top, behavior: still() ? 'instant' : 'smooth' });
+  };
+
   const onTouchMove = (e: TouchEvent) => {
     // Dragging an icon never scrolls the page.
     if (grab) e.preventDefault();
@@ -380,6 +397,7 @@ const METRICS = [
   layer.addEventListener('pointercancel', onUp);
   scroller.addEventListener('scroll', onScroll, { passive: true });
   scroller.addEventListener('touchmove', onTouchMove, { passive: false });
+  skip.addEventListener('click', onSkip);
 
   // The clock runs only while the pool is on screen.
   const io = new IntersectionObserver(([entry]) => {
@@ -414,6 +432,7 @@ const METRICS = [
       layer.removeEventListener('pointercancel', onUp);
       scroller.removeEventListener('scroll', onScroll);
       scroller.removeEventListener('touchmove', onTouchMove);
+      skip.removeEventListener('click', onSkip);
     },
     { once: true },
   );
