@@ -1,7 +1,8 @@
 ---
 // Stack page 5: no framework + Anime.js v4. The pinned menu, the Hero
 // (Figma 142:1117: an interactive Sales/ACOS chart fed by heroChart.json)
-// and the Ads, Process and Results sections, in landing page order. Astro
+// and the Ads, Process, Results, Case studies (the shared static piece in
+// src/components/) and Testimonials sections, in landing page order. Astro
 // renders the markup at build time; bundled <script>s animate it. The
 // wrapper is the sandbox root and the page's scroll container; each landing
 // section marks itself with data-lab-part. See notes.md.
@@ -11,6 +12,12 @@ import Ads from './Ads.astro';
 import Process from './Process.astro';
 import Results from './Results.astro';
 import Testimonials from './Testimonials.astro';
+import Audits from '../../components/audits/Audits.astro';
+import AboutUs from '../../components/about/AboutUs.astro';
+import CaseStudies from '../../components/case-studies/CaseStudies.astro';
+import FormFaq from '../../components/forms/FormFaq.astro';
+import Logo from '../../components/logo/Logo.astro';
+import Footer from '../../components/footer/Footer.astro';
 import {
   METRICS,
   acosTick,
@@ -37,15 +44,16 @@ import grow from './assets/popup/grow.svg?url';
 import graphArrow from './assets/popup/graph-arrow.svg?url';
 import storyDivider from './assets/popup/divider.svg?url';
 import arrowRight from './assets/popup/arrow-right.svg?url';
+import closeIcon from './assets/popup/close.svg?url';
 
 /** Menu links and the landing section each scrolls to (its data-lab-part).
  *  Contact Us has no section on this page yet, so it goes to the end. */
 const NAV = [
   { label: 'Home', part: 'Hero' },
   { label: 'Services', part: 'Ads' },
-  { label: 'About', part: 'Process' },
-  { label: 'Resources', part: 'Results' },
-  { label: 'Contact Us', part: '' },
+  { label: 'About', part: 'About us' },
+  { label: 'Resources', part: 'Case studies' },
+  { label: 'Contact Us', part: 'Form & FAQ' },
 ];
 
 /** The success story popup (Figma 329:84). */
@@ -56,7 +64,7 @@ const STORY = {
   title: 'Scaled monthly revenue while improving profit and TACOS.',
   brand: 'US-Based Amazon CPG Brand',
   cta: 'View Case Studies',
-  part: 'Results',
+  part: 'Case studies',
 };
 
 const rest = days[defaultIndex];
@@ -227,11 +235,23 @@ const acosTicks = ticks(axis.acosMax);
 
   <Ads />
 
+  <Audits />
+
   <Process />
+
+  <AboutUs />
 
   <Results />
 
+  <CaseStudies />
+
   <Testimonials />
+
+  <FormFaq />
+
+  <Logo />
+
+  <Footer />
 
   <aside class="story" data-story aria-label={STORY.label} hidden>
     <div class="story__stat">
@@ -250,9 +270,14 @@ const acosTicks = ticks(axis.acosMax);
       <p class="story__title">{STORY.title}</p>
       <p class="story__brand">{STORY.brand}</p>
     </div>
-    <a class="story__cta" href="#top" data-part-link={STORY.part}>
-      {STORY.cta} <img src={arrowRight} width="17" height="17" alt="" />
-    </a>
+    <div class="story__actions">
+      <a class="story__cta" href="#top" data-part-link={STORY.part}>
+        {STORY.cta} <img src={arrowRight} width="17" height="17" alt="" />
+      </a>
+      <button class="story__close" type="button" aria-label="Close" data-story-close>
+        <img src={closeIcon} width="10.8" height="10.8" alt="" />
+      </button>
+    </div>
   </aside>
 </div>
 
@@ -270,6 +295,7 @@ const acosTicks = ticks(axis.acosMax);
   const burger = menu.querySelector<HTMLButtonElement>('.menu__burger')!;
   const panel = menu.querySelector<HTMLElement>('.menu__panel')!;
   const story = page.querySelector<HTMLElement>('[data-story]')!;
+  const storyClose = story.querySelector<HTMLButtonElement>('[data-story-close]')!;
   const chart = hero.querySelector<HTMLElement>('[data-chart]')!;
   const q = <T extends Element = HTMLElement>(sel: string) => chart.querySelector<T>(sel)!;
   const plot = q('[data-plot]');
@@ -381,6 +407,8 @@ const acosTicks = ticks(axis.acosMax);
   let downAt = { x: 0, y: 0 };
   const onDown = (e: PointerEvent) => {
     downAt = { x: e.clientX, y: e.clientY };
+    // A press anywhere off the popup closes it (and still does its own job).
+    if (storyState === 'shown' && !story.contains(e.target as Node)) hideStory();
   };
   const onClick = (e: MouseEvent) => {
     const target = e.target as Element;
@@ -441,7 +469,8 @@ const acosTicks = ticks(axis.acosMax);
   // ---------- Success story popup ----------
   // It slides up from below the screen after five seconds on the hero and
   // settles with a slow, soft bounce. Leaving the hero first cancels it for
-  // good; leaving while it shows slides it back down for good.
+  // good; leaving while it shows, its close button, Escape or a press
+  // anywhere else slide it back down for good.
   let storyState: 'waiting' | 'shown' | 'done' = 'waiting';
   const offHero = () => hero.getBoundingClientRect().bottom - page.getBoundingClientRect().top < page.clientHeight / 2;
   /** How far the popup moves to sit just below the screen's bottom edge. */
@@ -498,6 +527,7 @@ const acosTicks = ticks(axis.acosMax);
   plot.addEventListener('keydown', onPlotKey);
   plot.addEventListener('blur', onPlotLeave);
   burger.addEventListener('click', onBurger);
+  storyClose.addEventListener('click', hideStory);
   links.forEach((a) => a.addEventListener('click', onLink));
   desktop.addEventListener('change', onDesktop);
   page.addEventListener('scroll', onScroll, { passive: true });
@@ -527,6 +557,7 @@ const acosTicks = ticks(axis.acosMax);
       desktop.removeEventListener('change', onDesktop);
       page.removeEventListener('scroll', onScroll);
       document.removeEventListener('pointerdown', onDown, true);
+      storyClose.removeEventListener('click', hideStory);
       document.removeEventListener('click', onClick);
       document.removeEventListener('keydown', onKey);
     },

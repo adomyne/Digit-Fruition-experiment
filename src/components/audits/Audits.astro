@@ -1,0 +1,607 @@
+---
+// Audits: "We Also Do Audits", a live PPC audit sheet and what the audit
+// covers. Figma: Audit Section 142:1233 (1440 x 910.6).
+//
+// Shared, static piece like Case studies: the stack pages (2-5) include this
+// one Astro component. In Figma the sheet is a screenshot (1400 x 1062); here
+// it is real HTML so its numbers can be read, checked and charted. The
+// Takeaways panel, empty in Figma, holds a paired bar chart of share of spend
+// vs share of sales per match type.
+//
+// Figures: the frame's Total Sales ($321.78) was off by 1000x, which made
+// TACOS 7511% and "% of ad sales" 27840%; it is $321,780 here. ACOS and the
+// table's % of spend / % of sales didn't match Ad Spend and Ad Sales; they are
+// recomputed from them. Every derived figure is computed below, so they can't
+// drift apart again.
+//
+// The sheet is drawn on the screenshot's 1400px grid: --u is one screenshot
+// pixel, so the whole sheet scales with its card.
+import download from './assets/download.svg?url';
+import arrowRight from './assets/arrow-right.svg?url';
+import calendarStar from './assets/calendar-star.svg?url';
+import dataBarStar from './assets/data-bar-star.svg?url';
+import scale from './assets/scale.svg?url';
+import search from './assets/search.svg?url';
+import menuSearch from './assets/menu-search.svg?url';
+
+const totals = {
+  spend: 24170.04,
+  adSales: 89584.74,
+  totalSales: 321780,
+  impressions: 1338400,
+  clicks: 34296,
+  orders: 3035,
+};
+
+const matchTypes = [
+  { name: 'Exact', spend: 3470.08, sales: 8004.38, impressions: 581295, clicks: 3582, orders: 246 },
+  { name: 'Phrase', spend: 4156.13, sales: 18306.8, impressions: 376874, clicks: 6196, orders: 484 },
+];
+
+const money = (n: number) =>
+  '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const count = (n: number) => n.toLocaleString('en-US');
+const pct = (part: number, whole: number) => ((part / whole) * 100).toFixed(2) + '%';
+
+const tiles = [
+  ['Ad Spend', money(totals.spend)],
+  ['Ad Sales', money(totals.adSales)],
+  ['Total Sales', money(totals.totalSales)],
+  ['ACOS', pct(totals.spend, totals.adSales)],
+  ['TACOS', pct(totals.spend, totals.totalSales)],
+  ['% of ad sales', pct(totals.adSales, totals.totalSales)],
+  ['CVR', pct(totals.orders, totals.clicks)],
+  ['CPA', money(totals.spend / totals.orders)],
+  ['CPC', money(totals.spend / totals.clicks)],
+  ['Impressions', count(totals.impressions)],
+  ['Clicks', count(totals.clicks)],
+  ['Orders', count(totals.orders)],
+];
+
+const columns = ['Match Types', 'Spend', 'Sales', '% of sales', '% of spend', 'ACOS', 'Impressions', 'Clicks', 'Orders', 'CVR', 'CTR', 'CPC'];
+const rows = matchTypes.map((m) => ({
+  name: m.name,
+  shareOfSpend: (m.spend / totals.spend) * 100,
+  shareOfSales: (m.sales / totals.adSales) * 100,
+  cells: [
+    money(m.spend),
+    money(m.sales),
+    pct(m.sales, totals.adSales),
+    pct(m.spend, totals.spend),
+    pct(m.spend, m.sales),
+    count(m.impressions),
+    count(m.clicks),
+    count(m.orders),
+    pct(m.orders, m.clicks),
+    pct(m.clicks, m.impressions),
+    money(m.spend / m.clicks),
+  ],
+}));
+
+// Bars share one scale, rounded up to the next 5%.
+const scaleMax = Math.ceil(Math.max(...rows.flatMap((r) => [r.shareOfSpend, r.shareOfSales])) / 5) * 5;
+const barWidth = (v: number) => `${((v / scaleMax) * 100).toFixed(2)}%`;
+
+const sheetTabs = ['PPC Audit', 'PPC Audit Sample', 'Search Term Report', 'Low/High Conversion ASIN Breakdown', 'Structure Analysis', 'Business Reports'];
+
+const offers = [
+  { label: 'Ad Type Performance Check', icon: calendarStar },
+  { label: 'Match Type Efficiency View', icon: dataBarStar },
+  { label: 'TACOS Scaling Calculator', icon: scale },
+  { label: 'Search Term ROI Breakdown', icon: search },
+  { label: 'Smart Budget Allocation Plan', icon: menuSearch },
+];
+---
+
+<section class="audits" id="audits" data-lab-part="Audits">
+  <header class="heading">
+    <p class="heading__eyebrow">We Also Do Audits</p>
+    <h2 class="heading__title">A PPC Audit Built for Revenue Growth — Not Surface-Level Insights</h2>
+  </header>
+
+  <div class="preview">
+    <div class="preview__row">
+      <figure class="sheet" aria-label="Sample PPC audit sheet">
+        <div class="sheet__grid">
+          <div class="sheet__top">
+            <div class="sheet__titlebar">
+              <p class="sheet__title">PPC Audit</p>
+              <span class="sheet__dash" aria-hidden="true"></span>
+            </div>
+            <div class="sheet__fields">
+              <p class="field field--brand">Brand Name:<span class="field__line"></span></p>
+              <p class="field field--period">Period:<span class="field__line"></span></p>
+            </div>
+            <div class="sheet__body">
+              <dl class="tiles">
+                {tiles.map(([label, value]) => (
+                  <div class="tile">
+                    <dt class="tile__label">{label}</dt>
+                    <dd class="tile__value">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div class="takeaways">
+                <p class="takeaways__title">Takeaways:</p>
+                <p class="takeaways__lead">Spend vs sales share</p>
+                <ul class="legend" aria-hidden="true">
+                  <li class="legend__item"><span class="legend__key legend__key--spend"></span>% of spend</li>
+                  <li class="legend__item"><span class="legend__key legend__key--sales"></span>% of sales</li>
+                </ul>
+                <ul class="bars">
+                  {rows.map((r) => (
+                    <li class="bars__group">
+                      <p class="bars__name">{r.name}</p>
+                      <div class="bar">
+                        <span class="bar__fill bar__fill--spend" style={`width: ${barWidth(r.shareOfSpend)}`}></span>
+                        <span class="bar__value">{r.shareOfSpend.toFixed(1)}%<span class="sr"> of spend</span></span>
+                      </div>
+                      <div class="bar">
+                        <span class="bar__fill bar__fill--sales" style={`width: ${barWidth(r.shareOfSales)}`}></span>
+                        <span class="bar__value">{r.shareOfSales.toFixed(1)}%<span class="sr"> of sales</span></span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p class="takeaways__note">
+                  Phrase brings in more sales than its share of spend; Exact costs more than it returns.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="sheet__table">
+            <table class="table">
+              <thead>
+                <tr>{columns.map((c) => <th scope="col">{c}</th>)}</tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr>
+                    <th scope="row">{r.name}</th>
+                    {r.cells.map((c) => <td>{c}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="sheet__tabs" aria-hidden="true">
+            <span class="sheet__plus"></span>
+            <span class="sheet__menu"></span>
+            {sheetTabs.map((t, i) => (
+              <span class:list={['sheet__tab', { 'sheet__tab--active': i === 0 }]}>{t}<span class="sheet__chevron"></span></span>
+            ))}
+            <span class="sheet__arrows"><span class="sheet__arrow sheet__arrow--prev"></span><span class="sheet__arrow"></span></span>
+          </div>
+        </div>
+      </figure>
+
+      <div class="offers">
+        <p class="offers__title"><span>What we offer</span></p>
+        <ul class="offers__list">
+          {offers.map((item) => (
+            <li class="offer">
+              <img class="offer__icon" src={item.icon} alt="" />
+              <span>{item.label}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="button button--light" href="#">
+        <img class="button__icon" src={download} alt="" />
+        <span>Get a Free Audit</span>
+      </a>
+      <a class="button button--dark" href="#">
+        <span>Learn more</span>
+        <img class="button__icon" src={arrowRight} alt="" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .audits {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-12);
+    padding: var(--space-16) var(--space-4) var(--space-20);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+  }
+  .audits *, .audits *::before, .audits *::after { box-sizing: border-box; }
+  p, h2, ul, dl, dd, figure { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    max-width: 100%;
+    text-align: center;
+  }
+  .heading__eyebrow {
+    width: 51.3576rem; /* 821.7px */
+    max-width: 100%;
+    font-size: var(--text-md);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-heading);
+  }
+  .heading__title {
+    width: 42.5rem; /* 680px */
+    max-width: 100%;
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-heading);
+  }
+
+  .preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    width: var(--width-content);
+    max-width: 100%;
+  }
+  .preview__row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+
+  /* ---- The audit sheet (the screenshot in Figma, rebuilt) ---- */
+  .sheet {
+    flex-shrink: 1;
+    width: var(--width-main);
+    min-width: 0;
+    aspect-ratio: 1400 / 1062;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-elevation-3);
+    background: var(--color-bg);
+    color: var(--color-text);
+    container-type: inline-size;
+  }
+  .sheet__grid {
+    --u: calc(100cqi / 1400); /* one pixel of the 1400px screenshot */
+    --sheet-paper: color-mix(in srgb, var(--color-ink) 5%, color-mix(in srgb, var(--color-accent) 5%, var(--color-bg)));
+    --sheet-bar: color-mix(in srgb, var(--color-ink) 3%, var(--color-bg));
+    --sheet-rule: color-mix(in srgb, var(--color-ink) 14%, transparent);
+    display: grid;
+    grid-template-rows: calc(var(--u) * 720) 1fr calc(var(--u) * 77);
+    height: 100%;
+    font-size: calc(var(--u) * 15);
+    line-height: 1.3;
+  }
+  .sheet__top {
+    padding: calc(var(--u) * 58) calc(var(--u) * 62) 0;
+    background: var(--sheet-paper);
+  }
+  .sheet__titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sheet__title {
+    font-size: calc(var(--u) * 46);
+    font-weight: var(--weight-medium);
+    line-height: 1.1;
+  }
+  .sheet__dash {
+    width: calc(var(--u) * 63);
+    height: calc(var(--u) * 4);
+    background: var(--color-accent);
+  }
+  .sheet__fields {
+    display: flex;
+    gap: calc(var(--u) * 47);
+    margin-top: calc(var(--u) * 45);
+  }
+  .field {
+    display: flex;
+    align-items: flex-end;
+    gap: calc(var(--u) * 16);
+  }
+  .field__line {
+    height: 1px;
+    margin-bottom: calc(var(--u) * 2);
+    background: var(--sheet-rule);
+  }
+  .field--brand .field__line { width: calc(var(--u) * 296); }
+  .field--period .field__line { width: calc(var(--u) * 336); }
+
+  .sheet__body {
+    display: flex;
+    align-items: flex-start;
+    gap: calc(var(--u) * 38);
+    margin-top: calc(var(--u) * 33);
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(3, calc(var(--u) * 296));
+    column-gap: calc(var(--u) * 27);
+    padding-top: calc(var(--u) * 20);
+  }
+  /* Row 1 starts at the label; rows 2-4 sit 23px below the rule above. */
+  .tile {
+    height: calc(var(--u) * 95);
+    border-bottom: 1px solid var(--sheet-rule);
+  }
+  .tile:nth-child(n + 4) {
+    height: calc(var(--u) * 117);
+    padding-top: calc(var(--u) * 23);
+  }
+  .tile__label {
+    color: var(--color-text-faint);
+  }
+  .tile__value {
+    margin-top: calc(var(--u) * 12);
+    font-size: calc(var(--u) * 38);
+    line-height: 1.15;
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .takeaways {
+    display: flex;
+    flex-direction: column;
+    width: calc(var(--u) * 296);
+    height: calc(var(--u) * 466);
+    padding: calc(var(--u) * 26) calc(var(--u) * 23);
+    border: 1px solid var(--sheet-rule);
+    background: var(--color-bg);
+  }
+  .takeaways__title {
+    padding-bottom: calc(var(--u) * 16);
+    border-bottom: calc(var(--u) * 2.5) solid var(--color-accent);
+    font-size: calc(var(--u) * 26);
+    line-height: 1.2;
+  }
+  .takeaways__lead {
+    margin-top: calc(var(--u) * 20);
+    font-size: calc(var(--u) * 18);
+    font-weight: var(--weight-semibold);
+  }
+  .legend {
+    display: flex;
+    gap: calc(var(--u) * 16);
+    margin-top: calc(var(--u) * 10);
+    color: var(--color-text-faint);
+    font-size: calc(var(--u) * 15);
+  }
+  .legend__item { display: flex; align-items: center; gap: calc(var(--u) * 6); }
+  .legend__key { width: calc(var(--u) * 12); height: calc(var(--u) * 12); border-radius: calc(var(--u) * 2); }
+  .legend__key--spend, .bar__fill--spend { background: var(--color-ink); }
+  .legend__key--sales, .bar__fill--sales { background: var(--color-accent); }
+
+  .bars {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 18);
+    margin-top: calc(var(--u) * 20);
+  }
+  .bars__name {
+    margin-bottom: calc(var(--u) * 6);
+    font-size: calc(var(--u) * 17);
+    color: var(--color-accent);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--u) * 8);
+    height: calc(var(--u) * 26);
+  }
+  .bar + .bar { margin-top: calc(var(--u) * 4); }
+  .bar__fill {
+    height: 100%;
+    max-width: calc(100% - var(--u) * 64);
+    border-radius: 0 calc(var(--u) * 3) calc(var(--u) * 3) 0;
+  }
+  .bar__value {
+    font-size: calc(var(--u) * 16);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .takeaways__note {
+    margin-top: auto;
+    font-size: calc(var(--u) * 16);
+    line-height: 1.4;
+    color: var(--color-text-muted);
+  }
+
+  .sheet__table {
+    padding: calc(var(--u) * 38) calc(var(--u) * 62) 0;
+  }
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .table thead th {
+    height: calc(var(--u) * 54);
+    padding: 0 calc(var(--u) * 12);
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+    font-weight: var(--weight-regular);
+    text-align: left;
+    white-space: nowrap;
+  }
+  .table tbody th, .table td {
+    height: calc(var(--u) * 62);
+    padding: 0 calc(var(--u) * 12);
+    border-bottom: 1px solid var(--sheet-rule);
+    white-space: nowrap;
+  }
+  .table tbody th {
+    color: var(--color-accent);
+    font-weight: var(--weight-regular);
+    text-align: left;
+  }
+  .table td { text-align: right; }
+
+  .sheet__tabs {
+    display: flex;
+    align-items: stretch;
+    border-top: 1px solid var(--sheet-rule);
+    background: var(--sheet-bar);
+    padding: calc(var(--u) * 10) 0 0 calc(var(--u) * 26);
+    font-size: calc(var(--u) * 15);
+    white-space: nowrap;
+  }
+  .sheet__plus, .sheet__menu {
+    position: relative;
+    align-self: center;
+    width: calc(var(--u) * 14);
+    height: calc(var(--u) * 14);
+    margin-right: calc(var(--u) * 24);
+  }
+  .sheet__plus::before, .sheet__plus::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    height: calc(var(--u) * 1.5);
+    background: var(--color-text-faint);
+  }
+  .sheet__plus::after { transform: rotate(90deg); }
+  .sheet__menu {
+    border-block: calc(var(--u) * 1.5) solid var(--color-text-faint);
+    background: linear-gradient(var(--color-text-faint), var(--color-text-faint)) center / 100% calc(var(--u) * 1.5) no-repeat;
+  }
+  .sheet__tab {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--u) * 24);
+    padding: 0 calc(var(--u) * 12);
+    border-right: 1px solid var(--sheet-rule);
+  }
+  .sheet__tab--active {
+    border-top: calc(var(--u) * 2) solid var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent-light) 8%, var(--color-bg));
+    color: var(--color-accent);
+  }
+  .sheet__chevron {
+    width: calc(var(--u) * 6);
+    height: calc(var(--u) * 6);
+    border-right: calc(var(--u) * 1.2) solid currentColor;
+    border-bottom: calc(var(--u) * 1.2) solid currentColor;
+    opacity: 0.7;
+    transform: translateY(-25%) rotate(45deg);
+  }
+  .sheet__arrows {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--u) * 18);
+    margin-left: auto;
+    padding-right: calc(var(--u) * 28);
+  }
+  .sheet__arrow {
+    width: calc(var(--u) * 7);
+    height: calc(var(--u) * 7);
+    border-right: calc(var(--u) * 1.5) solid var(--color-text);
+    border-top: calc(var(--u) * 1.5) solid var(--color-text);
+    transform: rotate(45deg);
+  }
+  .sheet__arrow--prev { transform: rotate(-135deg); }
+
+  /* ---- What we offer ---- */
+  .offers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    flex-shrink: 0;
+    width: var(--width-side);
+    padding: 2.125rem 0 var(--space-6); /* 34px top */
+    border: 1px solid var(--color-on-ink);
+    border-radius: var(--radius-sm);
+    background: linear-gradient(to bottom, var(--color-axis), var(--color-ink));
+  }
+  .offers__title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 17.875rem; /* 286px */
+    height: 5.25rem; /* 84px */
+    font-size: var(--text-h4);
+    line-height: var(--leading-heading);
+  }
+  .offers__title span { width: 15.0625rem; /* 241px text box */ }
+  /* Title at the top, list at the bottom (Figma: justify-between). */
+  .offers__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 17.875rem;
+    height: 21.1875rem; /* 339px */
+    margin-top: auto;
+  }
+  .offer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--control-height);
+    padding: 0 var(--space-5);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    white-space: nowrap;
+  }
+  .offer__icon { width: var(--icon-md); height: var(--icon-md); }
+
+  .actions {
+    display: flex;
+    gap: var(--space-5);
+  }
+  .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--control-height);
+    padding: 0 var(--space-5);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    white-space: nowrap;
+  }
+  .button--light {
+    flex: 1;
+    gap: var(--space-2);
+    background: var(--color-bg);
+    box-shadow: var(--shadow-elevation-3);
+    color: var(--color-text);
+  }
+  .button--dark {
+    gap: var(--space-3);
+    width: var(--width-side);
+    border: 1px solid var(--color-on-ink);
+    background: linear-gradient(to right, var(--color-ink), var(--color-axis));
+    font-weight: var(--weight-bold);
+  }
+  .button__icon { width: var(--icon-sm); height: var(--icon-sm); }
+  .button:focus-visible { outline: 2px solid var(--color-on-accent); outline-offset: 2px; }
+
+  /* Below the 1044px column the sheet and the offers stack, and the
+     buttons follow. */
+  @media (max-width: 66rem) {
+    .preview__row, .actions { flex-direction: column; align-items: stretch; }
+    .sheet { width: 100%; }
+    .offers, .button--dark { width: 100%; }
+    .offers__list { height: auto; margin-top: var(--space-6); }
+    .button--light { flex: none; }
+  }
+</style>

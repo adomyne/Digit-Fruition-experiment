@@ -486,12 +486,12 @@
     display: flex;
     align-items: center;
     gap: var(--space-6);
-    padding: var(--space-1-75) var(--space-5) var(--space-1-75) var(--space-6);
+    padding: var(--space-1-75) 0 var(--space-1-75) var(--space-6);
     border: 1px solid var(--color-accent);
     border-radius: var(--radius-panel);
-    background: var(--color-ink);
+    background: linear-gradient(var(--color-bg) 29.945%, var(--color-popup-fade) 141.8%);
     box-shadow: var(--shadow-elevation-3);
-    color: var(--color-on-ink);
+    color: var(--color-ink);
     text-align: left;
   }
   .story[hidden] { display: none; }
@@ -536,10 +536,10 @@
     justify-content: center;
   }
   .story__divider img { flex: none; transform: rotate(90deg); }
-  /* Figma gives the copy 763px and the button the rest (288px at 1360):
-     the copy grows three times as fast as the button. */
+  /* Figma gives the copy 763px and the button and close X the rest (307px
+     at 1360): they share the free width 5 : 2. */
   .story__text {
-    flex: 3 1 0;
+    flex: 5 1 0;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -556,6 +556,12 @@
     font-size: var(--text-base);
     line-height: var(--leading-body);
   }
+  .story__actions {
+    flex: 2 1 0;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+  }
   .story__cta {
     flex: 1 1 0;
     height: var(--control-height);
@@ -567,7 +573,7 @@
     border: 1px solid var(--color-on-accent);
     border-radius: var(--radius-sm);
     background: var(--color-accent);
-    color: var(--color-on-accent);
+    color: var(--color-ink);
     font-size: var(--text-base);
     font-weight: var(--weight-bold);
     line-height: var(--leading-body);
@@ -576,6 +582,19 @@
     transition: background-color var(--duration-fast) var(--ease-out);
   }
   .story__cta:hover { background: color-mix(in srgb, var(--color-accent) 88%, var(--color-text)); }
+  /* Close X (Figma 353:156): top right corner, 12px from the edge. */
+  .story__close {
+    flex: none;
+    align-self: stretch;
+    display: flex;
+    align-items: flex-start;
+    padding: 0 var(--space-3);
+    border: 0;
+    background: none;
+    cursor: pointer;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+  .story__close:hover { opacity: 0.7; }
 
   & a:focus-visible,
   & button:focus-visible {
@@ -597,9 +616,15 @@
       gap: var(--space-3) var(--space-5);
       bottom: var(--space-12);
     }
+    .story { padding-right: var(--space-8); }
     .story__divider { display: none; }
     .story__text { flex-basis: 16rem; }
-    .story__cta { flex: 1 0 100%; }
+    .story__actions { flex: 1 0 100%; }
+    .story__close {
+      position: absolute;
+      top: var(--space-2);
+      right: 0;
+    }
   }
 
   @media (max-width: 640px) {

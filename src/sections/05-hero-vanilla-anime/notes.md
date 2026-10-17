@@ -51,10 +51,17 @@ What it does:
   `spring({ bounce: 0.45, duration: 2000 })`: about 18px of overshoot at
   ~1.2s on desktop, at rest by ~2s. Reduced motion shows it in place.
   Leaving the hero first cancels it for good; leaving while it shows slides
-  it back down for good (Escape too). Its button scrolls to Results.
+  it back down for good, as do its close X, Escape and a press anywhere off
+  the popup (that press still does its own job). Its button scrolls to the
+  section named in `STORY.part`.
   Owner's quieter version of 329:84 (2026-10-16): a 1360 × 80 bar, H5
   numbers and title (21px), 16px bold label, 40px button; copy and button
   split the free width 3 : 1 (763 : 288 in Figma).
+  Owner's light version with a close X (same day): white to `#d8d7d7`
+  gradient (`--color-popup-fade`), Gray (`--color-ink`) text and button
+  label, dark arrow, orange X (`assets/popup/close.svg`, Figma 353:156) in
+  the top right with 12px side padding; copy and button + X split 5 : 2.
+  Below 1000px the X sits in the card's top right corner.
 
 Not done / open:
 - The language button and Get a Free Audit go nowhere yet.
@@ -271,3 +278,99 @@ Started from the `/6` reference part (copied, not imported).
   "They dove into our artworks" (Elovate, 0:27). While playing the caption
   drops to body size and widens so a two-line cue fits.
 - Not done: card 2 copy.
+
+## Case studies (shared, 2026-10-16, Claude Code)
+
+The Resources block (Figma 142:1504: "Case Studies / Blogs" tabs and three
+result cards) sits after Results. It is not rebuilt per stack: the page
+includes the one static Astro component at
+`src/components/case-studies/CaseStudies.astro`, copied from page 6's
+`parts/CaseStudies.astro` with its own copies of the images. No animation
+and no island. Its root has `id="resources"` and
+`data-lab-part="Case studies"`. Below about 1056px wide the cards stack.
+The Blogs tab does nothing yet.
+On page 5 the menu's Resources link and the popup's "View Case Studies"
+button now scroll here (they went to Results before).
+
+## Form & FAQ (shared, 2026-10-16, Claude Code)
+
+The audit form and FAQ block (Figma 142:1607 "Audit form and FAQ", inside
+142:1606) sits after Testimonials. It is not rebuilt per stack: the page
+includes the one static Astro component at
+`src/components/forms/FormFaq.astro`, copied from page 6's
+`parts/FormFaq.astro` with its own copies of the icons. No animation and no
+island. Its root has `id="forms"` and `data-lab-part="Form & FAQ"`. Below
+about 1056px wide the form and the FAQ stack. The form does not send
+anything yet and the FAQ rows don't open.
+
+On page 5 the menu's Contact Us link scrolls to it.
+
+## Footer (shared, 2026-10-16, Claude Code)
+
+The footer (Figma 142:1697 "Footer") is the last block on the page, after
+Form & FAQ. It is not rebuilt per stack: the page includes the shared static
+piece `src/components/footer/Footer.astro`, copied from page 6's
+`parts/Footer.astro` with its own copy of the creator logo. No animation and
+no island. Its root has `id="footer"` and `data-lab-part="Footer"`. Below
+768px wide the two columns stack and the social links wrap (not in Figma).
+The social links point at `#` until real URLs exist.
+
+## Logo (shared, 2026-10-16, Claude Code)
+
+The logo block sits between Form & FAQ and the footer, as in the landing
+order. It is the shared piece `src/components/logo/Logo.astro`, built from
+the user's Paper design: their logo SVG with Paper's Gem Smoke shader, from
+the plain `@paper-design/shaders` package (0.0.81), mounted with vanilla
+TypeScript (no React, no animation library, so nothing fights this page's
+own). It uses the user's own Paper settings (speed 1, size 0.8, outer/inner
+distortion 0.55/0.6, outer glow 0, inner glow 0.65, scale 0.6, diamond,
+their starting frame), mapped the way Paper's React wrapper does, on an
+800 x 600 canvas that shrinks with the same ratio on narrow screens. Colours
+are read from tokens.css at start (`--color-accent`, `--color-gem-yellow`,
+`--color-gem-white`, `--color-gem-inner`) and the background is
+transparent. The plain SVG shows until the shader is ready and stays if
+WebGL is missing; reduced motion gets one still frame; it pauses when off
+screen. Root has `id="logo"` and `data-lab-part="Logo"`. Figma 142:1695 (a
+static glow PNG) was the rough example only.
+
+## Audits (shared, 2026-10-17, Claude Code)
+
+The audits block (Figma 142:1233 "Audit Section") sits between Ads and
+Process, as in the landing order. It is the shared static piece
+`src/components/audits/Audits.astro`: no animation and no island. Its root
+has `id="audits"` and `data-lab-part="Audits"`. In Figma the audit sheet is a
+screenshot; here it is real HTML (12 metric tiles, the match-type table and
+the sheet tabs), and the empty Takeaways panel holds a paired bar chart of
+% of spend vs % of ad sales per match type. Figures fixed from the frame:
+Total Sales $321.78 -> $321,780 (so TACOS 7.51% and % of ad sales 27.84%),
+ACOS 31.23% -> 26.98%, and the table's % of spend / % of sales recomputed
+from Ad Spend and Ad Sales; the component computes every derived figure.
+The five "What we offer" icons are the Figma ones, downloaded 2026-10-17.
+
+## About us (shared, 2026-10-17, Claude Code)
+
+The About us block (Figma 142:1298 "Values and Partners") sits between
+Process and Results, as in the landing order. It is the shared piece
+`src/components/about/AboutUs.astro`, with no island and no animation
+library. Root has `id="about"` and `data-lab-part="About us"`. Assets are the
+frame's own Figma exports (icons, backdrop and photo as WebP).
+
+The four value cards flip like a coin: on hover they tip 20% of a half turn
+(36deg, 450ms, `--ease-out`); a click finishes the turn (750ms, the new
+`--ease-in-out` token) and a second click turns it back. While a click's
+turn runs, the hover tip waits until the pointer leaves, so the card lands
+flat. Plain CSS transitions on one `transform`, toggled by a small script
+whose listeners are removed on `astro:before-swap`. Each card is a button
+with `aria-pressed`; reduced motion swaps sides with no turn and no tip.
+The back follows Figma 375:104: grey card, orange 16px title, 13px Small
+text and the Digit Fruition logo at the foot. Not done: the back text is
+draft copy (Figma has "Body"); replace the `body` lines in AboutUs.astro
+when the real copy arrives. Cards grow past Figma's 215px so the three-line
+"Flexible Payment Structure" isn't clipped as it is in the frame.
+
+Card polish (owner's call): the icons are trimmed to their shapes and sized
+by area of colour (84 / 91 / 84 / 104px) in one 104px slot, so the diamond
+no longer looks smaller than the leaf and icons and titles line up. All four
+titles share one size: 21px when it fits, otherwise the script steps it down
+until no word touches the card's padding (CSS guess `100cqi / 8.6` without JS).
+On page 5 the menu's About link now scrolls to About us (it went to Process).

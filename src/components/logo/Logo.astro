@@ -1,0 +1,216 @@
+---
+// Logo: the Digit Fruition wordmark with Paper's Gem Smoke shader, right
+// before the footer. Design: the user's Paper file (logo SVG supplied in the
+// thread); Figma Logo Container 142:1695 (1440 x 600) is the rough example.
+//
+// Shared piece: the stack pages (2-5) include this one Astro component
+// instead of rebuilding it per framework. The moving finish is Gem Smoke from
+// the plain @paper-design/shaders package (0.0.81), mounted with vanilla
+// TypeScript so it never touches a section's animation library. Settings are
+// the ones the user copied from Paper's React GemSmoke. The plain SVG shows
+// until the shader is ready, and stays if WebGL is missing. Its scoped
+// <style> sets its own font, colour, background and box-sizing from
+// tokens.css and reaches nothing else. (ShaderMount itself adds one
+// `@layer paper-shaders` <style> that only targets [data-paper-shader].)
+import logo from './assets/logo.svg?url';
+---
+
+<section class="logo" id="logo" data-lab-part="Logo" data-logo>
+  <div class="logo__stage">
+    <img class="logo__image" src={logo} width="738" height="207" alt="Digit Fruition" loading="lazy" decoding="async" />
+    <div class="logo__shader" data-logo-shader data-art={logo} aria-hidden="true"></div>
+  </div>
+</section>
+
+<script>
+  import {
+    ShaderMount,
+    ShaderFitOptions,
+    defaultObjectSizing,
+    gemSmokeFragmentShader,
+    GemSmokeShapes,
+    getShaderColorFromString,
+    toProcessedGemSmoke,
+  } from '@paper-design/shaders';
+
+  // The user's Paper settings (React GemSmoke, shaders-react 0.0.81).
+  // Colours come from tokens.css; colorBack is fully transparent so the
+  // white section shows through.
+  const SETTINGS = {
+    speed: 1,
+    frame: 1424529.0400000087,
+    size: 0.8,
+    outerDistortion: 0.55,
+    innerDistortion: 0.6,
+    outerGlow: 0,
+    innerGlow: 0.65,
+    offset: 0,
+    scale: 0.6,
+    angle: 0,
+    shape: 'diamond',
+  } as const;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const cleanups: (() => void)[] = [];
+
+  function token(name: string) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  // The logo SVG only has a viewBox; give it a pixel size so Paper's
+  // pre-processing can read its aspect ratio, then hand it over as a blob.
+  async function sizedSvgUrl(src: string) {
+    const text = await (await fetch(src)).text();
+    const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
+    const svg = doc.documentElement;
+    const box = svg.getAttribute('viewBox')?.split(/[\s,]+/).map(Number);
+    if (box?.length === 4 && !svg.getAttribute('width')) {
+      svg.setAttribute('width', String(box[2]));
+      svg.setAttribute('height', String(box[3]));
+    }
+    const blob = new Blob([new XMLSerializer().serializeToString(doc)], { type: 'image/svg+xml' });
+    return URL.createObjectURL(blob);
+  }
+
+  function loadImage(url: string) {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Logo image failed to load'));
+      img.src = url;
+    });
+  }
+
+  async function startLogo(root: HTMLElement) {
+    const host = root.querySelector<HTMLElement>('[data-logo-shader]')!;
+    let disposed = false;
+    let mount: ShaderMount | undefined;
+    let processedUrl: string | undefined;
+    cleanups.push(() => {
+      disposed = true;
+      mount?.dispose();
+      mount?.canvasElement.remove();
+      if (processedUrl) URL.revokeObjectURL(processedUrl);
+    });
+
+    // Same pre-processing step the React wrapper runs on `image`.
+    const svgUrl = await sizedSvgUrl(host.dataset.art!);
+    try {
+      const { pngBlob } = await toProcessedGemSmoke(svgUrl);
+      processedUrl = URL.createObjectURL(pngBlob);
+    } finally {
+      URL.revokeObjectURL(svgUrl);
+    }
+    const image = await loadImage(processedUrl);
+    if (disposed) return;
+
+    const colors = [token('--color-accent'), token('--color-gem-yellow'), token('--color-gem-white')];
+    const sizing = { ...defaultObjectSizing, scale: SETTINGS.scale };
+    const uniforms = {
+      u_colors: colors.map(getShaderColorFromString),
+      u_colorsCount: colors.length,
+      u_colorBack: [0, 0, 0, 0],
+      u_image: image,
+      u_innerDistortion: SETTINGS.innerDistortion,
+      u_outerDistortion: SETTINGS.outerDistortion,
+      u_outerGlow: SETTINGS.outerGlow,
+      u_innerGlow: SETTINGS.innerGlow,
+      u_colorInner: getShaderColorFromString(token('--color-gem-inner')),
+      u_offset: SETTINGS.offset,
+      u_angle: SETTINGS.angle,
+      u_size: SETTINGS.size,
+      u_isImage: true,
+      u_shape: GemSmokeShapes[SETTINGS.shape],
+      u_fit: ShaderFitOptions[sizing.fit],
+      u_scale: sizing.scale,
+      u_rotation: sizing.rotation,
+      u_offsetX: sizing.offsetX,
+      u_offsetY: sizing.offsetY,
+      u_originX: sizing.originX,
+      u_originY: sizing.originY,
+      u_worldWidth: sizing.worldWidth,
+      u_worldHeight: sizing.worldHeight,
+    };
+
+    // Throws when WebGL2 is missing; the plain logo then stays.
+    mount = new ShaderMount(host, gemSmokeFragmentShader, uniforms, undefined, 0, SETTINGS.frame, undefined, undefined, ['u_image']);
+    root.toggleAttribute('data-shaded', true);
+
+    // Reduced motion: speed 0 keeps the single still frame at `frame`.
+    // Off screen: speed 0 too, resumed when the section is visible again.
+    let visible = false;
+    const apply = () => mount?.setSpeed(visible && !reduceMotion.matches ? SETTINGS.speed : 0);
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      apply();
+    });
+    observer.observe(root);
+    reduceMotion.addEventListener('change', apply);
+    cleanups.push(() => {
+      observer.disconnect();
+      reduceMotion.removeEventListener('change', apply);
+    });
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-logo]')) {
+    startLogo(root).catch(() => {}); // the plain logo stays
+  }
+
+  // Navigation is full page loads today; once view transitions are added
+  // this stops the shader before the swap.
+  document.addEventListener('astro:before-swap', () => cleanups.splice(0).forEach((stop) => stop()), { once: true });
+</script>
+
+<style>
+  .logo {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 37.5rem; /* 600px */
+    padding: 0 var(--space-5);
+    overflow: hidden;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+  }
+  .logo *, .logo *::before, .logo *::after { box-sizing: border-box; }
+
+  /* The stage is the Paper canvas (800 x 600); it shrinks with the same
+     aspect ratio on narrow screens. */
+  .logo__stage {
+    position: relative;
+    width: 50rem; /* 800px */
+    max-width: 100%;
+    aspect-ratio: 800 / 600;
+  }
+  .logo__image,
+  .logo__shader {
+    position: absolute;
+    display: block;
+  }
+  .logo__image {
+    /* Where Gem Smoke draws the logo: contain-fit at scale 0.6, minus
+       Paper's 2.5% padding on each side, centred. */
+    left: 21.5%;
+    top: 50%;
+    width: 57%;
+    height: auto;
+    transform: translateY(-50%);
+  }
+  .logo__shader {
+    inset: 0;
+    opacity: 0;
+    transition: opacity var(--duration-base) ease;
+  }
+  .logo[data-shaded] .logo__shader { opacity: 1; }
+  .logo[data-shaded] .logo__image { visibility: hidden; }
+
+  /* Narrow screens (not in Figma): drop the fixed 600px height so the
+     section hugs the shrunken logo instead of leaving a tall white gap. */
+  @media (max-width: 48rem) {
+    .logo { height: auto; padding: var(--space-16) var(--space-5); }
+  }
+</style>

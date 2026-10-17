@@ -2,17 +2,30 @@
 // Stack page 3: Svelte 5 islands + GSAP. The Hero (learning-order step 3) and
 // the Process section (docs/briefs/process/brief.md), in landing page order.
 // The wrapper is the sandbox root and the page's scroll container; each
-// landing section marks itself with data-lab-part. See notes.md.
+// landing section marks itself with data-lab-part. Case studies is the
+// shared static piece from src/components/ (no island). See notes.md.
 import '@fontsource-variable/manrope';
 import Hero from './Hero.svelte';
 import Ads from './Ads.svelte';
 import Process from './Process.svelte';
 import Results from './Results.svelte';
+import Audits from '../../components/audits/Audits.astro';
+import AboutUs from '../../components/about/AboutUs.astro';
+import CaseStudies from '../../components/case-studies/CaseStudies.astro';
+import FormFaq from '../../components/forms/FormFaq.astro';
+import Logo from '../../components/logo/Logo.astro';
+import Footer from '../../components/footer/Footer.astro';
 ---
 
 <div class="page" data-sandbox="03-hero-svelte-gsap">
   <Hero client:load />
   <Ads client:load />
+  <Audits />
   <Process client:load />
+  <AboutUs />
   <Results client:visible={{ rootMargin: '100%' }} />
+  <CaseStudies />
+  <FormFaq />
+  <Logo />
+  <Footer />
 </div>

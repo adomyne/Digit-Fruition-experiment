@@ -1,0 +1,98 @@
+---
+// Footer: company details, social links and the website credit.
+// Figma: Footer 142:1697 (1441 x 153.2).
+//
+// Shared, static piece: the stack pages (2-5) include this one Astro
+// component at the bottom instead of rebuilding it per framework, since
+// nothing on it moves. It is plain HTML at build time, so it never touches a
+// section's animation library. Its scoped <style> sets its own font, colour,
+// background and box-sizing from tokens.css and reaches nothing else.
+// The logo is its own copy (page 6 keeps its own in parts/Footer.astro).
+import creatorLogo from './assets/creator-logo.svg?url';
+
+const socials = ['Instagram', 'Youtube', 'Facebook', 'Tiktok', 'LinkedIn'];
+---
+
+<footer class="footer" id="footer" data-lab-part="Footer">
+  <p class="company">
+    MB DigitFruition, Girulių g. 10, LT-12112 Vilnius<br />
+    Copyright @ DigitFruition MB 2024. All rights are strictly<br />
+    reserved<br />
+    <br />
+    This site uses cookies for better user experience
+  </p>
+  <div class="links">
+    <ul class="socials">
+      {socials.map((s) => <li><a href="#">{s}</a></li>)}
+    </ul>
+    <p class="credit">
+      <span>Website created by</span>
+      <img class="credit__logo" src={creatorLogo} width="81" height="63" alt="La Croyance" loading="lazy" decoding="async" />
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-5);
+    width: 100%;
+    padding: var(--space-5);
+    border-top: 1px solid var(--color-text);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+  }
+  .footer *, .footer *::before, .footer *::after { box-sizing: border-box; }
+  p, ul { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  a { color: inherit; text-decoration: none; }
+  a:hover, a:focus-visible { color: var(--color-accent); }
+
+  .company {
+    width: 25.0259rem; /* 400.41px */
+    max-width: 100%;
+  }
+  .links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    justify-content: space-between;
+  }
+  .socials {
+    display: flex;
+    align-items: center;
+    gap: 2.125rem; /* 34px */
+    white-space: nowrap;
+  }
+  .credit {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2-5);
+    width: 100%;
+    padding: var(--space-3) 0;
+    white-space: nowrap;
+  }
+  .credit__logo {
+    display: block;
+    width: 5.0625rem; /* 81px */
+    height: 3.9375rem; /* 63px */
+  }
+
+  /* Narrow screens (not in Figma): stack the two columns and let the
+     social links wrap, so nothing runs off the edge. */
+  @media (max-width: 48rem) {
+    .footer { flex-direction: column; }
+    .links { align-items: flex-start; }
+    .socials { flex-wrap: wrap; gap: var(--space-3) var(--space-5); }
+    .credit { justify-content: flex-start; }
+  }
+</style>

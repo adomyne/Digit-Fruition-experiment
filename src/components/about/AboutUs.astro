@@ -1,0 +1,460 @@
+---
+// About us: "Our Values" flip cards, partner logos and the founder photo.
+// Figma: Values and Partners 142:1298 (1440 x 700).
+//
+// Shared piece like Audits: the stack pages (2-5) include this one Astro
+// component. Its scoped <style> sets its own font, colour, background and
+// box-sizing from tokens.css and reaches nothing else; assets are its own
+// copies (page 6 keeps its own in parts/AboutUs.astro).
+//
+// The four value cards turn over like a coin. Hover (on devices that hover)
+// tips a card 20% of the way (36deg) as a hint; a click finishes the turn to
+// the back, a second click turns it back. Plain CSS transitions on one
+// transform, toggled by the small script below, so no animation library is
+// involved and it never touches the stack page's own library.
+//
+// Assets are the frame's own Figma exports (the icons, backdrop and photo
+// converted to WebP).
+import background from './assets/about-bg.webp?url';
+import founder from './assets/founder.webp?url';
+import noOutsourcing from './assets/value-no-outsourcing.webp?url';
+import noAutomation from './assets/value-no-automation.webp?url';
+import flexiblePayment from './assets/value-flexible-payment.webp?url';
+import communication from './assets/value-communication.webp?url';
+import kepejas from './assets/partner-kepejas.svg?url';
+import treciadieniai from './assets/partner-treciadieniai.svg?url';
+import radvilos from './assets/partner-radvilos.svg?url';
+import fourHw from './assets/partner-4hw.svg?url';
+import linkedin from './assets/linkedin.svg?url';
+import logoDigit from './assets/logo-digit.svg?url';
+import logoFruition from './assets/logo-fruition.svg?url';
+import logoMark from './assets/logo-mark.svg?url';
+
+// Optical sizing (owner's call): the icons are trimmed to their shapes and
+// sized so each covers the same area of colour, then centred in one 104px
+// slot. The diamond fills only 55% of its square and the leaf 84%, so at the
+// same box size the diamond looked smaller; `size` (px) evens that out.
+// `body` is the card back's text (Figma 375:104 leaves it as "Body"): draft
+// copy until the owner sends the real lines.
+const values = [
+  {
+    title: 'No Outsourcing',
+    icon: noOutsourcing,
+    size: 84,
+    body: 'Every campaign is run by our own in-house team. No freelancers, no hand-offs.',
+  },
+  {
+    title: 'No Software Automation',
+    icon: noAutomation,
+    size: 91,
+    body: 'Bids, budgets and keywords are managed by hand, by people who know your brand.',
+  },
+  {
+    title: 'Flexible Payment Structure',
+    icon: flexiblePayment,
+    size: 84,
+    body: 'Pay monthly, on performance or a mix of both, whatever fits your stage of growth.',
+  },
+  {
+    title: 'Top-Notch Communication',
+    icon: communication,
+    size: 104,
+    body: 'A direct line to the people running your account, and clear, regular reports.',
+  },
+];
+
+const partners = [
+  { name: 'Lietuvos Kepėjas', src: kepejas, cls: 'partner--kepejas' },
+  { name: 'Trečiadieniai', src: treciadieniai, cls: 'partner--treciadieniai' },
+  { name: 'Radvilos', src: radvilos, cls: 'partner--radvilos' },
+  { name: '4hw', src: fourHw, cls: 'partner--4hw' },
+];
+---
+
+<section class="about" id="about" data-lab-part="About us" data-about>
+  <div class="about__bg" aria-hidden="true">
+    <img src={background} alt="" loading="lazy" decoding="async" />
+  </div>
+  <div class="about__frame">
+    <div class="content">
+      <div class="values">
+        <h2 class="values__title">Our <span class="accent">Values</span></h2>
+        <ul class="values__grid">
+          {values.map((v) => (
+            <li class="value">
+              <button class="flip" type="button" aria-pressed="false" data-flip>
+                <span class="flip__inner" data-flip-inner>
+                  <span class="face face--front" data-face="front">
+                    <span class="value__icon">
+                      <img src={v.icon} alt="" style={`--s:${v.size / 16}rem`} loading="lazy" decoding="async" />
+                    </span>
+                    <span class="value__title">{v.title}</span>
+                  </span>
+                  <span class="face face--back" data-face="back" aria-hidden="true">
+                    <span class="back__title">{v.title}</span>
+                    <span class="back__body">{v.body}</span>
+                    <span class="back__logo">
+                      <img class="back__logo-digit" src={logoDigit} alt="" />
+                      <img class="back__logo-fruition" src={logoFruition} alt="" />
+                      <img class="back__logo-mark" src={logoMark} alt="" />
+                    </span>
+                  </span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="partners">
+        <h3 class="partners__title">Along With Our <span class="accent">Partners</span></h3>
+        <ul class="partners__logos">
+          {partners.map((p) => (
+            <li class:list={['partner', p.cls]}><img src={p.src} alt={p.name} /></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+    <figure class="profile">
+      <img class="profile__photo" src={founder} alt="Nojus Latvinskas, founder of Digit Fruition" loading="lazy" decoding="async" />
+      <figcaption class="profile__info">
+        <img class="profile__linkedin" src={linkedin} alt="LinkedIn" />
+        <span>Nojus Latvinskas<br />Founder</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<script>
+  // Click turns a card over; a second click turns it back. While a click's
+  // turn is running the card uses the slower flip timing both ways, and the
+  // hover hint is held off until the pointer leaves, so the card lands flat
+  // instead of stopping at the tilt. Everything is removed on page swap.
+  const ac = new AbortController();
+  const { signal } = ac;
+
+  for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-about] [data-flip]')) {
+    const inner = btn.querySelector<HTMLElement>('[data-flip-inner]')!;
+    const front = btn.querySelector<HTMLElement>('[data-face="front"]')!;
+    const back = btn.querySelector<HTMLElement>('[data-face="back"]')!;
+
+    btn.addEventListener(
+      'click',
+      () => {
+        const flipped = btn.getAttribute('aria-pressed') !== 'true';
+        btn.setAttribute('aria-pressed', String(flipped));
+        front.setAttribute('aria-hidden', String(flipped));
+        back.setAttribute('aria-hidden', String(!flipped));
+        btn.dataset.turning = '';
+        btn.dataset.hold = '';
+      },
+      { signal },
+    );
+    btn.addEventListener('pointerleave', () => delete btn.dataset.hold, { signal });
+    inner.addEventListener(
+      'transitionend',
+      (e) => {
+        if (e.target === inner && e.propertyName === 'transform') delete btn.dataset.turning;
+      },
+      { signal },
+    );
+  }
+
+  // Title size: start at H5 (21px) and step down until no word in any title
+  // is wider than its card, then use that one size for all four. Re-run when
+  // the cards change width and once the web font has loaded.
+  const MAX = 21;
+  const MIN = 12;
+  for (const grid of document.querySelectorAll<HTMLElement>('[data-about] .values__grid')) {
+    const titles = [...grid.querySelectorAll<HTMLElement>('.value__title')];
+    const fit = () => {
+      let size = MAX;
+      grid.style.setProperty('--title-size', `${size}px`);
+      while (size > MIN && titles.some((t) => t.scrollWidth > t.clientWidth)) {
+        size -= 0.5;
+        grid.style.setProperty('--title-size', `${size}px`);
+      }
+    };
+    const ro = new ResizeObserver(fit);
+    ro.observe(grid);
+    signal.addEventListener('abort', () => ro.disconnect());
+    document.fonts.ready.then(() => !signal.aborted && fit());
+  }
+
+  document.addEventListener('astro:before-swap', () => ac.abort(), { once: true, signal });
+</script>
+
+<style>
+  .about {
+    /* Coin flip: 20% of a half turn on hover, the full half turn on click. */
+    --tilt: 36deg;
+    --duration-tilt: calc(var(--duration-base) * 1.5);  /* 450ms */
+    --duration-flip: calc(var(--duration-base) * 2.5);  /* 750ms */
+
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    padding-top: var(--space-16);
+    background: var(--color-text);
+    color: var(--color-on-ink);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+  }
+  .about *, .about *::before, .about *::after { box-sizing: border-box; }
+  p, h2, h3, ul, figure { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  img { display: block; }
+  .accent { color: var(--color-accent); }
+
+  /* Figma crops the backdrop: 164.93% x 304.49% of the frame, shifted
+     -32.47% / -107.72%. */
+  .about__bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .about__bg img {
+    position: absolute;
+    top: -107.72%;
+    left: -32.47%;
+    width: 164.93%;
+    height: 304.49%;
+    max-width: none;
+  }
+
+  .about__frame {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-5);
+    width: min(var(--width-page), 100%);
+    margin-inline: auto;
+  }
+  /* 200px left inset at 1440; it gives way first as the screen narrows. */
+  .content {
+    flex: none; /* 887px at 1440: the inset plus the 685px column */
+    min-width: 0;
+    padding-left: clamp(var(--space-4), 100vw - 77.5rem, 12.5rem);
+  }
+  .content > * + * { margin-top: var(--space-18); }
+
+  .values {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+    width: var(--width-copy);
+    max-width: 100%;
+  }
+  .values__title {
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-heading);
+    text-align: center;
+  }
+  .values__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+
+  /* ---------- Flip card ---------- */
+  .value {
+    min-height: 13.4375rem; /* 215px */
+    perspective: 62.5rem;
+  }
+  .flip {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-card);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+  }
+  .flip:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; }
+  .flip__inner {
+    display: grid;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform var(--duration-tilt) var(--ease-out);
+  }
+  .flip[aria-pressed='true'] .flip__inner { transform: rotateY(180deg); }
+  /* A click's turn: slower, eased in and out like a tossed coin. */
+  .flip[data-turning] .flip__inner {
+    transition: transform var(--duration-flip) var(--ease-in-out);
+  }
+  @media (hover: hover) {
+    .flip:not([data-hold]):hover .flip__inner { transform: rotateY(var(--tilt)); }
+    .flip[aria-pressed='true']:not([data-hold]):hover .flip__inner {
+      transform: rotateY(calc(180deg - var(--tilt)));
+    }
+  }
+
+  .face {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-4);
+    padding: var(--space-5) 0.9651rem; /* 20px 15.44px */
+    container-type: inline-size;
+    overflow: hidden;
+    border: 1px solid var(--color-on-ink);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card-hard);
+    backface-visibility: hidden;
+  }
+  /* Back: Figma 375:104. Title, text, then the Digit Fruition logo at the
+     foot; same box, border and shadow as the front. */
+  .face--back {
+    justify-content: space-between;
+    gap: 0;
+    transform: rotateY(180deg);
+    background: var(--color-ink);
+    text-align: left;
+  }
+
+  /* One slot for every icon, so their centres and the titles below line up. */
+  .value__icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 6.5rem; /* 104px */
+    height: 6.5rem;
+  }
+  .value__icon img { width: var(--s); height: var(--s); }
+  /* Whole words, inside the card's padding. All four titles share one size:
+     H5 (21px) where the card is wide enough, smaller when the longest word
+     ("Communication") would touch the sides. The CSS size is a safe guess;
+     the script below measures the real words and sets --title-size. */
+  .value__title {
+    display: block;
+    width: 100%;
+    font-size: var(--title-size, min(var(--text-md), 100cqi / 8.6));
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-heading);
+    overflow-wrap: normal;
+  }
+  .back__title {
+    width: 100%;
+    font-size: var(--text-base);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-body); /* 24px */
+    text-align: center;
+    color: var(--color-accent);
+  }
+  .back__body {
+    flex: 1 0 0;
+    width: 100%;
+    padding-block: var(--space-2);
+    font-size: var(--text-small); /* 13px Small */
+    line-height: var(--leading-small); /* 15px */
+    letter-spacing: var(--tracking-wide); /* 2% */
+    color: var(--color-on-ink);
+  }
+  /* Logo 101.95 x 28 with its three parts placed as Figma insets them. */
+  .back__logo {
+    position: relative;
+    flex-shrink: 0;
+    width: 6.3718rem;
+    height: 1.75rem;
+  }
+  .back__logo img { position: absolute; }
+  .back__logo-digit { inset: 0 37.8% 39.84% 0; width: 62.2%; height: 60.16%; }
+  .back__logo-fruition { inset: 78.26% 41.46% 0.57% 0; width: 58.54%; height: 21.17%; }
+  .back__logo-mark { inset: 0.17% 0 0 71.95%; width: 28.05%; height: 99.83%; }
+
+  /* ---------- Partners ---------- */
+  .partners {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-12);
+    width: var(--width-copy);
+    max-width: 100%;
+    padding-inline: var(--space-5);
+  }
+  .partners__title {
+    font-size: var(--text-h4);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-heading);
+    text-align: center;
+  }
+  /* Figma's 88px gaps make the row 707px, wider than its 645px box; the
+     logos spread across the box instead (about 87px apart at 1440). */
+  .partners__logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-8);
+    width: 100%;
+    opacity: 0.8;
+  }
+  .partner { overflow: hidden; }
+  .partner img { width: 100%; height: 100%; }
+  /* Figma nudges these two inside their boxes (inset 0.75% / -0.48%). */
+  .partner--kepejas img, .partner--radvilos img { translate: 0.75% -0.48%; }
+  .partner--kepejas { width: 3.8011rem; height: 5.3879rem; }      /* 60.82 x 86.21 */
+  .partner--treciadieniai { width: 8.0045rem; height: 4.0409rem; } /* 128.07 x 64.66 */
+  .partner--radvilos { width: 3.8912rem; height: 5.3879rem; }     /* 62.26 x 86.21 */
+  .partner--4hw { width: 8.3118rem; height: 2.6939rem; }          /* 132.99 x 43.10 */
+
+  /* ---------- Founder ---------- */
+  /* 486 x 633 at 1440; on narrower screens the photo shrinks before the
+     cards do. */
+  .profile {
+    position: relative;
+    flex: 0 1 30.375rem;
+    min-width: 0;
+    aspect-ratio: 486 / 633;
+    overflow: hidden;
+  }
+  /* Figma crops the photo: 102.31% tall, shifted up 2.31%. */
+  .profile__photo {
+    position: absolute;
+    top: -2.31%;
+    left: 0;
+    width: 100%;
+    height: 102.31%;
+    max-width: none;
+    object-fit: cover;
+  }
+  .profile__info {
+    position: absolute;
+    right: 2.9388rem; /* 47.02px */
+    bottom: 3.755rem; /* 60.08px */
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-heading);
+    color: var(--color-caption);
+  }
+  .profile__info span { width: 11.0594rem; /* 176.95px */ text-align: center; }
+  .profile__linkedin { flex-shrink: 0; width: 1.1895rem; height: 0.9733rem; /* 19.03 x 15.57 */ }
+
+  /* Below 1056px the photo moves under the values and partners. */
+  @media (max-width: 66rem) {
+    .about__frame { flex-direction: column; align-items: center; }
+    .content { flex: none; width: 100%; padding-inline: var(--space-4); }
+    .values, .partners { margin-inline: auto; }
+    .profile { flex: none; width: min(30.375rem, 100%); }
+  }
+  @media (max-width: 40rem) {
+    .values__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .partners__logos { justify-content: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flip__inner, .flip[data-turning] .flip__inner { transition: none; }
+    .flip:not([data-hold]):hover .flip__inner { transform: none; }
+    .flip[aria-pressed='true']:not([data-hold]):hover .flip__inner { transform: rotateY(180deg); }
+  }
+</style>

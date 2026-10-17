@@ -37,6 +37,11 @@
   --color-shadow: #000000;          /* value card hard shadow */
   /* Hero (05), frames 142:1117, 142:1074 and 329:84 */
   --color-sales: #ffcc00;           /* accents/yellow: Sales line and card bar */
+  --color-popup-fade: #d8d7d7;      /* success story popup gradient end */
+  /* Logo Gem Smoke shader (Paper); colour 1 is --color-accent */
+  --color-gem-yellow: #f7ff61;
+  --color-gem-white: #ffffff;
+  --color-gem-inner: #300000;
 
   /* Type
    * Display = Manrope (H1, H5). Figma sets H2-H4 and H6 in Neue Montreal;
@@ -172,6 +177,7 @@
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* About us card flip */
   --duration-fast: 150ms;
   --duration-base: 300ms;
 }
